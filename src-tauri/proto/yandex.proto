@@ -1,0 +1,212 @@
+syntax = "proto3";
+
+// VIDEO TRANSLATION
+message VideoTranslationHelpObject {
+  // video_file_url or subtitles_file_url
+  string target = 1;
+  // raw url to video file or subs
+  string targetUrl = 2;
+}
+
+message VideoTranslationRequest {
+  string url = 3;
+  // used in mobile version
+  optional string deviceId = 4;
+  // true for the first request, false for subsequent ones
+  bool firstRequest = 5;
+  double duration = 6;
+  int32 unknown0 = 7; // 1 1
+  // source language code
+  string language = 8;
+  // 0 - auto detected by yabrowser, 1 - user set his
+  // (own lang by dropdown)
+  bool forceSourceLang = 9;
+  int32 unknown1 = 10; // 0 0
+  // array for translation assistance
+  // ([0] -> {2: link to video, 1: "video_file_url"},
+  // [1] -> {2: link to subtitles, 1: "subtitles_file_url"})
+  // i guess subtitles_file_url is optional in 2025
+  repeated VideoTranslationHelpObject translationHelp = 11;
+  // set true if it's ended stream else don't add it
+  bool wasStream = 13;
+  string responseLanguage = 14;
+  int32 unknown2 = 15; // 1?
+  int32 unknown3 = 16; // before april 2025 is 1, but now it's 2
+  // they have some kind of limiter on requests from one IP
+  // because after one such request it stops working
+  bool bypassCache = 17;
+  // translates videos with higher-quality voices, but sometimes the
+  // voice of one person can constantly change
+  // (https://github.com/ilyhalight/voice-over-translation/issues/897)
+  bool useLivelyVoice = 18;
+  string videoTitle = 19;
+}
+
+message VideoTranslationResponse {
+  // this 2 options set if status is translated
+  optional string url = 1;
+  optional double duration = 2;
+
+  int32 status = 4;
+  // secs until translation is completed
+  optional int32 remainingTime = 5;
+  // unknown 0 (1st request) ->
+  // 10 (2nd, 3th and etc requests). (if status is waiting)
+  optional int32 unknown0 = 6;
+  // it isn't a type mistake
+  string translationId = 7;
+  // detected language (if the wrong one is set)
+  optional string language = 8;
+  optional string message = 9;
+  bool isLivelyVoice = 10;
+  // added if status=1 (success) can be equal to 0 or 1
+  optional int32 unknown2 = 11;
+  // maybe i wrong, but it seems like a retry flag
+  // sets if error happened by audio failed
+  // 1 - retry
+  optional int32 shouldRetry = 12;
+  // 1 if classic voices and have translation url
+  optional int32 unknown3 = 13;
+}
+
+message VideoTranslationCacheItem {
+  int32 status = 1;
+  optional int32 remainingTime = 2;
+  // exists if status is 3 (error)
+  optional string message = 3;
+  // exists if status is 3 (error). Value is 5
+  optional int32 unknown0 = 4;
+}
+
+message VideoTranslationCacheRequest {
+  string url = 1;
+  double duration = 2;
+  // source language code
+  string language = 3;
+  string responseLanguage = 4;
+}
+
+message VideoTranslationCacheResponse {
+  VideoTranslationCacheItem default = 1;
+  VideoTranslationCacheItem cloning = 2;
+}
+
+// video translation audio info. Used separated
+message AudioBufferObject {
+  // Uint8Array. can be empty if it's failed audio js
+  bytes audioFile = 2;
+  // if it's single file u set json data
+  // {"downloadType":"web_api_get_all_generating_urls_data_from_iframe","itag":251,"minChunkSize":5295308,"fileSize":"xxx"}
+  // if it's error u set only downloadType
+  // (1=web_api_get_all_generating_urls_data_from_iframe)
+  string fileId = 1;
+}
+
+// video translation partial audio info. Part of ChunkAudioObject
+message PartialAudioBufferObject {
+  // Uint8Array
+  bytes audioFile = 2;
+  // if it's chunk u set chunk index (0-xxx...)
+  int32 chunkId = 1;
+}
+
+// video translation audio info
+message ChunkAudioObject {
+  PartialAudioBufferObject audioBuffer = 1;
+  // 1-xxx... (chunks count)
+  int32 audioPartsLength = 2;
+  // I don't know why it's a fileId, but they call it that
+  // {"downloadType":"web_api_get_all_generating_urls_data_from_iframe","itag":251,"minChunkSize":5295308,"fileSize":"xxxx"}
+  string fileId = 3;
+  // current version only 1
+  int32 version = 4;
+}
+
+// can have only partialAudioInfo or only audioInfo
+message VideoTranslationAudioRequest {
+  string translationId = 1;
+  string url = 2;
+  // used if video has many chunks
+  optional ChunkAudioObject partialAudioInfo = 4;
+  // used if video has only one chunk
+  optional AudioBufferObject audioInfo = 6;
+}
+
+message VideoTranslationAudioResponse {
+  // something like this
+  // 1 = waiting chunks
+  // 2 = done
+  int32 status = 1;
+  // invalid naming. It's not a list of chunks, but a list of some numbers (?)
+  repeated string remainingChunks = 2;
+}
+
+// SUBTITLES
+message SubtitlesObject {
+  string language = 1;
+  string url = 2;
+  int32 unknown0 = 3;
+  string translatedLanguage = 4;
+  string translatedUrl = 5;
+  int32 unknown1 = 6;
+  int32 unknown2 = 7;
+}
+
+message SubtitlesRequest {
+  string url = 1;
+  // source language code
+  string language = 2;
+}
+
+message SubtitlesResponse {
+  // 0 - finished/failed, 1 - waiting result (1 - ~10min, maybe more)
+  bool waiting = 1;
+  repeated SubtitlesObject subtitles = 2;
+}
+
+// STREAM TRANSLATION
+message StreamTranslationObject {
+  string url = 1;
+  // timestamp in ms (timing of start m3u8).
+  // it could have been big float,
+  // but js requires an additional dependencies for this
+  string timestamp = 2;
+}
+
+message StreamTranslationRequest {
+  string url = 1;
+  string language = 2;
+  string responseLanguage = 3;
+  int32 unknown0 = 5;
+  int32 unknown1 = 6;
+}
+
+enum StreamInterval {
+  NO_CONNECTION = 0;
+  TRANSLATING = 10;
+  STREAMING = 20;
+}
+
+message StreamTranslationResponse {
+  // 20s - streaming, 10s - translating,
+  // 0s - there is no connection with the server (the broadcast is finished or
+  // deleted)
+  StreamInterval interval = 1;
+  optional StreamTranslationObject translatedInfo = 2;
+  optional int32 pingId = 3;
+}
+
+// doesn't have response proto
+message StreamPingRequest { int32 pingId = 1; }
+
+// SESSIONS
+message YandexSessionRequest {
+  string uuid = 1;
+  // e.g. video_translation or summarization
+  string module = 2;
+}
+
+message YandexSessionResponse {
+  string secretKey = 1;
+  int32 expires = 2;
+}
