@@ -49,15 +49,20 @@ impl YandexClient {
 #[async_trait]
 impl TranslationProvider for YandexClient {
     async fn translate_video(&self, video_url: &str) -> Result<TranslationResult, String> {
-        // 1. Формируем Protobuf запрос (пока хардкодим en -> ru по KISS)
+        // 1. Формируем Protobuf запрос по спецификации vot.js
         let request = pb::VideoTranslationRequest {
             url: video_url.to_string(),
             language: "en".to_string(),
             response_language: "ru".to_string(),
             first_request: true,
-            use_lively_voice: true,
+            duration: 344.0, // Дефолтное значение, если мы пока не умеем парсить длину
+            unknown0: 1,
+            unknown1: 0,
+            unknown2: 1,
+            unknown3: 2, // Актуально для 2025/2026 года
+            use_lively_voice: false, // Обычные голоса (без OAuth)
             bypass_cache: false,
-            ..Default::default() // Остальные поля (unknown и т.д.) оставим дефолтными
+            ..Default::default()
         };
 
         // 2. Сериализуем в бинарный формат
@@ -100,6 +105,7 @@ impl TranslationProvider for YandexClient {
             url: yandex_response.url,
             status: yandex_response.status,
             message: yandex_response.message,
+            remaining_time: yandex_response.remaining_time,
         })
     }
 }

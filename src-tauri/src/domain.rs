@@ -7,6 +7,7 @@ pub struct TranslationResult {
     pub url: Option<String>,
     pub status: i32,
     pub message: Option<String>,
+    pub remaining_time: Option<i32>,
 }
 
 /// Порт (Интерфейс) для инверсии зависимостей.
