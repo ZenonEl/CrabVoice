@@ -19,7 +19,8 @@ async fn translate(url: String, state: State<'_, AppState>) -> Result<Translatio
 #[tauri::command]
 fn close_player(app: AppHandle) {
     if let Some(window) = app.get_webview_window("player_window") {
-        // Tauri v2 стандартизировал работу с окнами. Просто закрываем (Android Activity закроется или вьюшка уничтожится).
+        // На мобилках (Android/iOS) окна убиваются системно, метода close() там нет
+        #[cfg(not(any(target_os = "android", target_os = "ios")))]
         let _ = window.close();
     }
 }
@@ -34,7 +35,8 @@ async fn open_player(app: AppHandle, target_url: String, audio_url: String) -> R
             
             // 1. Создаем аудио-объект прямо в контексте страницы
             const audioObj = new Audio("AUDIO_URL_PLACEHOLDER");
-            audioObj.crossOrigin = "anonymous";
+            // ВАЖНО: Мы убрали crossOrigin = "anonymous", иначе браузер блокирует 
+            // стороннее аудио от Яндекса на сайтах типа Vimeo из-за CORS!
             let mainVideo = null;
 
             // 2. Создаем минималистичный UI (Пульт закрытия/статуса)
