@@ -1,23 +1,18 @@
 use std::sync::Arc;
-
+use tauri::{State};
 mod domain;
 mod yandex_api;
 
-use domain::{TranslationProvider};
+use domain::{TranslationProvider, TranslationResult};
 use yandex_api::YandexClient;
 
 struct AppState {
     translator: Arc<dyn TranslationProvider>,
 }
 
-// Тестовая функция-обработчик
 #[tauri::command]
-fn log_video_data(title: String, duration: f64) {
-    println!("========================================");
-    println!("🚀 СРАБОТАЛА МАГИЯ VOT.JS!");
-    println!("🎬 Название видео: {}", title);
-    println!("⏱ Длина видео: {} сек", duration);
-    println!("========================================");
+async fn translate(url: String, duration: f64, state: State<'_, AppState>) -> Result<TranslationResult, String> {
+    state.translator.translate_video(&url, duration).await
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -33,7 +28,7 @@ pub fn run() {
             translator: Arc::new(yandex_client),
         })
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![log_video_data])
+        .invoke_handler(tauri::generate_handler![translate])
         .setup(move |app| {
             // Создаем единое главное окно ВРУЧНУЮ, чтобы прикрепить бессмертный скрипт
             tauri::WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::App("index.html".into()))
