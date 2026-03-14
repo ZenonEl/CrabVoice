@@ -14,5 +14,5 @@ pub struct TranslationResult {
 /// Наш контроллер (Tauri command) будет знать ТОЛЬКО об этом трейте.
 #[async_trait]
 pub trait TranslationProvider: Send + Sync {
-    async fn translate_video(&self, video_url: &str) -> Result<TranslationResult, String>;
+    async fn translate_video(&self, video_url: &str, duration: f64) -> Result<TranslationResult, String>;
 }

@@ -12,38 +12,42 @@ struct AppState {
 }
 
 #[tauri::command]
-async fn translate(url: String, state: State<'_, AppState>) -> Result<TranslationResult, String> {
-    state.translator.translate_video(&url).await
+async fn translate(url: String, duration: f64, state: State<'_, AppState>) -> Result<TranslationResult, String> {
+    state.translator.translate_video(&url, duration).await
 }
 
 #[tauri::command]
-fn close_player(app: AppHandle) {
+fn close_player(app: tauri::AppHandle) {
     if let Some(window) = app.get_webview_window("player_window") {
-        // На мобилках (Android/iOS) окна убиваются системно, метода close() там нет
         #[cfg(not(any(target_os = "android", target_os = "ios")))]
-        let _ = window.close();
+        {
+            let _ = window.close();
+        }
+
+        #[cfg(any(target_os = "android", target_os = "ios"))]
+        {
+            // на мобилках тоже закрываем окно, это и закрывает webview
+            let _ = window.close();
+            // или: let _ = window.destroy();
+        }
     }
 }
 
 #[tauri::command]
-async fn open_player(app: AppHandle, target_url: String, audio_url: String) -> Result<(), String> {
-    // Внедряем логику Voice Over Translation (Нативный DOM-связкинг).
-    // Аудио играет ВНУТРИ самого окна с видео, обеспечивая идеальный синхрон.
+async fn open_player(app: AppHandle, target_url: String) -> Result<(), String> {
     let init_script = r#"
         window.addEventListener('DOMContentLoaded', () => {
-            console.log("CrabVoice: Initializing sync...");
+            // Tauri v2 позволяет внешним сайтам вызывать команды (благодаря withGlobalTauri)
+            const invoke = window.__TAURI__.core.invoke;
             
-            // 1. Создаем аудио-объект прямо в контексте страницы
-            const audioObj = new Audio("AUDIO_URL_PLACEHOLDER");
-            // ВАЖНО: Мы убрали crossOrigin = "anonymous", иначе браузер блокирует 
-            // стороннее аудио от Яндекса на сайтах типа Vimeo из-за CORS!
             let mainVideo = null;
+            let audioObj = null;
+            let isTranslating = false;
 
-            // 2. Создаем минималистичный UI (Пульт закрытия/статуса)
             const panel = document.createElement('div');
             panel.innerHTML = `
                 <div style="font-size: 12px; margin-bottom: 5px; color: #fff; font-family: sans-serif;">
-                    CrabVoice: <span id="cv-status" style="color:#FFC131">Searching...</span>
+                    CrabVoice: <span id="cv-status" style="color:#FFC131">Searching video...</span>
                 </div>
                 <button id="cv-close" style="background:#ff5e5e; color:#fff; border:none; padding:5px 10px; border-radius:4px; font-weight:bold; cursor:pointer; font-family: sans-serif;">
                     ❌ Close Player
@@ -56,84 +60,91 @@ async fn open_player(app: AppHandle, target_url: String, audio_url: String) -> R
             document.body.appendChild(panel);
 
             document.getElementById('cv-close').onclick = () => {
-                window.__TAURI_INTERNALS__.invoke("plugin:event|emit", { event: "player-closed", payload: "" });
+                invoke("close_player");
             };
 
-            // 3. Главная функция синхронизации
             function syncAudio() {
-                if (!mainVideo) return;
-                
-                // Приглушаем оригинальное видео
+                if (!mainVideo || !audioObj) return;
                 if (mainVideo.volume > 0.15) mainVideo.volume = 0.15;
                 
-                // Синхронизация Play/Pause
                 if (mainVideo.paused || mainVideo.waiting || mainVideo.ended) {
                     audioObj.pause();
-                } else {
-                    if (audioObj.paused) {
-                        audioObj.play().catch(e => console.log("CrabVoice Audio Play Error:", e));
-                    }
+                } else if (audioObj.paused) {
+                    audioObj.play().catch(() => {});
                 }
                 
-                // Синхронизация Времени (Отмотка). 
-                // Погрешность 0.3s нормальная, иначе будет постоянное заикание.
                 if (Math.abs(audioObj.currentTime - mainVideo.currentTime) > 0.3) {
                     audioObj.currentTime = mainVideo.currentTime;
                 }
                 
-                // Синхронизация скорости (x1.5, x2)
                 if (audioObj.playbackRate !== mainVideo.playbackRate) {
                     audioObj.playbackRate = mainVideo.playbackRate;
                 }
             }
 
-            // 4. Привязка нативных слушателей к найденному видео
-            function attachListeners(v) {
-                if (v._cvAttached) return;
-                v._cvAttached = true;
-                mainVideo = v;
+            // Функция связи с Rust API
+            async function requestTranslation(v) {
+                if (isTranslating) return;
+                isTranslating = true;
                 
-                document.getElementById('cv-status').innerText = "Linked ✅";
-                document.getElementById('cv-status').style.color = "\#4CAF50";
+                const pollTranslation = async () => {
+                    document.getElementById('cv-status').innerText = "Translating Yandex... ⏳";
+                    try {
+                        const duration = v.duration && !isNaN(v.duration) ? v.duration : 344.0;
+                        const res = await invoke("translate", { 
+                            url: window.location.href, 
+                            duration: duration 
+                        });
+                        
+                        if (res.status === 1 && res.url) {
+                            // Успех! Перевод готов
+                            document.getElementById('cv-status').innerText = "Linked & Translated ✅";
+                            document.getElementById('cv-status').style.color = "\#4CAF50";
+                            
+                            audioObj = new Audio(res.url);
+                            const events =['play', 'pause', 'playing', 'waiting', 'seeking', 'seeked', 'ratechange', 'timeupdate'];
+                            events.forEach(e => v.addEventListener(e, syncAudio));
+                            syncAudio();
+                        } else {
+                            // YouTube AUDIO_REQUESTED или ожидание кэша
+                            document.getElementById('cv-status').innerText = "Yandex Processing... (Retry 10s)";
+                            setTimeout(pollTranslation, 10000);
+                        }
+                    } catch (e) {
+                        document.getElementById('cv-status').innerText = "Error: " + e;
+                        isTranslating = false;
+                    }
+                };
                 
-                // Полный набор событий для мгновенной реакции как у нативного плеера
-                const events =['play', 'pause', 'playing', 'waiting', 'seeking', 'seeked', 'ratechange', 'timeupdate'];
-                events.forEach(e => v.addEventListener(e, syncAudio));
-                
-                // Принудительный первый вызов
-                syncAudio();
+                pollTranslation();
             }
 
-            // 5. Умный поиск видео (в т.ч. в Shadow DOM)
+            // Умный поиск с селекторами из vot.js
             function findVideo() {
-                if (mainVideo) return; // Уже нашли
-
-                const walk = (root) => {
-                    let node = root.querySelector('video');
-                    if (node) return node;
-                    
-                    let els = root.querySelectorAll('*');
-                    for (let el of els) {
-                        if (el.shadowRoot) {
-                            let res = walk(el.shadowRoot);
-                            if (res) return res;
-                        }
+                if (mainVideo) return;
+                
+                // vot.js selectors
+                const selectors =[
+                    ".html5-video-container video", // YouTube
+                    "vk-video-player", // VK
+                    ".vjs-tech", // VideoJS Universal
+                    ".fp-player video", // Flowplayer
+                    "video" // Fallback
+                ];
+                
+                for (let sel of selectors) {
+                    let v = document.querySelector(sel);
+                    if (v && v.duration > 0) {
+                        mainVideo = v;
+                        requestTranslation(v);
+                        return;
                     }
-                    return null;
-                };
-
-                let v = walk(document);
-                // Защита от микро-видео (рекламы, превьюшек)
-                if (v && v.offsetWidth > 100) {
-                    attachListeners(v);
                 }
             }
 
-            // Ищем видео раз в секунду (на случай если оно загружается динамически)
-            setInterval(findVideo, 1000);
-            findVideo(); // Первая попытка
+            setInterval(findVideo, 2000);
         });
-    "#.replace("AUDIO_URL_PLACEHOLDER", &audio_url);
+    "#;
 
     let _player_window = WebviewWindowBuilder::new(
         &app,

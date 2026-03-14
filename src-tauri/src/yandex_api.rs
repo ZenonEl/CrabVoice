@@ -48,14 +48,14 @@ impl YandexClient {
 
 #[async_trait]
 impl TranslationProvider for YandexClient {
-    async fn translate_video(&self, video_url: &str) -> Result<TranslationResult, String> {
+    async fn translate_video(&self, video_url: &str, duration: f64) -> Result<TranslationResult, String> {
         // 1. Формируем Protobuf запрос по спецификации vot.js
         let request = pb::VideoTranslationRequest {
             url: video_url.to_string(),
             language: "en".to_string(),
             response_language: "ru".to_string(),
             first_request: true,
-            duration: 344.0, // Дефолтное значение, если мы пока не умеем парсить длину
+            duration, // Теперь передаем точную длину видео прямо из плеера
             unknown0: 1,
             unknown1: 0,
             unknown2: 1,
