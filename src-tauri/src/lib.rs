@@ -32,7 +32,6 @@ pub fn run() {
         .setup(move |app| {
             // Создаем единое главное окно ВРУЧНУЮ, чтобы прикрепить бессмертный скрипт
             tauri::WebviewWindowBuilder::new(app, "main", tauri::WebviewUrl::App("index.html".into()))
-                .title("crabvoice")
                 .initialization_script(init_script)
                 .build()?;
             Ok(())

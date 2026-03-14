@@ -46,6 +46,7 @@ if (!window._cvInitialized) {
     let audioObj: HTMLAudioElement | null = null;
     let isTranslating = false;
     let currentVideoUrl = "";
+    let countdownInterval: any = null; // Глобальный таймер для отсчета
 
     function updateStatus(text: string, color?: string) {
         const panel = document.getElementById('cv-panel-host');
@@ -99,26 +100,28 @@ if (!window._cvInitialized) {
 
             updateStatus("VOT.js extracting... 🔍", "#24c8db");
             
-            // МАГИЯ VOT.JS: Автоматически достает метаданные (Ютуб, ВК, Vimeo и тд)
             const videoData = await getVideoData(service);
             console.log("🦀 CrabVoice: Метаданные от vot.js:", videoData);
 
             const duration = videoData?.duration || v.duration || 344.0;
 
             const pollTranslation = async () => {
-                // Если URL изменился (Ютуб переключил видео без перезагрузки)
                 if (window.location.href !== currentVideoUrl) {
                     isTranslating = false;
                     return;
                 }
+                
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                }
 
-                updateStatus("Yandex Processing... ⏳", "#FFC131");
+                updateStatus("Requesting Yandex... ⏳", "#FFC131");
 
                 try {
                     const invoke = window.__TAURI__ ? window.__TAURI__.core.invoke : null;
                     if (!invoke) return;
 
-                    // Отправляем чистые данные в Rust
                     const res = await invoke("translate", { 
                         url: window.location.href, 
                         duration: duration 
@@ -132,13 +135,33 @@ if (!window._cvInitialized) {
                         events.forEach(e => v.addEventListener(e, syncAudio));
                         syncAudio();
                     } else {
+                        // ЯНДЕКС В ПРОЦЕССЕ (Статусы 2, 3 или просто нет URL)
                         attempts++;
-                        if (attempts > 15) {
+                        if (attempts > 30) { // Даем до 10 минут на перевод длинных видео
                             updateStatus("Timeout ❌", "#ff5e5e");
                             isTranslating = false;
                             return;
                         }
-                        setTimeout(pollTranslation, 10000);
+
+                        // Берем время от Яндекса, либо по умолчанию 15 секунд
+                        let timeLeft = (res.remaining_time && res.remaining_time > 0) ? res.remaining_time : 15;
+                        
+                        updateStatus(`Processing... (~${timeLeft}s) ⏳`, "#FFC131");
+                        
+                        // Живой обратный отсчет
+                        countdownInterval = setInterval(() => {
+                            if (window.location.href !== currentVideoUrl) {
+                                clearInterval(countdownInterval);
+                                return;
+                            }
+                            timeLeft--;
+                            if (timeLeft > 0) {
+                                updateStatus(`Processing... (~${timeLeft}s) ⏳`, "#FFC131");
+                            } else {
+                                clearInterval(countdownInterval);
+                                pollTranslation(); // Проверяем статус снова
+                            }
+                        }, 1000);
                     }
                 } catch (e) {
                     updateStatus("Error: API Failed ⚠️", "#ff5e5e");
@@ -173,10 +196,11 @@ if (!window._cvInitialized) {
     const checkAndInject = () => {
         if (isHome) return;
 
-        // Если SPA Ютуба переключило видео, сбрасываем старый звук
+        // Если SPA Ютуба переключило видео, сбрасываем старый звук и таймеры
         if (mainVideo && (!mainVideo.isConnected || window.location.href !== currentVideoUrl)) {
             mainVideo = null;
             if (audioObj) { audioObj.pause(); audioObj = null; }
+            if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
             isTranslating = false;
             updateStatus("Searching new video...", "#FFC131");
         }

@@ -3600,6 +3600,7 @@
     let audioObj = null;
     let isTranslating = false;
     let currentVideoUrl = "";
+    let countdownInterval = null;
     async function requestTranslation(v) {
       if (isTranslating) return;
       isTranslating = true;
@@ -3621,7 +3622,11 @@
             isTranslating = false;
             return;
           }
-          updateStatus("Yandex Processing... \u23F3", "#FFC131");
+          if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+          }
+          updateStatus("Requesting Yandex... \u23F3", "#FFC131");
           try {
             const invoke = window.__TAURI__ ? window.__TAURI__.core.invoke : null;
             if (!invoke) return;
@@ -3637,12 +3642,26 @@
               syncAudio();
             } else {
               attempts++;
-              if (attempts > 15) {
+              if (attempts > 30) {
                 updateStatus("Timeout \u274C", "#ff5e5e");
                 isTranslating = false;
                 return;
               }
-              setTimeout(pollTranslation, 1e4);
+              let timeLeft = res.remaining_time && res.remaining_time > 0 ? res.remaining_time : 15;
+              updateStatus(`Processing... (~${timeLeft}s) \u23F3`, "#FFC131");
+              countdownInterval = setInterval(() => {
+                if (window.location.href !== currentVideoUrl) {
+                  clearInterval(countdownInterval);
+                  return;
+                }
+                timeLeft--;
+                if (timeLeft > 0) {
+                  updateStatus(`Processing... (~${timeLeft}s) \u23F3`, "#FFC131");
+                } else {
+                  clearInterval(countdownInterval);
+                  pollTranslation();
+                }
+              }, 1e3);
             }
           } catch (e) {
             updateStatus("Error: API Failed \u26A0\uFE0F", "#ff5e5e");
@@ -3675,6 +3694,10 @@
         if (audioObj) {
           audioObj.pause();
           audioObj = null;
+        }
+        if (countdownInterval) {
+          clearInterval(countdownInterval);
+          countdownInterval = null;
         }
         isTranslating = false;
         updateStatus("Searching new video...", "#FFC131");
