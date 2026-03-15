@@ -19,4 +19,4 @@ By leveraging the power of Rust on the backend, CrabVoice successfully bypasses 
 A huge thank you to the [vot.js](https://github.com/FOSWLY/vot.js) project! Their incredible work on video data extraction, player detection, and API reverse-engineering made the frontend integration of CrabVoice incredibly robust. 
 
 ## ⚠️ Legal Disclaimer
-The library was created exclusively for research purposes and isn't intended for commercial use. All rights to the original software belong to their respective right holders. The library isn't affiliated with the original rights holders.
+The app was created exclusively for research purposes and isn't intended for commercial use. All rights to the original software belong to their respective right holders. The app isn't affiliated with the original rights holders.

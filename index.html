@@ -1,46 +1,57 @@
 <!doctype html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <link rel="stylesheet" href="/src/styles.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tauri App</title>
+    <title>CrabVoice</title>
     <script type="module" src="/src/main.ts" defer></script>
-  </head>
-
-  <body>
+</head>
+<body>
     <main class="container">
-      <h1>Welcome to Tauri</h1>
+        <div class="header">
+            <h1>🦀 CrabVoice</h1>
+            <p>Real-time Native Video Translation</p>
+        </div>
 
-      <div class="row">
-        <a href="https://vite.dev" target="_blank">
-          <img src="/src/assets/vite.svg" class="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img
-            src="/src/assets/tauri.svg"
-            class="logo tauri"
-            alt="Tauri logo"
-          />
-        </a>
-        <a href="https://www.typescriptlang.org/docs" target="_blank">
-          <img
-            src="/src/assets/typescript.svg"
-            class="logo typescript"
-            alt="typescript logo"
-          />
-        </a>
-      </div>
-      <p>Click on the Tauri logo to learn more about the framework</p>
+        <form id="translate-form" class="card">
+            <input id="url-input" type="url" placeholder="Paste video URL (YouTube, VK, Vimeo)..." required />
+            <button type="submit" class="btn-primary">▶ Open Video</button>
+            <div id="result-msg"></div>
+        </form>
+        
+        <div class="card settings-card">
+            <h3>⚙️ Settings</h3>
+            
+            <div class="setting-group">
+                <label>Translate to:</label>
+                <select id="set-target-lang">
+                    <option value="ru">Русский (Russian)</option>
+                    <option value="en">English</option>
+                    <option value="kk">Қазақ (Kazakh)</option>
+                </select>
+            </div>
 
-      <form class="row" id="translate-form">
-        <input id="url-input" placeholder="Paste video URL (e.g. Vimeo, VK)..." style="width: 300px;" />
-        <button type="submit">Translate</button>
-      </form>
-      
-      <!-- Контейнер для результатов и плеера -->
-      <div id="result-msg" style="margin-top: 20px;"></div>
-      
+            <div class="setting-group">
+                <label>Video Volume Ducking: <span id="vol-val">15%</span></label>
+                <input type="range" id="set-volume" min="0" max="100" value="15" />
+            </div>
+
+            <div class="setting-group row-checkbox">
+                <input type="checkbox" id="set-lively" />
+                <label for="set-lively">Use Lively Voices (Better acting)</label>
+            </div>
+
+            <div class="setting-group row-checkbox">
+                <input type="checkbox" id="set-use-proxy" />
+                <label for="set-use-proxy">Use Proxy Worker (Bypass blocks)</label>
+            </div>
+
+            <div class="setting-group proxy-host-group" id="proxy-container">
+                <label>Proxy Worker Address:</label>
+                <input type="text" id="set-proxy-host" placeholder="vot-worker.kload.workers.dev" />
+            </div>
+        </div>
     </main>
-  </body>
+</body>
 </html>

@@ -1,4 +1,4 @@
-use crate::domain::{TranslationProvider, TranslationResult};
+use crate::domain::{TranslationProvider, TranslationResult, AppSettings};
 use async_trait::async_trait;
 use prost::Message;
 use reqwest::{Client, header};
@@ -6,12 +6,10 @@ use hmac::{Hmac, Mac};
 use sha2::Sha256;
 use uuid::Uuid;
 
-// Подключаем сгенерированный Protobuf код
 pub mod pb {
     include!(concat!(env!("OUT_DIR"), "/_.rs"));
 }
 
-// Секретный ключ Яндекса для подписи запросов (вытащен из браузера)
 const HMAC_KEY: &[u8] = b"bt8xH3VOlb4mqf0nqAibnDOoiPlXsisf";
 
 pub struct YandexClient {
@@ -20,47 +18,34 @@ pub struct YandexClient {
 
 impl YandexClient {
     pub fn new() -> Self {
-        // Яндексу нужен правдоподобный User-Agent, иначе отдаст 403 Forbidden
         let mut headers = header::HeaderMap::new();
         headers.insert(
             header::USER_AGENT,
             header::HeaderValue::from_static("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.836 YaBrowser/23.9.1.836 Yowser/2.5 Safari/537.36"),
         );
-        headers.insert(
-            header::ACCEPT,
-            header::HeaderValue::from_static("application/x-protobuf"),
-        );
-        headers.insert(
-            header::CONTENT_TYPE,
-            header::HeaderValue::from_static("application/x-protobuf"),
-        );
+        headers.insert(header::ACCEPT, header::HeaderValue::from_static("application/x-protobuf"));
+        headers.insert(header::CONTENT_TYPE, header::HeaderValue::from_static("application/x-protobuf"));
 
-        let client = Client::builder()
-            .default_headers(headers)
-            .build()
-            .expect("Failed to build reqwest client");
-
-        Self {
-            http_client: client,
-        }
+        let client = Client::builder().default_headers(headers).build().expect("Failed to build reqwest client");
+        Self { http_client: client }
     }
 }
 
 #[async_trait]
 impl TranslationProvider for YandexClient {
-    async fn translate_video(&self, video_url: &str, duration: f64) -> Result<TranslationResult, String> {
-        // 1. Формируем Protobuf запрос по спецификации vot.js
+    async fn translate_video(&self, video_url: &str, duration: f64, settings: &AppSettings) -> Result<TranslationResult, String> {
+        // 1. Используем настройки, выбранные юзером
         let request = pb::VideoTranslationRequest {
             url: video_url.to_string(),
-            language: "en".to_string(),
-            response_language: "ru".to_string(),
+            language: settings.default_source_lang.clone(),
+            response_language: settings.default_target_lang.clone(),
             first_request: true,
-            duration, // Теперь передаем точную длину видео прямо из плеера
+            duration,
             unknown0: 1,
             unknown1: 0,
             unknown2: 1,
-            unknown3: 2, // Актуально для 2025/2026 года
-            use_lively_voice: false, // Обычные голоса (без OAuth)
+            unknown3: 2,
+            use_lively_voice: settings.use_lively_voice,
             bypass_cache: false,
             ..Default::default()
         };

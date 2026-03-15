@@ -3554,7 +3554,6 @@
             createHTML: (string) => string
           });
         } catch (e) {
-          console.error("CrabVoice: Failed to create trusted policy", e);
         }
       }
       if (window._cvPolicy) {
@@ -3576,8 +3575,11 @@
       }
     }, syncAudio = function() {
       if (!mainVideo || !audioObj) return;
-      if (mainVideo.volume > 0.15) mainVideo.volume = 0.15;
-      if (mainVideo.paused || mainVideo.ended) {
+      if (mainVideo.volume !== userVideoVolume) {
+        mainVideo.volume = userVideoVolume;
+      }
+      audioObj.volume = userAudioVolume;
+      if (translationPaused || mainVideo.paused || mainVideo.ended) {
         audioObj.pause();
       } else if (audioObj.paused) {
         audioObj.play().catch(() => {
@@ -3601,11 +3603,28 @@
     let isTranslating = false;
     let currentVideoUrl = "";
     let countdownInterval = null;
-    async function requestTranslation(v) {
-      if (isTranslating) return;
+    let appSettings = null;
+    let translationPaused = false;
+    let userAudioVolume = 1;
+    let userVideoVolume = 0.15;
+    async function requestTranslation(v, forceRefresh = false) {
+      if (isTranslating && !forceRefresh) return;
       isTranslating = true;
       currentVideoUrl = window.location.href;
       let attempts = 0;
+      if (!appSettings && window.__TAURI__) {
+        try {
+          appSettings = await window.__TAURI__.core.invoke("get_settings");
+          userVideoVolume = appSettings.volume_ducking;
+          const panel = document.getElementById("cv-panel-host");
+          if (panel && panel.shadowRoot) {
+            const vidSlider = panel.shadowRoot.getElementById("cv-vol-video");
+            if (vidSlider) vidSlider.value = (userVideoVolume * 100).toString();
+          }
+        } catch (e) {
+          console.error("CrabVoice: Failed to fetch settings", e);
+        }
+      }
       try {
         const services = getService();
         if (!services.length) {
@@ -3615,7 +3634,6 @@
         const service = services[0];
         updateStatus("VOT.js extracting... \u{1F50D}", "#24c8db");
         const videoData = await getVideoData(service);
-        console.log("\u{1F980} CrabVoice: \u041C\u0435\u0442\u0430\u0434\u0430\u043D\u043D\u044B\u0435 \u043E\u0442 vot.js:", videoData);
         const duration = videoData?.duration || v.duration || 344;
         const pollTranslation = async () => {
           if (window.location.href !== currentVideoUrl) {
@@ -3630,13 +3648,20 @@
           try {
             const invoke = window.__TAURI__ ? window.__TAURI__.core.invoke : null;
             if (!invoke) return;
-            const res = await invoke("translate", {
-              url: window.location.href,
-              duration
-            });
+            const res = await invoke("translate", { url: window.location.href, duration });
             if (res.status === 1 && res.url) {
               updateStatus("Linked & Translated \u2705", "#4CAF50");
+              if (audioObj) {
+                audioObj.pause();
+                audioObj.src = "";
+              }
               audioObj = new Audio(res.url);
+              translationPaused = false;
+              const panel = document.getElementById("cv-panel-host");
+              if (panel && panel.shadowRoot) {
+                const btnPause = panel.shadowRoot.getElementById("cv-toggle-play");
+                if (btnPause) btnPause.innerText = "\u23F8 Pause Translation";
+              }
               const events = ["play", "pause", "playing", "waiting", "seeking", "seeked", "ratechange", "timeupdate"];
               events.forEach((e) => v.addEventListener(e, syncAudio));
               syncAudio();
@@ -3670,7 +3695,6 @@
         };
         pollTranslation();
       } catch (error) {
-        console.error("\u{1F980} CrabVoice VOT.js Error:", error);
         updateStatus("VOT.js Parse Error \u274C", "#ff5e5e");
         isTranslating = false;
       }
@@ -3711,37 +3735,90 @@
                 <style>
                     .cv-container {
                         position: fixed !important; bottom: 20px !important; right: 20px !important;
-                        background: rgba(0,0,0,0.85) !important; padding: 12px !important;
-                        border-radius: 8px !important; z-index: 2147483647 !important;
-                        box-shadow: 0 4px 10px rgba(0,0,0,0.5) !important;
-                        font-family: sans-serif !important; min-width: 150px !important;
-                        pointer-events: auto !important;
+                        background: rgba(0,0,0,0.85) !important; padding: 15px !important;
+                        border-radius: 10px !important; z-index: 2147483647 !important;
+                        box-shadow: 0 4px 15px rgba(0,0,0,0.6) !important;
+                        font-family: sans-serif !important; min-width: 200px !important;
+                        pointer-events: auto !important; color: #fff !important;
                     }
-                    .cv-header { color: #fff !important; font-size: 13px !important; margin-bottom: 8px !important; }
+                    .cv-header { font-size: 14px !important; margin-bottom: 12px !important; font-weight: bold; }
+                    .cv-row { display: flex !important; flex-direction: column !important; gap: 5px !important; margin-bottom: 10px !important; }
+                    .cv-row label { font-size: 11px !important; color: #bbb !important; display: flex; justify-content: space-between; }
+                    .cv-slider { width: 100% !important; accent-color: #24c8db !important; cursor: pointer; }
+                    .cv-btn-group { display: flex !important; gap: 8px !important; margin-bottom: 10px !important; }
                     .cv-btn {
+                        background: #333 !important; color: #fff !important; border: 1px solid #555 !important;
+                        padding: 6px 10px !important; border-radius: 6px !important; font-size: 12px !important;
+                        cursor: pointer !important; flex: 1 !important; transition: 0.2s;
+                    }
+                    .cv-btn:hover { background: #444 !important; }
+                    .cv-btn-close {
                         background: #ff5e5e !important; color: #fff !important; border: none !important;
                         padding: 8px 15px !important; border-radius: 6px !important; font-weight: bold !important;
-                        cursor: pointer !important; width: 100% !important; font-size: 14px !important;
+                        cursor: pointer !important; width: 100% !important; font-size: 13px !important;
                     }
                 </style>
                 <div class="cv-container">
                     <div class="cv-header">\u{1F980} CrabVoice: <span id="cv-status" style="color:#FFC131">Searching video...</span></div>
-                    <button class="cv-btn" id="cv-close">\u2B05 Back to App</button>
+                    
+                    <div class="cv-row">
+                        <label>Translation Vol: <span id="cv-val-audio">100%</span></label>
+                        <input type="range" class="cv-slider" id="cv-vol-audio" min="0" max="100" value="100">
+                    </div>
+                    
+                    <div class="cv-row">
+                        <label>Original Vol: <span id="cv-val-video">15%</span></label>
+                        <input type="range" class="cv-slider" id="cv-vol-video" min="0" max="100" value="15">
+                    </div>
+
+                    <div class="cv-btn-group">
+                        <button class="cv-btn" id="cv-toggle-play">\u23F8 Pause</button>
+                        <button class="cv-btn" id="cv-refresh">\u{1F504} Refresh</button>
+                    </div>
+
+                    <button class="cv-btn-close" id="cv-close">\u2B05 Back to App</button>
                 </div>
             `;
         safeSetHTML(panelHost.shadowRoot, htmlTemplate);
         document.documentElement.appendChild(panelHost);
-        panelHost.shadowRoot.getElementById("cv-close").onclick = () => {
+        const shadow = panelHost.shadowRoot;
+        shadow.getElementById("cv-close").onclick = () => {
           const homeUrl = localStorage.getItem("cv_home_url");
           if (homeUrl) window.location.href = homeUrl;
           else window.history.go(-(window.history.length - 1));
         };
+        shadow.getElementById("cv-vol-audio").oninput = (e) => {
+          userAudioVolume = e.target.value / 100;
+          shadow.getElementById("cv-val-audio").innerText = `${e.target.value}%`;
+          if (audioObj) audioObj.volume = userAudioVolume;
+        };
+        shadow.getElementById("cv-vol-video").oninput = (e) => {
+          userVideoVolume = e.target.value / 100;
+          shadow.getElementById("cv-val-video").innerText = `${e.target.value}%`;
+          if (mainVideo) mainVideo.volume = userVideoVolume;
+        };
+        shadow.getElementById("cv-toggle-play").onclick = (e) => {
+          translationPaused = !translationPaused;
+          e.target.innerText = translationPaused ? "\u25B6\uFE0F Play" : "\u23F8 Pause";
+          syncAudio();
+        };
+        shadow.getElementById("cv-refresh").onclick = () => {
+          if (audioObj) {
+            audioObj.pause();
+            audioObj.src = "";
+          }
+          if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+          }
+          translationPaused = false;
+          shadow.getElementById("cv-toggle-play").innerText = "\u23F8 Pause";
+          if (mainVideo) requestTranslation(mainVideo, true);
+        };
       }
       if (!mainVideo && !isTranslating) {
         let v = document.querySelector(".html5-video-container video, video.vjs-tech, .fp-player video");
-        if (!v || v.duration === 0) {
-          v = walkDOMForVideo(document);
-        }
+        if (!v || v.duration === 0) v = walkDOMForVideo(document);
         if (v && v.duration > 0 && v.offsetWidth > 100) {
           mainVideo = v;
           requestTranslation(v);

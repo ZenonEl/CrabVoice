@@ -1,7 +1,7 @@
 [package]
-name = "crabvoice"
-version = "0.2.0"
-description = "A Tauri App"
+name = "CrabVoice"
+version = "0.3.0"
+description = "Cross-platform real-time voice-over translation app for video platforms. Features native audio sync, vot.js integration, and mobile support"
 authors = ["Zenonel"]
 edition = "2021"
 
