@@ -53,7 +53,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     btnLogin.addEventListener("click", (e) => {
         e.preventDefault();
         authStatus.innerText = "Redirecting to Yandex...";
-        window.location.href = "https://rust-server-531j.onrender.com/oauth";
+        // Используем прямой официальный Yandex OAuth вместо мертвого сервера-прокладки
+        window.location.href = "https://oauth.yandex.ru/authorize?response_type=token&client_id=23cabbbdc6cd418abb4b39c32c41195d";
     });
 
     // 2. Функция сохранения

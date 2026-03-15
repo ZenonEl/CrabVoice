@@ -9,8 +9,21 @@ pub struct WorkerClient {
 
 impl WorkerClient {
     pub fn new() -> Self {
+        let mut headers = reqwest::header::HeaderMap::new();
+        // Cloudflare жестко дропает запросы без валидного User-Agent'а
+        headers.insert(
+            reqwest::header::USER_AGENT,
+            reqwest::header::HeaderValue::from_static("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.836 YaBrowser/23.9.1.836 Yowser/2.5 Safari/537.36"),
+        );
+        headers.insert(reqwest::header::ACCEPT, reqwest::header::HeaderValue::from_static("application/json"));
+
+        let client = Client::builder()
+            .default_headers(headers)
+            .build()
+            .expect("Failed to build worker client");
+
         Self {
-            http_client: Client::new(),
+            http_client: client,
         }
     }
 }
