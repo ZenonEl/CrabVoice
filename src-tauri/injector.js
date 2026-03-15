@@ -3689,7 +3689,8 @@
               }, 1e3);
             }
           } catch (e) {
-            updateStatus("Error: API Failed \u26A0\uFE0F", "#ff5e5e");
+            console.error("CrabVoice Rust Error:", e);
+            updateStatus(e.toString().substring(0, 30) + " \u26A0\uFE0F", "#ff5e5e");
             isTranslating = false;
           }
         };

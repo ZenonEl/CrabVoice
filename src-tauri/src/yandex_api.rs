@@ -64,20 +64,28 @@ impl TranslationProvider for YandexClient {
         // 4. Генерируем уникальный токен сессии (Яндекс это требует)
         let uuid_str = Uuid::new_v4().to_string();
 
-        // 5. Отправляем POST запрос Яндексу с новыми заголовками
-        let response = self
-            .http_client
+        // 5. Отправляем POST запрос Яндексу
+        let mut req_builder = self.http_client
             .post("https://api.browser.yandex.ru/video-translation/translate")
-            // Добавляем обязательные кастомные заголовки
             .header("Vtrans-Signature", signature_hex)
             .header("Sec-Vtrans-Token", uuid_str)
-            .body(buf)
+            .body(buf);
+
+        // Если у юзера есть токен, просим Яндекс дать нам живые голоса!
+        if let Some(token) = settings.yandex_token.clone() {
+            req_builder = req_builder.header("Authorization", format!("OAuth {}", token));
+        }
+
+        let response = req_builder
             .send()
             .await
             .map_err(|e| format!("Network error: {}", e))?;
 
         if !response.status().is_success() {
-            return Err(format!("Yandex API error: HTTP {}", response.status()));
+            let status = response.status();
+            let err_text = response.text().await.unwrap_or_default();
+            println!("❌ Yandex API Error: HTTP {} - {}", status, err_text);
+            return Err(format!("Yandex HTTP {}: {}", status, err_text));
         }
 
         // 4. Получаем бинарный ответ и десериализуем его

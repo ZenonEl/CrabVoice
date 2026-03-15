@@ -34,10 +34,18 @@ async fn save_settings(new_settings: AppSettings, state: State<'_, AppState>) ->
 }
 
 #[tauri::command]
+async fn save_yandex_token(token: String, state: State<'_, AppState>) -> Result<(), String> {
+    let mut s = state.settings.lock().await;
+    s.yandex_token = Some(token);
+    state.settings_manager.save(&s)?;
+    println!("✅ OAuth Token saved successfully!");
+    Ok(())
+}
+
+#[tauri::command]
 async fn translate(url: String, duration: f64, state: State<'_, AppState>) -> Result<TranslationResult, String> {
     let current_settings = state.settings.lock().await.clone();
     
-    // Динамический выбор: Прямо в Яндекс или через Proxy Worker
     if current_settings.use_proxy {
         state.worker_translator.translate_video(&url, duration, &current_settings).await
     } else {
@@ -51,7 +59,7 @@ pub fn run() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![translate, get_settings, save_settings])
+        .invoke_handler(tauri::generate_handler![translate, get_settings, save_settings, save_yandex_token])
         .setup(move |app| {
             // 1. Инициализируем менеджер настроек (здесь есть доступ к файловой системе ОС)
             let settings_manager = SettingsManager::new(app.handle());

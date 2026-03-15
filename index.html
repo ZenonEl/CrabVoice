@@ -37,10 +37,14 @@
                 <input type="range" id="set-volume" min="0" max="100" value="15" />
             </div>
 
-            <div class="setting-group row-checkbox">
-                <input type="checkbox" id="set-lively" />
-                <label for="set-lively">Use Lively Voices (Better acting)</label>
+            <div class="setting-group row-checkbox" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <input type="checkbox" id="set-lively" />
+                    <label for="set-lively">Use Lively Voices</label>
+                </div>
+                <button id="btn-login-yandex" style="background:#4CAF50; color:#fff; border:none; padding:6px 10px; border-radius:6px; cursor:pointer; font-size:12px;">🔑 Login Yandex</button>
             </div>
+            <div id="auth-status" style="font-size:12px; color:#aaa; text-align:right;"></div>
 
             <div class="setting-group row-checkbox">
                 <input type="checkbox" id="set-use-proxy" />

@@ -4,12 +4,13 @@ use serde::{Deserialize, Serialize};
 /// Глобальные настройки приложения (хранятся на диске)
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppSettings {
-    pub volume_ducking: f64,          // До скольки глушить видео (например, 0.15)
-    pub default_source_lang: String,  // Язык оригинала по умолчанию (например, "en")
-    pub default_target_lang: String,  // Язык перевода по умолчанию ("ru")
-    pub use_proxy: bool,              // Использовать ли vot-worker
-    pub proxy_worker_host: String,    // Адрес воркера
-    pub use_lively_voice: bool,       // Использовать живые голоса (доп. опция)
+    pub volume_ducking: f64,
+    pub default_source_lang: String,
+    pub default_target_lang: String,
+    pub use_proxy: bool,
+    pub proxy_worker_host: String,
+    pub use_lively_voice: bool,
+    pub yandex_token: Option<String>, // Токен для живых голосов
 }
 
 impl Default for AppSettings {
@@ -21,6 +22,7 @@ impl Default for AppSettings {
             use_proxy: false,
             proxy_worker_host: "vot-worker.kload.workers.dev".to_string(),
             use_lively_voice: false,
+            yandex_token: None,
         }
     }
 }

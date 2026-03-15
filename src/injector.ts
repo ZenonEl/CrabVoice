@@ -35,6 +35,20 @@ function safeSetHTML(element: HTMLElement | ShadowRoot, html: string) {
     element.innerHTML = html;
 }
 
+// Перехват OAuth редиректа от сервера авторизации
+if (window.location.pathname === '/auth/callback') {
+    const params = new URLSearchParams(window.location.hash.slice(1));
+    const token = params.get('access_token');
+    if (token && window.__TAURI__) {
+        document.body.innerHTML = "<h2 style='color: white; text-align: center; margin-top: 50px;'>Login successful! Returning...</h2>";
+        window.__TAURI__.core.invoke('save_yandex_token', { token: token }).then(() => {
+            const homeUrl = localStorage.getItem('cv_home_url');
+            if (homeUrl) window.location.href = homeUrl;
+            else window.history.go(-(window.history.length - 1));
+        });
+    }
+}
+
 if (!window._cvInitialized) {
     window._cvInitialized = true;
 
@@ -200,8 +214,10 @@ if (!window._cvInitialized) {
                             }
                         }, 1000);
                     }
-                } catch (e) {
-                    updateStatus("Error: API Failed ⚠️", "#ff5e5e");
+                } catch (e: any) {
+                    // Выводим ТОЧНУЮ причину ошибки из Rust
+                    console.error("CrabVoice Rust Error:", e);
+                    updateStatus(e.toString().substring(0, 30) + " ⚠️", "#ff5e5e");
                     isTranslating = false;
                 }
             };

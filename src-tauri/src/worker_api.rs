@@ -43,7 +43,9 @@ struct WorkerResponse {
 impl TranslationProvider for WorkerClient {
     async fn translate_video(&self, video_url: &str, duration: f64, settings: &AppSettings) -> Result<TranslationResult, String> {
         let host = &settings.proxy_worker_host;
-        let endpoint = format!("https://{}/video-translation/translate", host);
+        // Чистим URL, если юзер случайно ввел с https://
+        let clean_host = host.replace("https://", "").replace("http://", "").trim_end_matches('/').to_string();
+        let endpoint = format!("https://{}/video-translation/translate", clean_host);
 
         let req_body = WorkerRequest {
             url: video_url.to_string(),
@@ -54,20 +56,29 @@ impl TranslationProvider for WorkerClient {
             use_lively_voice: settings.use_lively_voice,
         };
 
-        let response = self.http_client
-            .post(&endpoint)
-            .json(&req_body)
+        let mut req_builder = self.http_client.post(&endpoint).json(&req_body);
+
+        // Если есть токен, добавляем авторизацию
+        if let Some(token) = &settings.yandex_token {
+            req_builder = req_builder.header("Authorization", format!("OAuth {}", token));
+        }
+
+        let response = req_builder
             .send()
             .await
-            .map_err(|e| format!("Worker Proxy Network Error: {}", e))?;
+            .map_err(|e| format!("Worker Network Error: {}", e))?;
 
         if !response.status().is_success() {
-            return Err(format!("Worker Error: HTTP {}", response.status()));
+            let status = response.status();
+            // Вытаскиваем точный текст ошибки от сервера
+            let err_text = response.text().await.unwrap_or_else(|_| "Unknown Error".to_string());
+            println!("❌ Worker Proxy Error: HTTP {} - {}", status, err_text);
+            return Err(format!("Worker HTTP {}: {}", status, err_text));
         }
 
         let proxy_res: WorkerResponse = response.json()
             .await
-            .map_err(|e| format!("Failed to parse JSON from worker: {}", e))?;
+            .map_err(|e| format!("JSON Parse Error: {}", e))?;
 
         Ok(TranslationResult {
             url: proxy_res.url,

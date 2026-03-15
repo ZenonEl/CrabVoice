@@ -22,10 +22,13 @@ window.addEventListener("DOMContentLoaded", async () => {
     const useProxy = document.querySelector("#set-use-proxy") as HTMLInputElement;
     const proxyHost = document.querySelector("#set-proxy-host") as HTMLInputElement;
     const proxyContainer = document.querySelector("#proxy-container") as HTMLElement;
+    const btnLogin = document.querySelector("#btn-login-yandex") as HTMLButtonElement;
+    const authStatus = document.querySelector("#auth-status") as HTMLElement;
 
     // 1. Загрузка настроек из Rust
     try {
-        const settings: AppSettings = await invoke("get_settings");
+        // @ts-ignore - yandex_token added in backend
+        const settings: AppSettings & { yandex_token?: string } = await invoke("get_settings");
         
         targetLang.value = settings.default_target_lang;
         volDucking.value = (settings.volume_ducking * 100).toString();
@@ -35,9 +38,23 @@ window.addEventListener("DOMContentLoaded", async () => {
         proxyHost.value = settings.proxy_worker_host;
         
         proxyContainer.style.display = useProxy.checked ? "flex" : "none";
+
+        if (settings.yandex_token) {
+            authStatus.innerText = "✅ Authorized";
+            authStatus.style.color = "#4CAF50";
+        } else {
+            authStatus.innerText = "❌ Not authorized";
+        }
     } catch (e) {
         console.error("Failed to load settings:", e);
     }
+
+    // Обработчик входа в Яндекс (Mobile First: редирект в текущем окне)
+    btnLogin.addEventListener("click", (e) => {
+        e.preventDefault();
+        authStatus.innerText = "Redirecting to Yandex...";
+        window.location.href = "https://rust-server-531j.onrender.com/oauth";
+    });
 
     // 2. Функция сохранения
     const saveSettings = async () => {
