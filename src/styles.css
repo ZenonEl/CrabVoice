@@ -33,6 +33,23 @@ body {
   margin-top: 5px;
 }
 
+/* Premium UI Mode */
+.premium-mode #app-title {
+  color: #FFD700;
+  text-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+}
+.premium-mode #app-subtitle::after {
+  content: " PRO";
+  color: #FFD700;
+  font-weight: bold;
+  font-size: 12px;
+  vertical-align: super;
+}
+.premium-mode svg {
+  stroke: #FFD700;
+  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.4));
+}
+
 .card {
   background-color: #1e1e1e;
   padding: 20px;

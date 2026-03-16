@@ -35,6 +35,15 @@ window.addEventListener("DOMContentLoaded", async () => {
     const btnDownloadLogs = document.querySelector("#btn-download-logs") as HTMLButtonElement;
     const logsArea = document.querySelector("#logs-area") as HTMLTextAreaElement;
 
+    // Проверка Premium
+    try {
+        const isPremium = await invoke("is_premium_active");
+        if (isPremium) {
+            document.body.classList.add("premium-mode");
+            appLog("Premium features activated ✨");
+        }
+    } catch (e) {}
+
     // 1. Загрузка настроек из Rust
     try {
         // @ts-ignore - yandex_token added in backend

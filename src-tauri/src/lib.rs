@@ -6,6 +6,7 @@ mod domain;
 mod yandex_api;
 mod settings;
 mod logger;
+mod premium;
 
 use domain::{TranslationProvider, TranslationResult, AppSettings};
 use settings::SettingsManager;
@@ -28,6 +29,18 @@ async fn log_message(source: String, msg: String, state: State<'_, AppState>) ->
 #[tauri::command]
 async fn get_logs(state: State<'_, AppState>) -> Result<String, String> {
     Ok(state.logger.lock().await.read())
+}
+
+// Команда, чтобы UI знал, куплен ли Premium
+#[tauri::command]
+fn is_premium_active() -> bool {
+    cfg!(feature = "premium")
+}
+
+// Команда получения сегментов с рекламой
+#[tauri::command]
+async fn get_skip_segments(video_id: String) -> Result<Vec<premium::SponsorSegment>, String> {
+    premium::fetch_sponsor_segments(&video_id).await
 }
 
 #[tauri::command]
@@ -78,7 +91,7 @@ pub fn run() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![translate, get_settings, save_settings, save_yandex_token, log_message, get_logs])
+        .invoke_handler(tauri::generate_handler![translate, get_settings, save_settings, save_yandex_token, log_message, get_logs, is_premium_active, get_skip_segments])
         .setup(move |app| {
             let settings_manager = SettingsManager::new(app.handle());
             let settings = settings_manager.load();

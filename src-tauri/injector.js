@@ -3546,6 +3546,13 @@
   }
 
   // src/injector.ts
+  var appLog = (msg) => {
+    console.log("[CrabVoice Injector]", msg);
+    if (window.__TAURI__) {
+      window.__TAURI__.core.invoke("log_message", { source: "Injector", msg }).catch(() => {
+      });
+    }
+  };
   function safeSetHTML(element, html) {
     if (window.trustedTypes && window.trustedTypes.createPolicy) {
       if (!window._cvPolicy) {
@@ -3594,6 +3601,18 @@
       }
     }, syncAudio = function() {
       if (!mainVideo || !audioObj) return;
+      if (sponsorSegments.length > 0 && !mainVideo.paused) {
+        const ct = mainVideo.currentTime;
+        for (let seg of sponsorSegments) {
+          if (ct >= seg.start && ct < seg.end) {
+            mainVideo.currentTime = seg.end;
+            appLog(`SponsorBlock: Skipped ${seg.category} (${seg.start.toFixed(1)}s -> ${seg.end.toFixed(1)}s)`);
+            updateStatus(`Skipped ${seg.category} \u23E9`, "#FFD700");
+            setTimeout(() => updateStatus("Linked & Translated \u2705", "#4CAF50"), 3e3);
+            break;
+          }
+        }
+      }
       if (mainVideo.volume !== userVideoVolume) {
         mainVideo.volume = userVideoVolume;
       }
@@ -3616,6 +3635,8 @@
     const isHome = window.location.hostname === "localhost" || window.location.hostname === "tauri.localhost" || window.location.protocol === "tauri:";
     if (isHome) {
       localStorage.setItem("cv_home_url", window.location.href);
+    } else {
+      appLog(`CrabVoice Injector attached to ${window.location.hostname}`);
     }
     let mainVideo = null;
     let audioObj = null;
@@ -3626,6 +3647,7 @@
     let translationPaused = false;
     let userAudioVolume = 1;
     let userVideoVolume = 0.15;
+    let sponsorSegments = [];
     async function requestTranslation(v, forceRefresh = false) {
       if (isTranslating && !forceRefresh) return;
       isTranslating = true;
@@ -3651,9 +3673,23 @@
           throw new Error("Unknown service");
         }
         const service = services[0];
+        appLog("Extracting video data via VOT.js");
         updateStatus("VOT.js extracting... \u{1F50D}", "#24c8db");
         const videoData = await getVideoData(service);
         const duration = videoData?.duration || v.duration || 344;
+        if (window.location.hostname.includes("youtube.com")) {
+          const urlObj = new URL(window.location.href);
+          const videoId = urlObj.searchParams.get("v");
+          if (videoId && window.__TAURI__) {
+            try {
+              sponsorSegments = await window.__TAURI__.core.invoke("get_skip_segments", { videoId });
+              if (sponsorSegments.length > 0) {
+                appLog(`SponsorBlock: Loaded ${sponsorSegments.length} segments`);
+              }
+            } catch (e) {
+            }
+          }
+        }
         const pollTranslation = async () => {
           if (window.location.href !== currentVideoUrl) {
             isTranslating = false;
@@ -3667,8 +3703,10 @@
           try {
             const invoke = window.__TAURI__ ? window.__TAURI__.core.invoke : null;
             if (!invoke) return;
+            appLog("Sent translation request to Rust backend");
             const res = await invoke("translate", { url: window.location.href, duration });
             if (res.status === 1 && res.url) {
+              appLog("Translation successful! Playing native audio...");
               updateStatus("Linked & Translated \u2705", "#4CAF50");
               if (audioObj) {
                 audioObj.pause();
@@ -3708,6 +3746,7 @@
               }, 1e3);
             }
           } catch (e) {
+            appLog(`Rust Error: ${e.toString()}`);
             console.error("CrabVoice Rust Error:", e);
             updateStatus(e.toString().substring(0, 30) + " \u26A0\uFE0F", "#ff5e5e");
             isTranslating = false;
