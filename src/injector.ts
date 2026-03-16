@@ -1,6 +1,13 @@
 import { getService, getVideoData } from "@vot.js/ext/utils/videoData";  
 import type { ServiceConf } from "@vot.js/ext/types/service";
 
+const appLog = (msg: string) => {
+    console.log("[CrabVoice Injector]", msg);
+    if (window.__TAURI__) {
+        window.__TAURI__.core.invoke("log_message", { source: "Injector", msg }).catch(()=>{});
+    }
+};
+
 declare global {
     interface Window {
         __TAURI__?: {
@@ -61,6 +68,8 @@ if (!window._cvInitialized) {
     const isHome = window.location.hostname === 'localhost' || window.location.hostname === 'tauri.localhost' || window.location.protocol === 'tauri:';
     if (isHome) {
         localStorage.setItem('cv_home_url', window.location.href);
+    } else {
+        appLog(`CrabVoice Injector attached to ${window.location.hostname}`);
     }
 
     let mainVideo: HTMLVideoElement | null = null;
@@ -150,6 +159,7 @@ if (!window._cvInitialized) {
             // Берем первый подходящий сервис  
             const service: ServiceConf = services[0];
 
+            appLog("Extracting video data via VOT.js");
             updateStatus("VOT.js extracting... 🔍", "#24c8db");
 
             const videoData = await getVideoData(service);
@@ -173,9 +183,11 @@ if (!window._cvInitialized) {
                     const invoke = window.__TAURI__ ? window.__TAURI__.core.invoke : null;
                     if (!invoke) return;
 
+                    appLog("Sent translation request to Rust backend");
                     const res = await invoke("translate", { url: window.location.href, duration: duration });
                     
                     if (res.status === 1 && res.url) {
+                        appLog("Translation successful! Playing native audio...");
                         updateStatus("Linked & Translated ✅", "#4CAF50");
                         
                         if (audioObj) {
@@ -222,6 +234,7 @@ if (!window._cvInitialized) {
                     }
                 } catch (e: any) {
                     // Выводим ТОЧНУЮ причину ошибки из Rust
+                    appLog(`Rust Error: ${e.toString()}`);
                     console.error("CrabVoice Rust Error:", e);
                     updateStatus(e.toString().substring(0, 30) + " ⚠️", "#ff5e5e");
                     isTranslating = false;

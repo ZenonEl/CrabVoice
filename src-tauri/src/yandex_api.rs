@@ -12,22 +12,11 @@ pub mod pb {
 
 const HMAC_KEY: &[u8] = b"bt8xH3VOlb4mqf0nqAibnDOoiPlXsisf";
 
-pub struct YandexClient {
-    http_client: Client,
-}
+pub struct YandexClient;
 
 impl YandexClient {
     pub fn new() -> Self {
-        let mut headers = header::HeaderMap::new();
-        headers.insert(
-            header::USER_AGENT,
-            header::HeaderValue::from_static("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.836 YaBrowser/23.9.1.836 Yowser/2.5 Safari/537.36"),
-        );
-        headers.insert(header::ACCEPT, header::HeaderValue::from_static("application/x-protobuf"));
-        headers.insert(header::CONTENT_TYPE, header::HeaderValue::from_static("application/x-protobuf"));
-
-        let client = Client::builder().default_headers(headers).build().expect("Failed to build reqwest client");
-        Self { http_client: client }
+        Self {}
     }
 }
 
@@ -64,14 +53,30 @@ impl TranslationProvider for YandexClient {
         // 4. Генерируем уникальный токен сессии (Яндекс это требует)
         let uuid_str = Uuid::new_v4().to_string();
 
-        // 5. Отправляем POST запрос Яндексу
-        let mut req_builder = self.http_client
+        // 5. Собираем HTTP клиент Яндекса на лету
+        let mut headers = header::HeaderMap::new();
+        headers.insert(header::USER_AGENT, header::HeaderValue::from_static("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.836 YaBrowser/23.9.1.836 Yowser/2.5 Safari/537.36"));
+        headers.insert(header::ACCEPT, header::HeaderValue::from_static("application/x-protobuf"));
+        headers.insert(header::CONTENT_TYPE, header::HeaderValue::from_static("application/x-protobuf"));
+
+        let mut client_builder = Client::builder().default_headers(headers);
+
+        // Применяем кастомный прокси, если включен
+        if settings.use_proxy && !settings.proxy_url.is_empty() {
+            if let Ok(proxy) = reqwest::Proxy::all(&settings.proxy_url) {
+                client_builder = client_builder.proxy(proxy);
+            }
+        }
+
+        let client = client_builder.build().map_err(|e| format!("Failed to build reqwest client: {}", e))?;
+
+        // 6. Отправляем POST запрос Яндексу
+        let mut req_builder = client
             .post("https://api.browser.yandex.ru/video-translation/translate")
             .header("Vtrans-Signature", signature_hex)
             .header("Sec-Vtrans-Token", uuid_str)
             .body(buf);
 
-        // Если у юзера есть токен, просим Яндекс дать нам живые голоса!
         if let Some(token) = settings.yandex_token.clone() {
             req_builder = req_builder.header("Authorization", format!("OAuth {}", token));
         }

@@ -8,9 +8,9 @@ pub struct AppSettings {
     pub default_source_lang: String,
     pub default_target_lang: String,
     pub use_proxy: bool,
-    pub proxy_worker_host: String,
+    pub proxy_url: String,
     pub use_lively_voice: bool,
-    pub yandex_token: Option<String>, // Токен для живых голосов
+    pub yandex_token: Option<String>,
 }
 
 impl Default for AppSettings {
@@ -20,7 +20,7 @@ impl Default for AppSettings {
             default_source_lang: "en".to_string(),
             default_target_lang: "ru".to_string(),
             use_proxy: false,
-            proxy_worker_host: "vot-worker.kload.workers.dev".to_string(),
+            proxy_url: "".to_string(), // Теперь сюда можно писать http://... или socks5://...
             use_lively_voice: false,
             yandex_token: None,
         }

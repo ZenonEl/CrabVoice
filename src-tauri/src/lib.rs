@@ -4,19 +4,30 @@ use tauri::{State, Manager};
 
 mod domain;
 mod yandex_api;
-mod worker_api;
 mod settings;
+mod logger;
 
 use domain::{TranslationProvider, TranslationResult, AppSettings};
 use settings::SettingsManager;
 use yandex_api::YandexClient;
-use worker_api::WorkerClient;
+use logger::Logger;
 
 struct AppState {
     yandex_translator: Arc<dyn TranslationProvider>,
-    worker_translator: Arc<dyn TranslationProvider>,
     settings: Mutex<AppSettings>,
     settings_manager: SettingsManager,
+    logger: Mutex<Logger>,
+}
+
+#[tauri::command]
+async fn log_message(source: String, msg: String, state: State<'_, AppState>) -> Result<(), String> {
+    state.logger.lock().await.write(&source, &msg);
+    Ok(())
+}
+
+#[tauri::command]
+async fn get_logs(state: State<'_, AppState>) -> Result<String, String> {
+    Ok(state.logger.lock().await.read())
 }
 
 #[tauri::command]
@@ -46,11 +57,19 @@ async fn save_yandex_token(token: String, state: State<'_, AppState>) -> Result<
 async fn translate(url: String, duration: f64, state: State<'_, AppState>) -> Result<TranslationResult, String> {
     let current_settings = state.settings.lock().await.clone();
     
-    if current_settings.use_proxy {
-        state.worker_translator.translate_video(&url, duration, &current_settings).await
+    let log_msg = if current_settings.use_proxy {
+        format!("Translate via Proxy ({}): {}", current_settings.proxy_url, url)
     } else {
-        state.yandex_translator.translate_video(&url, duration, &current_settings).await
+        format!("Translate via Direct Connection: {}", url)
+    };
+    let _ = state.logger.lock().await.write("Rust", &log_msg);
+
+    let result = state.yandex_translator.translate_video(&url, duration, &current_settings).await;
+
+    if let Err(e) = &result {
+        let _ = state.logger.lock().await.write("Rust", &format!("Translate Error: {}", e));
     }
+    result
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -59,18 +78,18 @@ pub fn run() {
 
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![translate, get_settings, save_settings, save_yandex_token])
+        .invoke_handler(tauri::generate_handler![translate, get_settings, save_settings, save_yandex_token, log_message, get_logs])
         .setup(move |app| {
-            // 1. Инициализируем менеджер настроек (здесь есть доступ к файловой системе ОС)
             let settings_manager = SettingsManager::new(app.handle());
             let settings = settings_manager.load();
+            let logger = Logger::new(app.handle());
+            logger.write("System", "🦀 CrabVoice backend started");
 
-            // 2. Внедряем глобальное состояние
             app.manage(AppState {
                 yandex_translator: Arc::new(YandexClient::new()),
-                worker_translator: Arc::new(WorkerClient::new()),
                 settings: Mutex::new(settings),
                 settings_manager,
+                logger: Mutex::new(logger),
             });
 
             // 3. Создаем окно
