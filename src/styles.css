@@ -20,7 +20,62 @@ body {
 }
 
 .header {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 20px;
+}
+
+.header-main {
+  display: flex;
+  align-items: end;
+  justify-content: center;
+}
+
+.header-logo {
+  width: 48px;
+  height: 48px;
+  fill: #FFC131;
+}
+
+.header-socials {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.header-socials a {
+  display: flex;
+  width: 24px;
+  height: 24px;
+  fill: #777;
+  transition: fill 0.2s;
+}
+
+.header-socials a:hover {
+  fill: #fff;
+}
+
+/* Кнопки с иконками */
+.btn-icon {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #4CAF50;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.btn-icon svg {
+  width: 14px;
+  height: 14px;
+  fill: white;
 }
 
 .header h1 {
@@ -121,4 +176,35 @@ input[type="url"]:focus, input[type="text"]:focus, select:focus {
   width: 18px;
   height: 18px;
   accent-color: #24c8db;
+}
+
+/* Footer & Author Info */
+.app-footer {
+  text-align: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
+  font-size: 13px;
+  color: #777777;
+}
+
+.app-footer p {
+  margin: 5px 0;
+}
+
+.app-footer a {
+  color: #24c8db;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.2s;
+}
+
+.app-footer a:hover {
+  color: #FFC131;
+}
+
+.version-info {
+  font-size: 11px;
+  color: #555555 !important;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }

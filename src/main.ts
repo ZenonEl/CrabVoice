@@ -1,3 +1,4 @@
+import { Icons } from "./icons"; // Импортируем
 import { invoke } from "@tauri-apps/api/core";
 
 const appLog = (msg: string) => {
@@ -147,5 +148,12 @@ window.addEventListener("DOMContentLoaded", async () => {
         }
     });
     
+    document.querySelectorAll('[data-icon]').forEach(el => {
+        const iconName = el.getAttribute('data-icon');
+        if (iconName && Icons[iconName]) {
+            el.innerHTML = Icons[iconName];
+        }
+    });
+
     appLog("Main UI loaded successfully");
 });
