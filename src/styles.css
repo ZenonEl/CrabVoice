@@ -169,15 +169,17 @@ input[type="url"]:focus, input[type="text"]:focus, select:focus {
 }
 
 .setting-group label {
-  font-size: 14px;
-  color: #cccccc;
   display: flex;
   justify-content: space-between;
+  align-items: center;
+  gap: 3px;
+  font-size: 14px;
+  color: #cccccc;
 }
 
 .row-checkbox {
   flex-direction: row;
-  align-items: center;
+  align-items: stretch;
   gap: 10px;
 }
 
