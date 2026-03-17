@@ -1,8 +1,8 @@
-use crate::domain::{TranslationProvider, TranslationResult, AppSettings};
+use crate::domain::{AppSettings, TranslationProvider, TranslationResult};
 use async_trait::async_trait;
-use prost::Message;
-use reqwest::{Client, header};
 use hmac::{Hmac, Mac};
+use prost::Message;
+use reqwest::{header, Client};
 use sha2::Sha256;
 use uuid::Uuid;
 
@@ -22,7 +22,12 @@ impl YandexClient {
 
 #[async_trait]
 impl TranslationProvider for YandexClient {
-    async fn translate_video(&self, video_url: &str, duration: f64, settings: &AppSettings) -> Result<TranslationResult, String> {
+    async fn translate_video(
+        &self,
+        video_url: &str,
+        duration: f64,
+        settings: &AppSettings,
+    ) -> Result<TranslationResult, String> {
         // 1. Используем настройки, выбранные юзером
         let request = pb::VideoTranslationRequest {
             url: video_url.to_string(),
@@ -44,8 +49,8 @@ impl TranslationProvider for YandexClient {
         request.encode(&mut buf).map_err(|e| e.to_string())?;
 
         // 3. Создаем криптографическую подпись (HMAC-SHA256)
-        let mut mac = Hmac::<Sha256>::new_from_slice(HMAC_KEY)
-            .expect("HMAC can take key of any size");
+        let mut mac =
+            Hmac::<Sha256>::new_from_slice(HMAC_KEY).expect("HMAC can take key of any size");
         mac.update(&buf);
         let signature_bytes = mac.finalize().into_bytes();
         let signature_hex = hex::encode(signature_bytes); // Переводим в 16-ричную строку
@@ -56,8 +61,14 @@ impl TranslationProvider for YandexClient {
         // 5. Собираем HTTP клиент Яндекса на лету
         let mut headers = header::HeaderMap::new();
         headers.insert(header::USER_AGENT, header::HeaderValue::from_static("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.836 YaBrowser/23.9.1.836 Yowser/2.5 Safari/537.36"));
-        headers.insert(header::ACCEPT, header::HeaderValue::from_static("application/x-protobuf"));
-        headers.insert(header::CONTENT_TYPE, header::HeaderValue::from_static("application/x-protobuf"));
+        headers.insert(
+            header::ACCEPT,
+            header::HeaderValue::from_static("application/x-protobuf"),
+        );
+        headers.insert(
+            header::CONTENT_TYPE,
+            header::HeaderValue::from_static("application/x-protobuf"),
+        );
 
         let mut client_builder = Client::builder().default_headers(headers);
 
@@ -68,7 +79,9 @@ impl TranslationProvider for YandexClient {
             }
         }
 
-        let client = client_builder.build().map_err(|e| format!("Failed to build reqwest client: {}", e))?;
+        let client = client_builder
+            .build()
+            .map_err(|e| format!("Failed to build reqwest client: {}", e))?;
 
         // 6. Отправляем POST запрос Яндексу
         let mut req_builder = client

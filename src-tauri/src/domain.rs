@@ -40,5 +40,10 @@ pub struct TranslationResult {
 #[async_trait]
 pub trait TranslationProvider: Send + Sync {
     // Теперь провайдер принимает настройки, чтобы знать, какие параметры отправлять (языки, голоса)
-    async fn translate_video(&self, video_url: &str, duration: f64, settings: &AppSettings) -> Result<TranslationResult, String>;
+    async fn translate_video(
+        &self,
+        video_url: &str,
+        duration: f64,
+        settings: &AppSettings,
+    ) -> Result<TranslationResult, String>;
 }

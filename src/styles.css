@@ -148,6 +148,9 @@ input[type="url"]:focus, input[type="text"]:focus, select:focus {
 }
 
 .settings-card h3 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   margin: 0 0 10px 0;
   border-bottom: 1px solid #333;
   padding-bottom: 10px;

@@ -1,7 +1,7 @@
+use crate::domain::AppSettings;
 use std::fs;
 use std::path::PathBuf;
 use tauri::{AppHandle, Manager};
-use crate::domain::AppSettings;
 
 pub struct SettingsManager {
     filepath: PathBuf,
@@ -10,13 +10,16 @@ pub struct SettingsManager {
 impl SettingsManager {
     pub fn new(app: &AppHandle) -> Self {
         // Получаем правильный путь к папке данных приложения в зависимости от ОС (Windows/Mac/Android)
-        let mut path = app.path().app_data_dir().expect("Failed to get app data dir");
-        
+        let mut path = app
+            .path()
+            .app_data_dir()
+            .expect("Failed to get app data dir");
+
         // Создаем папку, если её нет
         if !path.exists() {
             let _ = fs::create_dir_all(&path);
         }
-        
+
         path.push("settings.json");
         Self { filepath: path }
     }
