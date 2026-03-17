@@ -3546,12 +3546,26 @@
   }
 
   // src/injector.ts
-  var appLog = (msg) => {
-    console.log("[CrabVoice Injector]", msg);
+  var invokeLog = (source, msg) => {
     if (window.__TAURI__) {
-      window.__TAURI__.core.invoke("log_message", { source: "Injector", msg }).catch(() => {
+      window.__TAURI__.core.invoke("log_message", { source, msg }).catch(() => {
       });
     }
+  };
+  var appLog = (msg) => {
+    console.log("[CrabVoice Injector]", msg);
+    invokeLog("info", msg);
+  };
+  var originalError = console.error;
+  console.error = (...args) => {
+    originalError(...args);
+    const msg = args.map((a) => {
+      if (a instanceof Error) return `${a.name}: ${a.message}
+${a.stack}`;
+      if (typeof a === "object") return JSON.stringify(a, null, 2);
+      return String(a);
+    }).join(" ");
+    invokeLog("error", msg);
   };
   function safeSetHTML(element, html) {
     if (window.trustedTypes && window.trustedTypes.createPolicy) {
