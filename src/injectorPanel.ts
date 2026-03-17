@@ -90,12 +90,14 @@ export class CrabPanel {
                 .cv-slider { width: 100% !important; accent-color: #24c8db !important; cursor: pointer; }
                 .cv-btn-group { display: flex !important; gap: 8px !important; margin-bottom: 10px !important; }
                 .cv-btn {
+                    display: flex; justify-content: center; gap: 2px;
                     background: #333 !important; color: #fff !important; border: 1px solid #555 !important;
                     padding: 6px 10px !important; border-radius: 6px !important; font-size: 12px !important;
                     cursor: pointer !important; flex: 1 !important; transition: 0.2s;
                 }
                 .cv-btn:hover { background: #444 !important; }
                 .cv-btn-close {
+                    display: flex; align-items: center; justify-content: center;
                     background: #ff5e5e !important; color: #fff !important; border: none !important;
                     padding: 8px 15px !important; border-radius: 6px !important; font-weight: bold !important;
                     cursor: pointer !important; width: 100% !important; font-size: 13px !important;
@@ -139,10 +141,10 @@ export class CrabPanel {
 
                         <div class="cv-btn-group">
                             <button class="cv-btn" id="cv-toggle-play">⏸ Pause</button>
-                            <button class="cv-btn" id="cv-refresh">🔄 Refresh</button>
+                            <button class="cv-btn" id="cv-refresh">${Icons.refresh} Refresh</button>
                         </div>
 
-                        <button class="cv-btn-close" id="cv-close-full">⬅ Back to App</button>
+                        <button class="cv-btn-close" id="cv-close-full">${Icons.return} Back to App</button>
                     </div>
                 </div>
             </div>
@@ -166,8 +168,6 @@ export class CrabPanel {
         } else {
             this.wrapper.classList.remove('collapsed');
             
-            // Ждем завершения отрисовки (пока CSS применит display: flex), 
-            // чтобы получить корректные размеры новой панели
             requestAnimationFrame(() => {
                 const rect = this.wrapper.getBoundingClientRect();
                 const panelWidth = this.wrapper.offsetWidth;
@@ -179,23 +179,20 @@ export class CrabPanel {
                 let newLeft = rect.left;
                 let newTop = rect.top;
                 
-                // Горизонтальные границы
                 if (newLeft + panelWidth > screenWidth) {
-                    newLeft = screenWidth - panelWidth - 20; // 20px отступ от края
+                    newLeft = screenWidth - panelWidth - 20;
                 }
                 if (newLeft < 0) {
                     newLeft = 20;
                 }
                 
-                // Вертикальные границы
                 if (newTop + panelHeight > screenHeight) {
-                    newTop = screenHeight - panelHeight - 20; // 20px отступ от края
+                    newTop = screenHeight - panelHeight - 20;
                 }
                 if (newTop < 0) {
                     newTop = 20;
                 }
 
-                // Применяем вычисленные координаты
                 this.wrapper.style.setProperty('left', `${newLeft}px`, 'important');
                 this.wrapper.style.setProperty('top', `${newTop}px`, 'important');
             });
@@ -242,20 +239,29 @@ export class CrabPanel {
         let startX = 0, startY = 0;
         let initialLeft = 0, initialTop = 0;
 
-        const onMouseDown = (e: MouseEvent) => {
-            const target = e.target as HTMLElement;
-            
-            // Проверяем: клик был по хедеру (или внутри него) ИЛИ по крабику.
-            // И исключаем клик по кнопкам внутри хедера
-            const isButton = target.tagName.toLowerCase() === 'button';
-            const isHeaderArea = header.contains(target);
-            const isFab = target === this.fab;
+        // Вспомогательная функция для нормализации координат
+        const getCoords = (e: MouseEvent | TouchEvent) => {
+            if ('touches' in e) {
+                return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            }
+            return { x: e.clientX, y: e.clientY };
+        };
 
-            if (isButton || (!isHeaderArea && !isFab)) return;
+        const onStart = (e: MouseEvent | TouchEvent) => {
+            const target = e.target as HTMLElement;
+            // Разрешаем драг только за хедер или за сам краб
+            if (target !== header && !header.contains(target) && target !== this.fab) return;
             
+            // Если это тач, предотвращаем дефолтное поведение (чтобы не скроллить страницу)
+            if (e.type === 'touchstart') {
+                // Не вызываем preventDefault здесь, чтобы не сломать клики, 
+                // но в move будем аккуратнее
+            }
+
             isDragging = true;
-            startX = e.clientX;
-            startY = e.clientY;
+            const coords = getCoords(e);
+            startX = coords.x;
+            startY = coords.y;
             
             const rect = this.wrapper.getBoundingClientRect();
             initialLeft = rect.left;
@@ -266,14 +272,22 @@ export class CrabPanel {
             this.wrapper.style.setProperty('left', `${initialLeft}px`, 'important');
             this.wrapper.style.setProperty('top', `${initialTop}px`, 'important');
 
-            document.addEventListener('mousemove', onMouseMove);
-            document.addEventListener('mouseup', onMouseUp);
+            // Вешаем события
+            document.addEventListener('mousemove', onMove);
+            document.addEventListener('touchmove', onMove, { passive: false });
+            document.addEventListener('mouseup', onEnd);
+            document.addEventListener('touchend', onEnd);
         };
 
-        const onMouseMove = (e: MouseEvent) => {
+        const onMove = (e: MouseEvent | TouchEvent) => {
             if (!isDragging) return;
-            let newLeft = initialLeft + (e.clientX - startX);
-            let newTop = initialTop + (e.clientY - startY);
+            
+            // Важно для тача: предотвращаем скролл страницы во время перетаскивания
+            if (e.type === 'touchmove') e.preventDefault();
+
+            const coords = getCoords(e);
+            let newLeft = initialLeft + (coords.x - startX);
+            let newTop = initialTop + (coords.y - startY);
             
             const maxLeft = window.innerWidth - this.wrapper.offsetWidth;
             const maxTop = window.innerHeight - this.wrapper.offsetHeight;
@@ -282,14 +296,19 @@ export class CrabPanel {
             this.wrapper.style.setProperty('top', `${Math.max(0, Math.min(newTop, maxTop))}px`, 'important');
         };
 
-        const onMouseUp = () => {
+        const onEnd = () => {
             isDragging = false;
-            document.removeEventListener('mousemove', onMouseMove);
-            document.removeEventListener('mouseup', onMouseUp);
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('touchmove', onMove);
+            document.removeEventListener('mouseup', onEnd);
+            document.removeEventListener('touchend', onEnd);
         };
 
-        header.addEventListener('mousedown', onMouseDown);
-        this.fab.addEventListener('mousedown', onMouseDown);
+        // Слушаем и мышь, и тач
+        header.addEventListener('mousedown', onStart);
+        header.addEventListener('touchstart', onStart, { passive: false });
+        this.fab.addEventListener('mousedown', onStart);
+        this.fab.addEventListener('touchstart', onStart, { passive: false });
     }
 
     public updateStatus(text: string, color: string = '#fff') {

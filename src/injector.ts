@@ -1,6 +1,7 @@
 import { getService, getVideoData } from "@vot.js/ext/utils/videoData";  
 import type { ServiceConf } from "@vot.js/ext/types/service";
 import { CrabPanel } from "./injectorPanel";
+import { Icons } from "./icons";
 
 // Универсальная функция отправки логов из песочницы инжектора в Rust
 // Инжектор работает на внешних сайтах, где JS API плагина недоступен, поэтому вызываем кастомную Rust-команду
@@ -52,7 +53,7 @@ if (window.location.href.includes('access_token=')) {
     
     if (token && window.__TAURI__) {
         try { window.stop(); } catch(e){} // Стопаем загрузку страницы Яндекса
-        document.documentElement.innerHTML = "<body style='background:#121212;'><h2 style='color: #4CAF50; text-align: center; margin-top: 50px; font-family: sans-serif;'>✅ Login successful!<br><br><span style='color: #aaa; font-size: 16px;'>Returning to CrabVoice...</span></h2></body>";
+        document.documentElement.innerHTML = `<body style='background:#121212;'><h2 style='color: #4CAF50; text-align: center; margin-top: 50px; font-family: sans-serif;'>${Icons.done} Login successful!<br><br><span style='color: #aaa; font-size: 16px;'>Returning to CrabVoice...</span></h2></body>`;
         
         window.__TAURI__.core.invoke('save_yandex_token', { token: token }).then(() => {
             const homeUrl = localStorage.getItem('cv_home_url');
