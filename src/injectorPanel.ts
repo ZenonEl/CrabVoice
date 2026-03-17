@@ -1,3 +1,5 @@
+import { Icons } from "./icons"; 
+
 export interface PanelCallbacks {
     onClose: () => void;
     onAudioVolume: (val: number) => void;
@@ -14,7 +16,6 @@ export class CrabPanel {
 
     // UI Элементы
     private wrapper!: HTMLElement;
-    private panel!: HTMLElement;
     private fab!: HTMLElement;
     private statusEl!: HTMLElement;
     private valAudio!: HTMLElement;
@@ -119,7 +120,7 @@ export class CrabPanel {
                 <div class="cv-panel" id="cv-panel">
                     <div class="cv-header" id="cv-header" title="Drag to move">
                         <div>🦀 CrabVoice</div>
-                        <button class="cv-btn-collapse" id="cv-btn-collapse" title="Minimize">_</button>
+                        <button class="cv-btn-collapse" id="cv-btn-collapse" title="Minimize">${Icons.collapse}</button>
                     </div>
                     <div class="cv-content">
                         <div style="font-size:12px; margin-bottom: 12px; text-align:center;">
@@ -149,7 +150,6 @@ export class CrabPanel {
         this.safeSetHTML(this.shadow, template);
 
         this.wrapper = this.shadow.getElementById('cv-wrapper')!;
-        this.panel = this.shadow.getElementById('cv-panel')!;
         this.fab = this.shadow.getElementById('cv-fab')!;
         this.statusEl = this.shadow.getElementById('cv-status')!;
         this.valAudio = this.shadow.getElementById('cv-val-audio')!;
@@ -161,8 +161,45 @@ export class CrabPanel {
 
     private toggleCollapse(collapsed: boolean) {
         this.isCollapsed = collapsed;
-        if (collapsed) this.wrapper.classList.add('collapsed');
-        else this.wrapper.classList.remove('collapsed');
+        if (collapsed) {
+            this.wrapper.classList.add('collapsed');
+        } else {
+            this.wrapper.classList.remove('collapsed');
+            
+            // Ждем завершения отрисовки (пока CSS применит display: flex), 
+            // чтобы получить корректные размеры новой панели
+            requestAnimationFrame(() => {
+                const rect = this.wrapper.getBoundingClientRect();
+                const panelWidth = this.wrapper.offsetWidth;
+                const panelHeight = this.wrapper.offsetHeight;
+                
+                const screenWidth = window.innerWidth;
+                const screenHeight = window.innerHeight;
+                
+                let newLeft = rect.left;
+                let newTop = rect.top;
+                
+                // Горизонтальные границы
+                if (newLeft + panelWidth > screenWidth) {
+                    newLeft = screenWidth - panelWidth - 20; // 20px отступ от края
+                }
+                if (newLeft < 0) {
+                    newLeft = 20;
+                }
+                
+                // Вертикальные границы
+                if (newTop + panelHeight > screenHeight) {
+                    newTop = screenHeight - panelHeight - 20; // 20px отступ от края
+                }
+                if (newTop < 0) {
+                    newTop = 20;
+                }
+
+                // Применяем вычисленные координаты
+                this.wrapper.style.setProperty('left', `${newLeft}px`, 'important');
+                this.wrapper.style.setProperty('top', `${newTop}px`, 'important');
+            });
+        }
     }
 
     private bindEvents() {
