@@ -58,8 +58,12 @@
             </div>
 
             <div class="setting-group proxy-host-group" id="proxy-container">
-                <label>Proxy URL:</label>
-                <input type="text" id="set-proxy-host" placeholder="socks5://127.0.0.1:1080" />
+                <label>Proxy URL: <span style="font-size: 11px; color: #aaa;">(App Restart required for Webview)</span></label>
+                <div style="display: flex; gap: 10px;">
+                    <input type="text" id="set-proxy-host" placeholder="socks5://user:pass@127.0.0.1:1080" style="flex: 1;" />
+                    <button type="button" id="btn-ping-proxy" class="btn-primary" style="padding: 8px 12px; min-width: 60px;">Ping</button>
+                </div>
+                <div id="proxy-ping-result" style="font-size: 12px; margin-top: 5px;"></div>
             </div>
         </div>
         

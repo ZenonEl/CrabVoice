@@ -46,6 +46,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     const proxyContainer = document.querySelector("#proxy-container") as HTMLElement;
     const btnLogin = document.querySelector("#btn-login-yandex") as HTMLButtonElement;
     const authStatus = document.querySelector("#auth-status") as HTMLElement;
+    const btnPingProxy = document.querySelector("#btn-ping-proxy") as HTMLButtonElement;
+    const proxyPingResult = document.querySelector("#proxy-ping-result") as HTMLElement;
     
     // Элементы логов
     const btnViewLogs = document.querySelector("#btn-view-logs") as HTMLButtonElement;
@@ -123,6 +125,22 @@ window.addEventListener("DOMContentLoaded", async () => {
     useProxy.addEventListener("change", () => {
         proxyContainer.style.display = useProxy.checked ? "flex" : "none";
         saveSettings();
+    });
+
+    btnPingProxy.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const proxyUrl = proxyHost.value.trim();
+        proxyPingResult.style.color = "#FFC131";
+        proxyPingResult.innerText = "Pinging...";
+        
+        try {
+            const ms = await invoke("ping_proxy", { proxyUrl });
+            proxyPingResult.style.color = "#4CAF50";
+            proxyPingResult.innerText = `Success: ${ms} ms`;
+        } catch (err: any) {
+            proxyPingResult.style.color = "#ff5e5e";
+            proxyPingResult.innerText = `Failed: ${err}`;
+        }
     });
 
     // 4. Запуск перевода

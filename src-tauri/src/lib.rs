@@ -86,6 +86,36 @@ async fn get_skip_segments(video_id: String) -> Result<Vec<premium::SponsorSegme
 }
 
 #[tauri::command]
+async fn ping_proxy(proxy_url: String) -> Result<u128, String> {
+    let mut client_builder = reqwest::Client::builder()
+        .timeout(std::time::Duration::from_secs(5));
+        
+    if !proxy_url.is_empty() {
+        if let Ok(proxy) = reqwest::Proxy::all(&proxy_url) {
+            client_builder = client_builder.proxy(proxy);
+        } else {
+            return Err("Invalid proxy URL format".into());
+        }
+    }
+    
+    let client = client_builder.build().map_err(|e| e.to_string())?;
+    
+    let start = std::time::Instant::now();
+    // Testing a very fast endpoint usually used for latency checks
+    let res = client
+        .get("http://gstatic.com/generate_204")
+        .send()
+        .await
+        .map_err(|e| format!("Proxy error: {}", e))?;
+        
+    if res.status().is_success() {
+        Ok(start.elapsed().as_millis())
+    } else {
+        Err(format!("HTTP Error: {}", res.status()))
+    }
+}
+
+#[tauri::command]
 async fn get_settings(state: State<'_, AppState>) -> Result<AppSettings, String> {
     let s = state.settings.lock().await;
     Ok(s.clone())
@@ -162,7 +192,8 @@ pub fn run() {
             get_logs,
             export_logs,
             is_premium_active,
-            get_skip_segments
+            get_skip_segments,
+            ping_proxy
         ])
         .setup(move |app| {
             let settings_manager = SettingsManager::new(app.handle());
@@ -171,18 +202,31 @@ pub fn run() {
 
             app.manage(AppState {
                 yandex_translator: Arc::new(YandexClient::new()),
-                settings: Mutex::new(settings),
+                settings: Mutex::new(settings.clone()),
                 settings_manager,
             });
 
             // 3. Создаем окно
-            tauri::WebviewWindowBuilder::new(
+            let mut window_builder = tauri::WebviewWindowBuilder::new(
                 app,
                 "main",
                 tauri::WebviewUrl::App("index.html".into()),
             )
-            .initialization_script(init_script)
-            .build()?;
+            .initialization_script(init_script);
+
+            if settings.use_proxy && !settings.proxy_url.is_empty() {
+                match tauri::Url::parse(&settings.proxy_url) {
+                    Ok(url) => {
+                        window_builder = window_builder.proxy_url(url);
+                        info!("🌐 Webview Proxy enabled: {}", settings.proxy_url);
+                    }
+                    Err(e) => {
+                        error!("❌ Invalid proxy URL: {}", e);
+                    }
+                }
+            }
+
+            window_builder.build()?;
 
             Ok(())
         })
