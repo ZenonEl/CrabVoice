@@ -181,6 +181,25 @@ input[type="url"]:focus, input[type="text"]:focus, select:focus {
   accent-color: #24c8db;
 }
 
+/* Info Box for settings */
+.info-box {
+  background: #2a2a2a;
+  border-left: 3px solid #24c8db;
+  padding: 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #bbb;
+  margin-top: 10px;
+}
+
+.info-box p {
+  margin: 4px 0;
+}
+
+.info-box strong {
+  color: #fff;
+}
+
 /* Footer & Author Info */
 .app-footer {
   text-align: center;
