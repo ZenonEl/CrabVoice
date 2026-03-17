@@ -3545,6 +3545,305 @@
     };
   }
 
+  // src/icons.ts
+  var Icons = {
+    crabLogo: `<svg xmlns="http://www.w3.org/2000/svg" width="50" height="100" viewBox="40 -140 350 50">
+                    <!-- SVG created with Arrow, by QuiverAI (https://quiver.ai) -->
+                    <path d="m253.2 71.09h-17.8c-4.18 0-6.37 5.2-2.28 8.01l15.88 11.75c1.87 1.37 4.52 0.95 5.77-0.96s0.79-4.47-1.12-5.72l-5.55-4.03h4.12c10.48 0 18.11 7.12 20.45 15.7h-24.93c-0.99 0-1.86-0.46-2.41-1.26-1.41-2.14-4.44-2.63-6.51-1.16-2.06 1.47-1.74 4.29-0.27 6.29 2.36 3.31 6.2 5.31 10.31 5.31h24.86v4.12c0 4.8-1.85 6.94-5.75 9.27l-17.85 10.42c-5.16-4.34-11.62-6.82-18.02-7.29v-13.47c0-2.71-1.79-4.05-3.85-4.05-2.33 0-3.9 1.69-3.9 4.05v12.39h-16.13v-12.39c0-2.43-1.64-4.05-3.84-4.05-2.33 0-3.91 1.69-3.91 4.05v13.42c-6.61 0.37-12.54 2.82-17.52 7.16l-17.4-10.24c-4.3-2.54-7.33-4.6-7.33-10.34v-4.12h26.8c4.11 0 7.95-2 10.31-5.31 1.47-2.2 1.19-4.67-0.88-6.02s-4.89-0.76-6.19 1.21c-0.76 1.12-1.96 1.88-3.43 1.88h-25.62c2.94-8.92 10.89-15.57 20.95-15.57h3.23l-6.19 5.29c-1.85 1.63-2.04 4.33-0.47 6.13 1.63 1.96 4.57 1.91 6.43 0.22l14.75-13.06c2.94-2.43 2.04-7.63-2.15-7.63h-18.02c-15.79 0-27.27 13.12-27.27 28.52v8.51c0 8.61 4.89 14.09 11.08 17.65l16.19 9.64c-1.47 2.1-2.72 4.38-3.72 6.75h-10.06l-6.86-3.87c-2.24-1.25-4.48-0.23-5.59 1.46-1.35 2.2-0.18 4.67 2.06 5.92l7.75 4.26c0.6 0.36 1.32 0.54 2.03 0.54h8.36c-0.23 1.36-0.42 2.77-0.51 4.22l-5.15 2.63c-0.55 0.31-1.05 0.69-1.46 1.19l-7.84 9.5c-1.75 2.2-1.3 4.71 0.5 6.12 2.07 1.63 4.67 0.78 6.2-1.23l8.4-8.41 11.4 7.03-9.09 3.61c-0.81 0.36-1.58 0.9-2.17 1.61l-7.26 7.7c-1.75 2.01-1.28 4.43 0.52 5.89 1.95 1.56 4.65 0.85 6.38-1.11l7.54-7.5 10.48-3.6-5.2 5.2c-1.2 1.2-1.79 2.37-1.79 4.11v10.42c0 2.37 1.62 3.93 3.86 3.93 2.34 0 3.91-1.69 3.91-4.06v-6.01l9.23-6.01h30.04l9.91 6.46v6.01c0 2.37 1.62 3.94 3.86 3.94 2.33 0 3.9-1.69 3.9-4.06v-8.56c0-1.74-0.85-3.21-2.31-4.15l-8.96-6.32 7.85-2.99 9.27 3.31 8.45 8.87c1.74 1.91 4.24 1.96 5.99 0.38 1.9-1.74 1.59-4.38-0.27-6.24l-8.44-8.51c-0.67-0.67-1.52-1.26-2.46-1.58l-8.58-3.13 9.27-9.28 6.67 3.41 7.11 8.78c1.63 2.14 4.14 2.09 5.89 0.45 1.95-1.79 1.5-4.48-0.25-6.39l-8.44-9.5c-0.67-0.76-1.48-1.35-2.47-1.72l-6.67-2.7c0-0.94-0.09-2.02-0.23-3.05h9.18c0.81 0 1.62-0.23 2.34-0.64l8.22-4.62c2.24-1.25 2.96-3.8 1.71-5.85-1.31-2.24-4.13-2.56-6.29-1.31l-7.45 4.3h-9.45c-0.99-2.69-2.29-5.2-3.9-7.53l18.98-10.97c5.93-3.35 8.87-8.24 8.87-14.89v-8.01c0-15.4-12-28.52-27.8-28.52zm-1.45 83.97-24.1 23.24h-24.44l-23.64-24.49c0-14.85 10.57-26.1 23.45-26.1h23.21c13.73 0 25.52 11.07 25.52 27.35z" fill="yellow"/>
+                </svg>`,
+    github: `<svg viewBox="0 0 640 640"><path d="M266.1 392.7C266.1 413.6 255.2 447.8 229.4 447.8C203.6 447.8 192.7 413.6 192.7 392.7C192.7 371.8 203.6 337.6 229.4 337.6C255.2 337.6 266.1 371.8 266.1 392.7zM560 342.2C560 374.1 556.8 407.9 542.5 437.2C504.6 513.8 400.4 512 325.8 512C250 512 139.6 514.7 100.2 437.2C85.6 408.2 80 374.1 80 342.2C80 300.3 93.9 260.7 121.5 228.6C116.3 212.8 113.8 196.2 113.8 179.8C113.8 158.3 118.7 147.5 128.4 128C173.7 128 202.7 137 237.2 164C266.2 157.1 296 154 325.9 154C352.9 154 380.1 156.9 406.3 163.2C440.3 136.5 469.3 128 514.1 128C523.9 147.5 528.7 158.3 528.7 179.8C528.7 196.2 526.1 212.5 521 228C548.5 260.4 560 300.3 560 342.2zM495.7 392.7C495.7 348.8 469 310.1 422.2 310.1C403.3 310.1 385.2 313.5 366.2 316.1C351.3 318.4 336.4 319.3 321.1 319.3C305.9 319.3 291 318.4 276 316.1C257.3 313.5 239 310.1 220 310.1C173.2 310.1 146.5 348.8 146.5 392.7C146.5 480.5 226.9 494 296.9 494L345.1 494C415.4 494 495.7 480.6 495.7 392.7zM413.1 337.6C387.3 337.6 376.4 371.8 376.4 392.7C376.4 413.6 387.3 447.8 413.1 447.8C438.9 447.8 449.8 413.6 449.8 392.7C449.8 371.8 438.9 337.6 413.1 337.6z"/></svg>`,
+    mastodon: `<svg viewBox="0 0 640 640"><path d="M529 243.1C529 145.9 465.3 117.4 465.3 117.4C402.8 88.7 236.7 89 174.8 117.4C174.8 117.4 111.1 145.9 111.1 243.1C111.1 358.8 104.5 502.5 216.7 532.2C257.2 542.9 292 545.2 320 543.6C370.8 540.8 399.3 525.5 399.3 525.5L397.6 488.6C397.6 488.6 361.3 500 320.5 498.7C280.1 497.3 237.5 494.3 230.9 444.7C230.3 440.1 230 435.4 230 430.8C315.6 451.7 388.7 439.9 408.7 437.5C464.8 430.8 513.7 396.2 519.9 364.6C529.7 314.8 528.9 243.1 528.9 243.1zM453.9 368.3L407.3 368.3L407.3 254.1C407.3 204.4 343.3 202.5 343.3 261L343.3 323.5L297 323.5L297 261C297 202.5 233 204.4 233 254.1L233 368.3L186.3 368.3C186.3 246.2 181.1 220.4 204.7 193.3C230.6 164.4 284.5 162.5 308.5 199.4L320.1 218.9L331.7 199.4C355.8 162.3 409.8 164.6 435.5 193.3C459.2 220.6 453.9 246.3 453.9 368.3L453.9 368.3z"/></svg>`,
+    gpl: `<svg viewBox="0 -960 960 960"><path d="M395-475q-35-35-35-85t35-85q35-35 85-35t85 35q35 35 35 85t-35 85q-35 35-85 35t-85-35ZM240-40v-309q-38-42-59-96t-21-115q0-134 93-227t227-93q134 0 227 93t93 227q0 61-21 115t-59 96v309l-240-80-240 80Zm410-350q70-70 70-170t-70-170q-70-70-170-70t-170 70q-70 70-70 170t70 170q70 70 170 70t170-70ZM320-159l160-41 160 41v-124q-35 20-75.5 31.5T480-240q-44 0-84.5-11.5T320-283v124Zm160-62Z"/></svg>`,
+    gear: `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="m234-480-12-60q-12-5-22.5-10.5T178-564l-58 18-40-68 46-40q-2-13-2-26t2-26l-46-40 40-68 58 18q11-8 21.5-13.5T222-820l12-60h80l12 60q12 5 22.5 10.5T370-796l58-18 40 68-46 40q2 13 2 26t-2 26l46 40-40 68-58-18q-11 8-21.5 13.5T326-540l-12 60h-80Zm96.5-143.5Q354-647 354-680t-23.5-56.5Q307-760 274-760t-56.5 23.5Q194-713 194-680t23.5 56.5Q241-600 274-600t56.5-23.5ZM592-40l-18-84q-17-6-31.5-14.5T514-158l-80 26-56-96 64-56q-2-18-2-36t2-36l-64-56 56-96 80 26q14-11 28.5-19.5T574-516l18-84h112l18 84q17 6 31.5 14.5T782-482l80-26 56 96-64 56q2 18 2 36t-2 36l64 56-56 96-80-26q-14 11-28.5 19.5T722-124l-18 84H592Zm56-160q50 0 85-35t35-85q0-50-35-85t-85-35q-50 0-85 35t-35 85q0 50 35 85t85 35Z"/></svg>`,
+    collapse: `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M440-440v240h-80v-160H200v-80h240Zm160-320v160h160v80H520v-240h80Z"/></svg>`,
+    rocket: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#121212" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rocket-icon lucide-rocket"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09"/><path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05"/></svg> `,
+    warn: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-triangle-alert-icon lucide-triangle-alert"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>`,
+    auth: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-user-key-icon lucide-user-key"><path d="M20 11v6"/><path d="M20 13h2"/><path d="M3 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 2.072.578"/><circle cx="10" cy="7" r="4"/><circle cx="20" cy="19" r="2"/></svg>`,
+    appLogs: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-scroll-text-icon lucide-scroll-text"><path d="M15 12h-5"/><path d="M15 8h-5"/><path d="M19 17V5a2 2 0 0 0-2-2H4"/><path d="M8 21h12a2 2 0 0 0 2-2v-1a1 1 0 0 0-1-1H11a1 1 0 0 0-1 1v1a2 2 0 1 1-4 0V5a2 2 0 1 0-4 0v2a1 1 0 0 0 1 1h3"/></svg>`,
+    key: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M400 416C497.2 416 576 337.2 576 240C576 142.8 497.2 64 400 64C302.8 64 224 142.8 224 240C224 258.7 226.9 276.8 232.3 293.7L71 455C66.5 459.5 64 465.6 64 472L64 552C64 565.3 74.7 576 88 576L168 576C181.3 576 192 565.3 192 552L192 512L232 512C245.3 512 256 501.3 256 488L256 448L296 448C302.4 448 308.5 445.5 313 441L346.3 407.7C363.2 413.1 381.3 416 400 416zM440 160C462.1 160 480 177.9 480 200C480 222.1 462.1 240 440 240C417.9 240 400 222.1 400 200C400 177.9 417.9 160 440 160z"/></svg>`,
+    waypoints: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-waypoints-icon lucide-waypoints"><path d="m10.586 5.414-5.172 5.172"/><path d="m18.586 13.414-5.172 5.172"/><path d="M6 12h12"/><circle cx="12" cy="20" r="2"/><circle cx="12" cy="4" r="2"/><circle cx="20" cy="12" r="2"/><circle cx="4" cy="12" r="2"/></svg>`,
+    audioLines: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-audio-lines-icon lucide-audio-lines"><path d="M2 10v3"/><path d="M6 6v11"/><path d="M10 3v18"/><path d="M14 8v7"/><path d="M18 5v13"/><path d="M22 10v3"/></svg>`,
+    videoRedirectShow: `><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clapperboard-icon lucide-clapperboard"><path d="m12.296 3.464 3.02 3.956"/><path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z"/><path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="m6.18 5.276 3.1 3.899"/></svg>`,
+    refresh: `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-ccw-icon lucide-refresh-ccw"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>`,
+    done: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check-big-icon lucide-circle-check-big"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>`,
+    return: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-big-left-icon lucide-arrow-big-left"><path d="M13 9a1 1 0 0 1-1-1V5.061a1 1 0 0 0-1.811-.75l-6.835 6.836a1.207 1.207 0 0 0 0 1.707l6.835 6.835a1 1 0 0 0 1.811-.75V16a1 1 0 0 1 1-1h6a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1z"/></svg>`
+  };
+
+  // src/injectorPanel.ts
+  var CrabPanel = class {
+    constructor(callbacks) {
+      this.callbacks = callbacks;
+      this.host = document.createElement("div");
+      this.host.id = "cv-panel-host";
+      this.shadow = this.host.attachShadow({ mode: "open" });
+      this.render();
+      this.bindEvents();
+      this.setupDraggable();
+    }
+    host;
+    shadow;
+    translationPaused = false;
+    isCollapsed = false;
+    // UI Элементы
+    wrapper;
+    fab;
+    statusEl;
+    valAudio;
+    valVideo;
+    btnTogglePlay;
+    sliderAudio;
+    sliderVideo;
+    safeSetHTML(element, html) {
+      if (window.trustedTypes && window.trustedTypes.createPolicy) {
+        if (!window._cvPolicy) {
+          try {
+            window._cvPolicy = window.trustedTypes.createPolicy("cv-policy-bypass", {
+              createHTML: (s) => s
+            });
+          } catch (e) {
+          }
+        }
+        if (window._cvPolicy) {
+          element.innerHTML = window._cvPolicy.createHTML(html);
+          return;
+        }
+      }
+      element.innerHTML = html;
+    }
+    render() {
+      const template = `
+            <style>
+                .cv-wrapper {
+                    position: fixed !important; bottom: 20px !important; right: 20px !important;
+                    z-index: 2147483647 !important; font-family: sans-serif !important; 
+                    pointer-events: auto !important; color: #fff !important;
+                }
+                
+                .cv-panel {
+                    background: rgba(0,0,0,0.85) !important; border-radius: 10px !important;
+                    min-width: 220px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.6) !important;
+                    display: flex !important; flex-direction: column !important;
+                }
+                
+                .cv-wrapper.collapsed .cv-panel { display: none !important; }
+
+                .cv-header { 
+                    font-size: 14px !important; font-weight: bold; background: #2a2a2a !important;
+                    padding: 10px 15px !important; border-radius: 10px 10px 0 0 !important;
+                    display: flex !important; justify-content: space-between !important; align-items: center !important;
+                    cursor: grab !important; user-select: none !important;
+                }
+                .cv-header div { pointer-events: none !important; }
+                .cv-header:active { cursor: grabbing !important; }
+                
+                .cv-btn-collapse {
+                    background: #444 !important; border: none; color: #fff; cursor: pointer; 
+                    font-size: 12px; padding: 2px 8px; border-radius: 4px; transition: 0.2s;
+                    line-height: 1; font-weight: bold;
+                }
+                .cv-btn-collapse:hover { background: #666 !important; }
+                
+                .cv-content { padding: 15px !important; }
+                .cv-row { display: flex !important; flex-direction: column !important; gap: 5px !important; margin-bottom: 10px !important; }
+                .cv-row label { font-size: 11px !important; color: #bbb !important; display: flex; justify-content: space-between; }
+                .cv-slider { width: 100% !important; accent-color: #24c8db !important; cursor: pointer; }
+                .cv-btn-group { display: flex !important; gap: 8px !important; margin-bottom: 10px !important; }
+                .cv-btn {
+                    display: flex; justify-content: center; gap: 2px;
+                    background: #333 !important; color: #fff !important; border: 1px solid #555 !important;
+                    padding: 6px 10px !important; border-radius: 6px !important; font-size: 12px !important;
+                    cursor: pointer !important; flex: 1 !important; transition: 0.2s;
+                }
+                .cv-btn:hover { background: #444 !important; }
+                .cv-btn-close {
+                    display: flex; align-items: center; justify-content: center;
+                    background: #ff5e5e !important; color: #fff !important; border: none !important;
+                    padding: 8px 15px !important; border-radius: 6px !important; font-weight: bold !important;
+                    cursor: pointer !important; width: 100% !important; font-size: 13px !important;
+                }
+
+                .cv-fab {
+                    display: none !important; width: 48px !important; height: 48px !important;
+                    background: rgba(0,0,0,0.85) !important; border-radius: 24px !important;
+                    align-items: center !important; justify-content: center !important;
+                    font-size: 24px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.6) !important;
+                    cursor: pointer !important; user-select: none !important; border: 2px solid #444 !important;
+                    transition: border-color 0.2s !important;
+                }
+                .cv-fab:hover { border-color: #24c8db !important; }
+                
+                .cv-wrapper.collapsed .cv-fab { display: flex !important; }
+            </style>
+
+            <div class="cv-wrapper" id="cv-wrapper">
+                <div class="cv-fab" id="cv-fab" title="Expand CrabVoice">\u{1F980}</div>
+                
+                <div class="cv-panel" id="cv-panel">
+                    <div class="cv-header" id="cv-header" title="Drag to move">
+                        <div>\u{1F980} CrabVoice</div>
+                        <button class="cv-btn-collapse" id="cv-btn-collapse" title="Minimize">${Icons.collapse}</button>
+                    </div>
+                    <div class="cv-content">
+                        <div style="font-size:12px; margin-bottom: 12px; text-align:center;">
+                            <span id="cv-status" style="color:#FFC131">Searching video...</span>
+                        </div>
+                        
+                        <div class="cv-row">
+                            <label>Translation Vol: <span id="cv-val-audio">100%</span></label>
+                            <input type="range" class="cv-slider" id="cv-vol-audio" min="0" max="100" value="100">
+                        </div>
+                        
+                        <div class="cv-row">
+                            <label>Original Vol: <span id="cv-val-video">15%</span></label>
+                            <input type="range" class="cv-slider" id="cv-vol-video" min="0" max="100" value="15">
+                        </div>
+
+                        <div class="cv-btn-group">
+                            <button class="cv-btn" id="cv-toggle-play">\u23F8 Pause</button>
+                            <button class="cv-btn" id="cv-refresh">${Icons.refresh} Refresh</button>
+                        </div>
+
+                        <button class="cv-btn-close" id="cv-close-full">${Icons.return} Back to App</button>
+                    </div>
+                </div>
+            </div>
+        `;
+      this.safeSetHTML(this.shadow, template);
+      this.wrapper = this.shadow.getElementById("cv-wrapper");
+      this.fab = this.shadow.getElementById("cv-fab");
+      this.statusEl = this.shadow.getElementById("cv-status");
+      this.valAudio = this.shadow.getElementById("cv-val-audio");
+      this.valVideo = this.shadow.getElementById("cv-val-video");
+      this.btnTogglePlay = this.shadow.getElementById("cv-toggle-play");
+      this.sliderAudio = this.shadow.getElementById("cv-vol-audio");
+      this.sliderVideo = this.shadow.getElementById("cv-vol-video");
+    }
+    toggleCollapse(collapsed) {
+      this.isCollapsed = collapsed;
+      if (collapsed) {
+        this.wrapper.classList.add("collapsed");
+      } else {
+        this.wrapper.classList.remove("collapsed");
+        requestAnimationFrame(() => {
+          const rect = this.wrapper.getBoundingClientRect();
+          const panelWidth = this.wrapper.offsetWidth;
+          const panelHeight = this.wrapper.offsetHeight;
+          const screenWidth = window.innerWidth;
+          const screenHeight = window.innerHeight;
+          let newLeft = rect.left;
+          let newTop = rect.top;
+          if (newLeft + panelWidth > screenWidth) {
+            newLeft = screenWidth - panelWidth - 20;
+          }
+          if (newLeft < 0) {
+            newLeft = 20;
+          }
+          if (newTop + panelHeight > screenHeight) {
+            newTop = screenHeight - panelHeight - 20;
+          }
+          if (newTop < 0) {
+            newTop = 20;
+          }
+          this.wrapper.style.setProperty("left", `${newLeft}px`, "important");
+          this.wrapper.style.setProperty("top", `${newTop}px`, "important");
+        });
+      }
+    }
+    bindEvents() {
+      this.shadow.getElementById("cv-close-full").onclick = () => this.callbacks.onClose();
+      this.shadow.getElementById("cv-btn-collapse").onclick = () => this.toggleCollapse(true);
+      this.fab.onclick = () => {
+        if (this.isCollapsed) this.toggleCollapse(false);
+      };
+      this.sliderAudio.oninput = (e) => {
+        const val = e.target.value;
+        this.valAudio.innerText = `${val}%`;
+        this.callbacks.onAudioVolume(val / 100);
+      };
+      this.sliderVideo.oninput = (e) => {
+        const val = e.target.value;
+        this.valVideo.innerText = `${val}%`;
+        this.callbacks.onVideoVolume(val / 100);
+      };
+      this.btnTogglePlay.onclick = () => {
+        this.translationPaused = !this.translationPaused;
+        this.setPlayPauseState(this.translationPaused);
+        this.callbacks.onTogglePlay(this.translationPaused);
+      };
+      this.shadow.getElementById("cv-refresh").onclick = () => {
+        this.setPlayPauseState(false);
+        this.callbacks.onRefresh();
+      };
+    }
+    setupDraggable() {
+      const header = this.shadow.getElementById("cv-header");
+      let isDragging = false;
+      let startX = 0, startY = 0;
+      let initialLeft = 0, initialTop = 0;
+      const getCoords = (e) => {
+        if ("touches" in e) {
+          return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        }
+        return { x: e.clientX, y: e.clientY };
+      };
+      const onStart = (e) => {
+        const target = e.target;
+        if (target !== header && !header.contains(target) && target !== this.fab) return;
+        if (e.type === "touchstart") {
+        }
+        isDragging = true;
+        const coords = getCoords(e);
+        startX = coords.x;
+        startY = coords.y;
+        const rect = this.wrapper.getBoundingClientRect();
+        initialLeft = rect.left;
+        initialTop = rect.top;
+        this.wrapper.style.setProperty("bottom", "auto", "important");
+        this.wrapper.style.setProperty("right", "auto", "important");
+        this.wrapper.style.setProperty("left", `${initialLeft}px`, "important");
+        this.wrapper.style.setProperty("top", `${initialTop}px`, "important");
+        document.addEventListener("mousemove", onMove);
+        document.addEventListener("touchmove", onMove, { passive: false });
+        document.addEventListener("mouseup", onEnd);
+        document.addEventListener("touchend", onEnd);
+      };
+      const onMove = (e) => {
+        if (!isDragging) return;
+        if (e.type === "touchmove") e.preventDefault();
+        const coords = getCoords(e);
+        let newLeft = initialLeft + (coords.x - startX);
+        let newTop = initialTop + (coords.y - startY);
+        const maxLeft = window.innerWidth - this.wrapper.offsetWidth;
+        const maxTop = window.innerHeight - this.wrapper.offsetHeight;
+        this.wrapper.style.setProperty("left", `${Math.max(0, Math.min(newLeft, maxLeft))}px`, "important");
+        this.wrapper.style.setProperty("top", `${Math.max(0, Math.min(newTop, maxTop))}px`, "important");
+      };
+      const onEnd = () => {
+        isDragging = false;
+        document.removeEventListener("mousemove", onMove);
+        document.removeEventListener("touchmove", onMove);
+        document.removeEventListener("mouseup", onEnd);
+        document.removeEventListener("touchend", onEnd);
+      };
+      header.addEventListener("mousedown", onStart);
+      header.addEventListener("touchstart", onStart, { passive: false });
+      this.fab.addEventListener("mousedown", onStart);
+      this.fab.addEventListener("touchstart", onStart, { passive: false });
+    }
+    updateStatus(text, color = "#fff") {
+      this.statusEl.innerText = text;
+      this.statusEl.style.color = color;
+    }
+    setVideoVolumeSlider(val) {
+      this.sliderVideo.value = (val * 100).toString();
+      this.valVideo.innerText = `${Math.round(val * 100)}%`;
+    }
+    setPlayPauseState(paused) {
+      this.translationPaused = paused;
+      this.btnTogglePlay.innerText = paused ? "\u25B6\uFE0F Play" : "\u23F8 Pause";
+    }
+  };
+
   // src/injector.ts
   var invokeLog = (source, msg) => {
     if (window.__TAURI__) {
@@ -3567,23 +3866,6 @@ ${a.stack}`;
     }).join(" ");
     invokeLog("error", msg);
   };
-  function safeSetHTML(element, html) {
-    if (window.trustedTypes && window.trustedTypes.createPolicy) {
-      if (!window._cvPolicy) {
-        try {
-          window._cvPolicy = window.trustedTypes.createPolicy("cv-policy-bypass", {
-            createHTML: (string) => string
-          });
-        } catch (e) {
-        }
-      }
-      if (window._cvPolicy) {
-        element.innerHTML = window._cvPolicy.createHTML(html);
-        return;
-      }
-    }
-    element.innerHTML = html;
-  }
   if (window.location.href.includes("access_token=")) {
     const hashOrSearch = window.location.hash ? window.location.hash.replace(/^#/, "") : window.location.search.replace(/^\?/, "");
     const params = new URLSearchParams(hashOrSearch);
@@ -3593,7 +3875,7 @@ ${a.stack}`;
         window.stop();
       } catch (e) {
       }
-      document.documentElement.innerHTML = "<body style='background:#121212;'><h2 style='color: #4CAF50; text-align: center; margin-top: 50px; font-family: sans-serif;'>\u2705 Login successful!<br><br><span style='color: #aaa; font-size: 16px;'>Returning to CrabVoice...</span></h2></body>";
+      document.documentElement.innerHTML = `<body style='background:#121212;'><h2 style='color: #4CAF50; text-align: center; margin-top: 50px; font-family: sans-serif;'>${Icons.done} Login successful!<br><br><span style='color: #aaa; font-size: 16px;'>Returning to CrabVoice...</span></h2></body>`;
       window.__TAURI__.core.invoke("save_yandex_token", { token }).then(() => {
         const homeUrl = localStorage.getItem("cv_home_url");
         setTimeout(() => {
@@ -3605,13 +3887,8 @@ ${a.stack}`;
   }
   if (!window._cvInitialized) {
     let updateStatus = function(text, color) {
-      const panel = document.getElementById("cv-panel-host");
-      if (panel && panel.shadowRoot) {
-        const statusEl = panel.shadowRoot.getElementById("cv-status");
-        if (statusEl) {
-          statusEl.innerText = text;
-          statusEl.style.color = color || "#fff";
-        }
+      if (panelInstance) {
+        panelInstance.updateStatus(text, color || "#fff");
       }
     }, syncAudio = function() {
       if (!mainVideo || !audioObj) return;
@@ -3661,6 +3938,7 @@ ${a.stack}`;
     let translationPaused = false;
     let userAudioVolume = 1;
     let userVideoVolume = 0.15;
+    let panelInstance = null;
     let sponsorSegments = [];
     async function requestTranslation(v, forceRefresh = false) {
       if (isTranslating && !forceRefresh) return;
@@ -3671,11 +3949,7 @@ ${a.stack}`;
         try {
           appSettings = await window.__TAURI__.core.invoke("get_settings");
           userVideoVolume = appSettings.volume_ducking;
-          const panel = document.getElementById("cv-panel-host");
-          if (panel && panel.shadowRoot) {
-            const vidSlider = panel.shadowRoot.getElementById("cv-vol-video");
-            if (vidSlider) vidSlider.value = (userVideoVolume * 100).toString();
-          }
+          if (panelInstance) panelInstance.setVideoVolumeSlider(userVideoVolume);
         } catch (e) {
           console.error("CrabVoice: Failed to fetch settings", e);
         }
@@ -3728,11 +4002,7 @@ ${a.stack}`;
               }
               audioObj = new Audio(res.url);
               translationPaused = false;
-              const panel = document.getElementById("cv-panel-host");
-              if (panel && panel.shadowRoot) {
-                const btnPause = panel.shadowRoot.getElementById("cv-toggle-play");
-                if (btnPause) btnPause.innerText = "\u23F8 Pause Translation";
-              }
+              if (panelInstance) panelInstance.setPlayPauseState(false);
               const events = ["play", "pause", "playing", "waiting", "seeking", "seeked", "ratechange", "timeupdate"];
               events.forEach((e) => v.addEventListener(e, syncAudio));
               syncAudio();
@@ -3800,94 +4070,40 @@ ${a.stack}`;
         updateStatus("Searching new video...", "#FFC131");
       }
       let panelHost = document.getElementById("cv-panel-host");
-      if (!panelHost) {
-        panelHost = document.createElement("div");
-        panelHost.id = "cv-panel-host";
-        panelHost.attachShadow({ mode: "open" });
-        const htmlTemplate = `
-                <style>
-                    .cv-container {
-                        position: fixed !important; bottom: 20px !important; right: 20px !important;
-                        background: rgba(0,0,0,0.85) !important; padding: 15px !important;
-                        border-radius: 10px !important; z-index: 2147483647 !important;
-                        box-shadow: 0 4px 15px rgba(0,0,0,0.6) !important;
-                        font-family: sans-serif !important; min-width: 200px !important;
-                        pointer-events: auto !important; color: #fff !important;
-                    }
-                    .cv-header { font-size: 14px !important; margin-bottom: 12px !important; font-weight: bold; }
-                    .cv-row { display: flex !important; flex-direction: column !important; gap: 5px !important; margin-bottom: 10px !important; }
-                    .cv-row label { font-size: 11px !important; color: #bbb !important; display: flex; justify-content: space-between; }
-                    .cv-slider { width: 100% !important; accent-color: #24c8db !important; cursor: pointer; }
-                    .cv-btn-group { display: flex !important; gap: 8px !important; margin-bottom: 10px !important; }
-                    .cv-btn {
-                        background: #333 !important; color: #fff !important; border: 1px solid #555 !important;
-                        padding: 6px 10px !important; border-radius: 6px !important; font-size: 12px !important;
-                        cursor: pointer !important; flex: 1 !important; transition: 0.2s;
-                    }
-                    .cv-btn:hover { background: #444 !important; }
-                    .cv-btn-close {
-                        background: #ff5e5e !important; color: #fff !important; border: none !important;
-                        padding: 8px 15px !important; border-radius: 6px !important; font-weight: bold !important;
-                        cursor: pointer !important; width: 100% !important; font-size: 13px !important;
-                    }
-                </style>
-                <div class="cv-container">
-                    <div class="cv-header">\u{1F980} CrabVoice: <span id="cv-status" style="color:#FFC131">Searching video...</span></div>
-                    
-                    <div class="cv-row">
-                        <label>Translation Vol: <span id="cv-val-audio">100%</span></label>
-                        <input type="range" class="cv-slider" id="cv-vol-audio" min="0" max="100" value="100">
-                    </div>
-                    
-                    <div class="cv-row">
-                        <label>Original Vol: <span id="cv-val-video">15%</span></label>
-                        <input type="range" class="cv-slider" id="cv-vol-video" min="0" max="100" value="15">
-                    </div>
-
-                    <div class="cv-btn-group">
-                        <button class="cv-btn" id="cv-toggle-play">\u23F8 Pause</button>
-                        <button class="cv-btn" id="cv-refresh">\u{1F504} Refresh</button>
-                    </div>
-
-                    <button class="cv-btn-close" id="cv-close">\u2B05 Back to App</button>
-                </div>
-            `;
-        safeSetHTML(panelHost.shadowRoot, htmlTemplate);
-        document.documentElement.appendChild(panelHost);
-        const shadow = panelHost.shadowRoot;
-        shadow.getElementById("cv-close").onclick = () => {
-          const homeUrl = localStorage.getItem("cv_home_url");
-          if (homeUrl) window.location.href = homeUrl;
-          else window.history.go(-(window.history.length - 1));
-        };
-        shadow.getElementById("cv-vol-audio").oninput = (e) => {
-          userAudioVolume = e.target.value / 100;
-          shadow.getElementById("cv-val-audio").innerText = `${e.target.value}%`;
-          if (audioObj) audioObj.volume = userAudioVolume;
-        };
-        shadow.getElementById("cv-vol-video").oninput = (e) => {
-          userVideoVolume = e.target.value / 100;
-          shadow.getElementById("cv-val-video").innerText = `${e.target.value}%`;
-          if (mainVideo) mainVideo.volume = userVideoVolume;
-        };
-        shadow.getElementById("cv-toggle-play").onclick = (e) => {
-          translationPaused = !translationPaused;
-          e.target.innerText = translationPaused ? "\u25B6\uFE0F Play" : "\u23F8 Pause";
-          syncAudio();
-        };
-        shadow.getElementById("cv-refresh").onclick = () => {
-          if (audioObj) {
-            audioObj.pause();
-            audioObj.src = "";
+      if (!panelHost && !panelInstance) {
+        panelInstance = new CrabPanel({
+          onClose: () => {
+            const homeUrl = localStorage.getItem("cv_home_url");
+            if (homeUrl) window.location.href = homeUrl;
+            else window.history.go(-(window.history.length - 1));
+          },
+          onAudioVolume: (val) => {
+            userAudioVolume = val;
+            if (audioObj) audioObj.volume = userAudioVolume;
+          },
+          onVideoVolume: (val) => {
+            userVideoVolume = val;
+            if (mainVideo) mainVideo.volume = userVideoVolume;
+          },
+          onTogglePlay: (paused) => {
+            translationPaused = paused;
+            syncAudio();
+          },
+          onRefresh: () => {
+            if (audioObj) {
+              audioObj.pause();
+              audioObj.src = "";
+            }
+            if (countdownInterval) {
+              clearInterval(countdownInterval);
+              countdownInterval = null;
+            }
+            translationPaused = false;
+            if (panelInstance) panelInstance.setPlayPauseState(false);
+            if (mainVideo) requestTranslation(mainVideo, true);
           }
-          if (countdownInterval) {
-            clearInterval(countdownInterval);
-            countdownInterval = null;
-          }
-          translationPaused = false;
-          shadow.getElementById("cv-toggle-play").innerText = "\u23F8 Pause";
-          if (mainVideo) requestTranslation(mainVideo, true);
-        };
+        });
+        document.documentElement.appendChild(panelInstance.host);
       }
       if (!mainVideo && !isTranslating) {
         let v = document.querySelector(".html5-video-container video, video.vjs-tech, .fp-player video");
