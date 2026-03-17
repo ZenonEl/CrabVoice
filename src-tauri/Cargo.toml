@@ -32,3 +32,10 @@ hmac = "0.12"
 sha2 = "0.10"
 hex = "0.4"
 uuid = { version = "1", features = ["v4"] }
+tauri-plugin-log = "2"
+log = "0.4.29"
+
+[features]
+default = []
+# Включаем эту фичу при сборке: pnpm tauri build -- --features premium
+premium = []

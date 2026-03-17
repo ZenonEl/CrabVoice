@@ -1,11 +1,29 @@
 import { getService, getVideoData } from "@vot.js/ext/utils/videoData";  
 import type { ServiceConf } from "@vot.js/ext/types/service";
 
+// Универсальная функция отправки логов из песочницы инжектора в Rust
+// Инжектор работает на внешних сайтах, где JS API плагина недоступен, поэтому вызываем кастомную Rust-команду
+const invokeLog = (source: string, msg: string) => {
+    if (window.__TAURI__) {
+        window.__TAURI__.core.invoke("log_message", { source, msg }).catch(()=>{});
+    }
+};
+
 const appLog = (msg: string) => {
     console.log("[CrabVoice Injector]", msg);
-    if (window.__TAURI__) {
-        window.__TAURI__.core.invoke("log_message", { source: "Injector", msg }).catch(()=>{});
-    }
+    invokeLog("info", msg);
+};
+
+// Перехватываем ошибки от vot.js и самого плеера
+const originalError = console.error;
+console.error = (...args) => {
+    originalError(...args);
+    const msg = args.map(a => {
+        if (a instanceof Error) return `${a.name}: ${a.message}\n${a.stack}`;
+        if (typeof a === 'object') return JSON.stringify(a, null, 2);
+        return String(a);
+    }).join(" ");
+    invokeLog("error", msg);
 };
 
 declare global {
@@ -95,10 +113,26 @@ if (!window._cvInitialized) {
         }
     }
 
+    let sponsorSegments: {start: number, end: number, category: string}[] =[];
+
     // Главная функция синхронизации
     function syncAudio() {
         if (!mainVideo || !audioObj) return;
         
+        // Спонсорблок: проверяем, не находимся ли мы внутри рекламного сегмента
+        if (sponsorSegments.length > 0 && !mainVideo.paused) {
+            const ct = mainVideo.currentTime;
+            for (let seg of sponsorSegments) {
+                if (ct >= seg.start && ct < seg.end) {
+                    mainVideo.currentTime = seg.end;
+                    appLog(`SponsorBlock: Skipped ${seg.category} (${seg.start.toFixed(1)}s -> ${seg.end.toFixed(1)}s)`);
+                    updateStatus(`Skipped ${seg.category} ⏩`, "#FFD700");
+                    setTimeout(() => updateStatus("Linked & Translated ✅", "#4CAF50"), 3000);
+                    break;
+                }
+            }
+        }
+
         // 1. Управление громкостью оригинала
         if (mainVideo.volume !== userVideoVolume) {
             mainVideo.volume = userVideoVolume;
@@ -165,6 +199,22 @@ if (!window._cvInitialized) {
             const videoData = await getVideoData(service);
 
             const duration = videoData?.duration || v.duration || 344.0;
+
+            // Запрашиваем премиум-сегменты спонсорблока, если это YouTube
+            if (window.location.hostname.includes("youtube.com")) {
+                const urlObj = new URL(window.location.href);
+                const videoId = urlObj.searchParams.get("v");
+                if (videoId && window.__TAURI__) {
+                    try {
+                        sponsorSegments = await window.__TAURI__.core.invoke("get_skip_segments", { videoId });
+                        if (sponsorSegments.length > 0) {
+                            appLog(`SponsorBlock: Loaded ${sponsorSegments.length} segments`);
+                        }
+                    } catch (e) {
+                        // Ошибка или бесплатная версия — просто игнорируем
+                    }
+                }
+            }
 
             const pollTranslation = async () => {
                 if (window.location.href !== currentVideoUrl) {

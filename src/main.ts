@@ -1,9 +1,26 @@
 import { invoke } from "@tauri-apps/api/core";
+import { info, warn, error, debug } from "@tauri-apps/plugin-log";
+import { Icons } from "./icons";
 
-const appLog = (msg: string) => {
-    console.log("[CrabVoice UI]", msg);
-    invoke("log_message", { source: "UI", msg }).catch(()=>{});
-};
+// Автоматически перенаправляем все console.log в Rust (в файл)
+function forwardConsole(
+  fnName: 'log' | 'debug' | 'info' | 'warn' | 'error',
+  logger: (message: string) => Promise<void>
+) {
+  const original = console[fnName];
+  console[fnName] = (...args: any[]) => {
+    original(...args);
+    // Преобразуем все аргументы (в т.ч. объекты/ошибки) в читаемую строку
+    const msg = args.map(a => typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a)).join(' ');
+    logger(`[UI] ${msg}`);
+  };
+}
+
+forwardConsole('log', info);
+forwardConsole('debug', debug);
+forwardConsole('info', info);
+forwardConsole('warn', warn);
+forwardConsole('error', error);
 
 // Интерфейс должен совпадать со структурой в Rust
 interface AppSettings {
@@ -34,6 +51,15 @@ window.addEventListener("DOMContentLoaded", async () => {
     const btnViewLogs = document.querySelector("#btn-view-logs") as HTMLButtonElement;
     const btnDownloadLogs = document.querySelector("#btn-download-logs") as HTMLButtonElement;
     const logsArea = document.querySelector("#logs-area") as HTMLTextAreaElement;
+
+    // Проверка Premium
+    try {
+        const isPremium = await invoke("is_premium_active");
+        if (isPremium) {
+            document.body.classList.add("premium-mode");
+            console.log("Premium features activated ✨");
+        }
+    } catch (e) {}
 
     // 1. Загрузка настроек из Rust
     try {
@@ -103,7 +129,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     document.querySelector("#translate-form")?.addEventListener("submit", (e) => {
         e.preventDefault();
         if (urlInputEl.value) {
-            appLog(`Requested translation for: ${urlInputEl.value}`);
+            console.log(`Requested translation for: ${urlInputEl.value}`);
             resultMsgEl.innerHTML = `<span style="color: #4CAF50;">🎬 Redirecting... Translation will start automatically.</span>`;
             window.location.href = urlInputEl.value;
         }
@@ -116,27 +142,52 @@ window.addEventListener("DOMContentLoaded", async () => {
             logsArea.style.display = "block";
             logsArea.value = logs || "Logs are empty.";
             logsArea.scrollTop = logsArea.scrollHeight;
-            appLog("Opened logs viewer");
+            console.log("Opened logs viewer");
         } catch (e) {
             console.error(e);
         }
     });
 
     btnDownloadLogs.addEventListener("click", async () => {
-        try {
+        const fallbackCopyToClipboard = async () => {
             const logs: string = await invoke("get_logs");
-            const blob = new Blob([logs], { type: "text/plain" });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement("a");
-            a.href = url;
-            a.download = "crabvoice.log";
-            a.click();
-            URL.revokeObjectURL(url);
-            appLog("Downloaded logs");
+            await navigator.clipboard.writeText(logs);
+            alert("📋 Logs copied to clipboard!");
+            console.log("Fallback: Logs copied to clipboard.");
+        };
+
+        try {
+            if (/android/i.test(navigator.userAgent)) {
+                const logs: string = await invoke("get_logs");
+                const file = new File([logs], "crabvoice.log", { type: "text/plain" });
+                
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({ files:[file], title: 'CrabVoice Logs' });
+                } else {
+                    // Если шторка не поддерживается - копируем в буфер обмена
+                    await fallbackCopyToClipboard();
+                }
+            } else {
+                // Desktop
+                const path: string = await invoke("export_logs");
+                alert(`✅ Logs saved to:\n${path}`);
+            }
         } catch (e) {
-            console.error(e);
+            console.warn("Export failed, falling back to clipboard...", e);
+            try {
+                await fallbackCopyToClipboard();
+            } catch (err) {
+                alert("❌ Failed to copy logs.");
+            }
+        }
+    });
+
+    document.querySelectorAll('[data-icon]').forEach(el => {
+        const iconName = el.getAttribute('data-icon');
+        if (iconName && Icons[iconName]) {
+            el.innerHTML = Icons[iconName];
         }
     });
     
-    appLog("Main UI loaded successfully");
+    console.log("Main UI loaded successfully");
 });
