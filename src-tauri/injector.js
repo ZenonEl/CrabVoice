@@ -3545,6 +3545,241 @@
     };
   }
 
+  // src/injectorPanel.ts
+  var CrabPanel = class {
+    constructor(callbacks) {
+      this.callbacks = callbacks;
+      this.host = document.createElement("div");
+      this.host.id = "cv-panel-host";
+      this.shadow = this.host.attachShadow({ mode: "open" });
+      this.render();
+      this.bindEvents();
+      this.setupDraggable();
+    }
+    host;
+    shadow;
+    translationPaused = false;
+    isCollapsed = false;
+    // UI Элементы
+    wrapper;
+    panel;
+    fab;
+    statusEl;
+    valAudio;
+    valVideo;
+    btnTogglePlay;
+    sliderAudio;
+    sliderVideo;
+    safeSetHTML(element, html) {
+      if (window.trustedTypes && window.trustedTypes.createPolicy) {
+        if (!window._cvPolicy) {
+          try {
+            window._cvPolicy = window.trustedTypes.createPolicy("cv-policy-bypass", {
+              createHTML: (s) => s
+            });
+          } catch (e) {
+          }
+        }
+        if (window._cvPolicy) {
+          element.innerHTML = window._cvPolicy.createHTML(html);
+          return;
+        }
+      }
+      element.innerHTML = html;
+    }
+    render() {
+      const template = `
+            <style>
+                .cv-wrapper {
+                    position: fixed !important; bottom: 20px !important; right: 20px !important;
+                    z-index: 2147483647 !important; font-family: sans-serif !important; 
+                    pointer-events: auto !important; color: #fff !important;
+                }
+                
+                .cv-panel {
+                    background: rgba(0,0,0,0.85) !important; border-radius: 10px !important;
+                    min-width: 220px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.6) !important;
+                    display: flex !important; flex-direction: column !important;
+                }
+                
+                .cv-wrapper.collapsed .cv-panel { display: none !important; }
+
+                .cv-header { 
+                    font-size: 14px !important; font-weight: bold; background: #2a2a2a !important;
+                    padding: 10px 15px !important; border-radius: 10px 10px 0 0 !important;
+                    display: flex !important; justify-content: space-between !important; align-items: center !important;
+                    cursor: grab !important; user-select: none !important;
+                }
+                .cv-header div { pointer-events: none !important; }
+                .cv-header:active { cursor: grabbing !important; }
+                
+                .cv-btn-collapse {
+                    background: #444 !important; border: none; color: #fff; cursor: pointer; 
+                    font-size: 12px; padding: 2px 8px; border-radius: 4px; transition: 0.2s;
+                    line-height: 1; font-weight: bold;
+                }
+                .cv-btn-collapse:hover { background: #666 !important; }
+                
+                .cv-content { padding: 15px !important; }
+                .cv-row { display: flex !important; flex-direction: column !important; gap: 5px !important; margin-bottom: 10px !important; }
+                .cv-row label { font-size: 11px !important; color: #bbb !important; display: flex; justify-content: space-between; }
+                .cv-slider { width: 100% !important; accent-color: #24c8db !important; cursor: pointer; }
+                .cv-btn-group { display: flex !important; gap: 8px !important; margin-bottom: 10px !important; }
+                .cv-btn {
+                    background: #333 !important; color: #fff !important; border: 1px solid #555 !important;
+                    padding: 6px 10px !important; border-radius: 6px !important; font-size: 12px !important;
+                    cursor: pointer !important; flex: 1 !important; transition: 0.2s;
+                }
+                .cv-btn:hover { background: #444 !important; }
+                .cv-btn-close {
+                    background: #ff5e5e !important; color: #fff !important; border: none !important;
+                    padding: 8px 15px !important; border-radius: 6px !important; font-weight: bold !important;
+                    cursor: pointer !important; width: 100% !important; font-size: 13px !important;
+                }
+
+                .cv-fab {
+                    display: none !important; width: 48px !important; height: 48px !important;
+                    background: rgba(0,0,0,0.85) !important; border-radius: 24px !important;
+                    align-items: center !important; justify-content: center !important;
+                    font-size: 24px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.6) !important;
+                    cursor: pointer !important; user-select: none !important; border: 2px solid #444 !important;
+                    transition: border-color 0.2s !important;
+                }
+                .cv-fab:hover { border-color: #24c8db !important; }
+                
+                .cv-wrapper.collapsed .cv-fab { display: flex !important; }
+            </style>
+
+            <div class="cv-wrapper" id="cv-wrapper">
+                <div class="cv-fab" id="cv-fab" title="Expand CrabVoice">\u{1F980}</div>
+                
+                <div class="cv-panel" id="cv-panel">
+                    <div class="cv-header" id="cv-header" title="Drag to move">
+                        <div>\u{1F980} CrabVoice</div>
+                        <button class="cv-btn-collapse" id="cv-btn-collapse" title="Minimize">_</button>
+                    </div>
+                    <div class="cv-content">
+                        <div style="font-size:12px; margin-bottom: 12px; text-align:center;">
+                            <span id="cv-status" style="color:#FFC131">Searching video...</span>
+                        </div>
+                        
+                        <div class="cv-row">
+                            <label>Translation Vol: <span id="cv-val-audio">100%</span></label>
+                            <input type="range" class="cv-slider" id="cv-vol-audio" min="0" max="100" value="100">
+                        </div>
+                        
+                        <div class="cv-row">
+                            <label>Original Vol: <span id="cv-val-video">15%</span></label>
+                            <input type="range" class="cv-slider" id="cv-vol-video" min="0" max="100" value="15">
+                        </div>
+
+                        <div class="cv-btn-group">
+                            <button class="cv-btn" id="cv-toggle-play">\u23F8 Pause</button>
+                            <button class="cv-btn" id="cv-refresh">\u{1F504} Refresh</button>
+                        </div>
+
+                        <button class="cv-btn-close" id="cv-close-full">\u2B05 Back to App</button>
+                    </div>
+                </div>
+            </div>
+        `;
+      this.safeSetHTML(this.shadow, template);
+      this.wrapper = this.shadow.getElementById("cv-wrapper");
+      this.panel = this.shadow.getElementById("cv-panel");
+      this.fab = this.shadow.getElementById("cv-fab");
+      this.statusEl = this.shadow.getElementById("cv-status");
+      this.valAudio = this.shadow.getElementById("cv-val-audio");
+      this.valVideo = this.shadow.getElementById("cv-val-video");
+      this.btnTogglePlay = this.shadow.getElementById("cv-toggle-play");
+      this.sliderAudio = this.shadow.getElementById("cv-vol-audio");
+      this.sliderVideo = this.shadow.getElementById("cv-vol-video");
+    }
+    toggleCollapse(collapsed) {
+      this.isCollapsed = collapsed;
+      if (collapsed) this.wrapper.classList.add("collapsed");
+      else this.wrapper.classList.remove("collapsed");
+    }
+    bindEvents() {
+      this.shadow.getElementById("cv-close-full").onclick = () => this.callbacks.onClose();
+      this.shadow.getElementById("cv-btn-collapse").onclick = () => this.toggleCollapse(true);
+      this.fab.onclick = () => {
+        if (this.isCollapsed) this.toggleCollapse(false);
+      };
+      this.sliderAudio.oninput = (e) => {
+        const val = e.target.value;
+        this.valAudio.innerText = `${val}%`;
+        this.callbacks.onAudioVolume(val / 100);
+      };
+      this.sliderVideo.oninput = (e) => {
+        const val = e.target.value;
+        this.valVideo.innerText = `${val}%`;
+        this.callbacks.onVideoVolume(val / 100);
+      };
+      this.btnTogglePlay.onclick = () => {
+        this.translationPaused = !this.translationPaused;
+        this.setPlayPauseState(this.translationPaused);
+        this.callbacks.onTogglePlay(this.translationPaused);
+      };
+      this.shadow.getElementById("cv-refresh").onclick = () => {
+        this.setPlayPauseState(false);
+        this.callbacks.onRefresh();
+      };
+    }
+    setupDraggable() {
+      const header = this.shadow.getElementById("cv-header");
+      let isDragging = false;
+      let startX = 0, startY = 0;
+      let initialLeft = 0, initialTop = 0;
+      const onMouseDown = (e) => {
+        const target = e.target;
+        const isButton = target.tagName.toLowerCase() === "button";
+        const isHeaderArea = header.contains(target);
+        const isFab = target === this.fab;
+        if (isButton || !isHeaderArea && !isFab) return;
+        isDragging = true;
+        startX = e.clientX;
+        startY = e.clientY;
+        const rect = this.wrapper.getBoundingClientRect();
+        initialLeft = rect.left;
+        initialTop = rect.top;
+        this.wrapper.style.setProperty("bottom", "auto", "important");
+        this.wrapper.style.setProperty("right", "auto", "important");
+        this.wrapper.style.setProperty("left", `${initialLeft}px`, "important");
+        this.wrapper.style.setProperty("top", `${initialTop}px`, "important");
+        document.addEventListener("mousemove", onMouseMove);
+        document.addEventListener("mouseup", onMouseUp);
+      };
+      const onMouseMove = (e) => {
+        if (!isDragging) return;
+        let newLeft = initialLeft + (e.clientX - startX);
+        let newTop = initialTop + (e.clientY - startY);
+        const maxLeft = window.innerWidth - this.wrapper.offsetWidth;
+        const maxTop = window.innerHeight - this.wrapper.offsetHeight;
+        this.wrapper.style.setProperty("left", `${Math.max(0, Math.min(newLeft, maxLeft))}px`, "important");
+        this.wrapper.style.setProperty("top", `${Math.max(0, Math.min(newTop, maxTop))}px`, "important");
+      };
+      const onMouseUp = () => {
+        isDragging = false;
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onMouseUp);
+      };
+      header.addEventListener("mousedown", onMouseDown);
+      this.fab.addEventListener("mousedown", onMouseDown);
+    }
+    updateStatus(text, color = "#fff") {
+      this.statusEl.innerText = text;
+      this.statusEl.style.color = color;
+    }
+    setVideoVolumeSlider(val) {
+      this.sliderVideo.value = (val * 100).toString();
+      this.valVideo.innerText = `${Math.round(val * 100)}%`;
+    }
+    setPlayPauseState(paused) {
+      this.translationPaused = paused;
+      this.btnTogglePlay.innerText = paused ? "\u25B6\uFE0F Play" : "\u23F8 Pause";
+    }
+  };
+
   // src/injector.ts
   var invokeLog = (source, msg) => {
     if (window.__TAURI__) {
@@ -3567,23 +3802,6 @@ ${a.stack}`;
     }).join(" ");
     invokeLog("error", msg);
   };
-  function safeSetHTML(element, html) {
-    if (window.trustedTypes && window.trustedTypes.createPolicy) {
-      if (!window._cvPolicy) {
-        try {
-          window._cvPolicy = window.trustedTypes.createPolicy("cv-policy-bypass", {
-            createHTML: (string) => string
-          });
-        } catch (e) {
-        }
-      }
-      if (window._cvPolicy) {
-        element.innerHTML = window._cvPolicy.createHTML(html);
-        return;
-      }
-    }
-    element.innerHTML = html;
-  }
   if (window.location.href.includes("access_token=")) {
     const hashOrSearch = window.location.hash ? window.location.hash.replace(/^#/, "") : window.location.search.replace(/^\?/, "");
     const params = new URLSearchParams(hashOrSearch);
@@ -3605,13 +3823,8 @@ ${a.stack}`;
   }
   if (!window._cvInitialized) {
     let updateStatus = function(text, color) {
-      const panel = document.getElementById("cv-panel-host");
-      if (panel && panel.shadowRoot) {
-        const statusEl = panel.shadowRoot.getElementById("cv-status");
-        if (statusEl) {
-          statusEl.innerText = text;
-          statusEl.style.color = color || "#fff";
-        }
+      if (panelInstance) {
+        panelInstance.updateStatus(text, color || "#fff");
       }
     }, syncAudio = function() {
       if (!mainVideo || !audioObj) return;
@@ -3661,6 +3874,7 @@ ${a.stack}`;
     let translationPaused = false;
     let userAudioVolume = 1;
     let userVideoVolume = 0.15;
+    let panelInstance = null;
     let sponsorSegments = [];
     async function requestTranslation(v, forceRefresh = false) {
       if (isTranslating && !forceRefresh) return;
@@ -3671,11 +3885,7 @@ ${a.stack}`;
         try {
           appSettings = await window.__TAURI__.core.invoke("get_settings");
           userVideoVolume = appSettings.volume_ducking;
-          const panel = document.getElementById("cv-panel-host");
-          if (panel && panel.shadowRoot) {
-            const vidSlider = panel.shadowRoot.getElementById("cv-vol-video");
-            if (vidSlider) vidSlider.value = (userVideoVolume * 100).toString();
-          }
+          if (panelInstance) panelInstance.setVideoVolumeSlider(userVideoVolume);
         } catch (e) {
           console.error("CrabVoice: Failed to fetch settings", e);
         }
@@ -3728,11 +3938,7 @@ ${a.stack}`;
               }
               audioObj = new Audio(res.url);
               translationPaused = false;
-              const panel = document.getElementById("cv-panel-host");
-              if (panel && panel.shadowRoot) {
-                const btnPause = panel.shadowRoot.getElementById("cv-toggle-play");
-                if (btnPause) btnPause.innerText = "\u23F8 Pause Translation";
-              }
+              if (panelInstance) panelInstance.setPlayPauseState(false);
               const events = ["play", "pause", "playing", "waiting", "seeking", "seeked", "ratechange", "timeupdate"];
               events.forEach((e) => v.addEventListener(e, syncAudio));
               syncAudio();
@@ -3800,94 +4006,40 @@ ${a.stack}`;
         updateStatus("Searching new video...", "#FFC131");
       }
       let panelHost = document.getElementById("cv-panel-host");
-      if (!panelHost) {
-        panelHost = document.createElement("div");
-        panelHost.id = "cv-panel-host";
-        panelHost.attachShadow({ mode: "open" });
-        const htmlTemplate = `
-                <style>
-                    .cv-container {
-                        position: fixed !important; bottom: 20px !important; right: 20px !important;
-                        background: rgba(0,0,0,0.85) !important; padding: 15px !important;
-                        border-radius: 10px !important; z-index: 2147483647 !important;
-                        box-shadow: 0 4px 15px rgba(0,0,0,0.6) !important;
-                        font-family: sans-serif !important; min-width: 200px !important;
-                        pointer-events: auto !important; color: #fff !important;
-                    }
-                    .cv-header { font-size: 14px !important; margin-bottom: 12px !important; font-weight: bold; }
-                    .cv-row { display: flex !important; flex-direction: column !important; gap: 5px !important; margin-bottom: 10px !important; }
-                    .cv-row label { font-size: 11px !important; color: #bbb !important; display: flex; justify-content: space-between; }
-                    .cv-slider { width: 100% !important; accent-color: #24c8db !important; cursor: pointer; }
-                    .cv-btn-group { display: flex !important; gap: 8px !important; margin-bottom: 10px !important; }
-                    .cv-btn {
-                        background: #333 !important; color: #fff !important; border: 1px solid #555 !important;
-                        padding: 6px 10px !important; border-radius: 6px !important; font-size: 12px !important;
-                        cursor: pointer !important; flex: 1 !important; transition: 0.2s;
-                    }
-                    .cv-btn:hover { background: #444 !important; }
-                    .cv-btn-close {
-                        background: #ff5e5e !important; color: #fff !important; border: none !important;
-                        padding: 8px 15px !important; border-radius: 6px !important; font-weight: bold !important;
-                        cursor: pointer !important; width: 100% !important; font-size: 13px !important;
-                    }
-                </style>
-                <div class="cv-container">
-                    <div class="cv-header">\u{1F980} CrabVoice: <span id="cv-status" style="color:#FFC131">Searching video...</span></div>
-                    
-                    <div class="cv-row">
-                        <label>Translation Vol: <span id="cv-val-audio">100%</span></label>
-                        <input type="range" class="cv-slider" id="cv-vol-audio" min="0" max="100" value="100">
-                    </div>
-                    
-                    <div class="cv-row">
-                        <label>Original Vol: <span id="cv-val-video">15%</span></label>
-                        <input type="range" class="cv-slider" id="cv-vol-video" min="0" max="100" value="15">
-                    </div>
-
-                    <div class="cv-btn-group">
-                        <button class="cv-btn" id="cv-toggle-play">\u23F8 Pause</button>
-                        <button class="cv-btn" id="cv-refresh">\u{1F504} Refresh</button>
-                    </div>
-
-                    <button class="cv-btn-close" id="cv-close">\u2B05 Back to App</button>
-                </div>
-            `;
-        safeSetHTML(panelHost.shadowRoot, htmlTemplate);
-        document.documentElement.appendChild(panelHost);
-        const shadow = panelHost.shadowRoot;
-        shadow.getElementById("cv-close").onclick = () => {
-          const homeUrl = localStorage.getItem("cv_home_url");
-          if (homeUrl) window.location.href = homeUrl;
-          else window.history.go(-(window.history.length - 1));
-        };
-        shadow.getElementById("cv-vol-audio").oninput = (e) => {
-          userAudioVolume = e.target.value / 100;
-          shadow.getElementById("cv-val-audio").innerText = `${e.target.value}%`;
-          if (audioObj) audioObj.volume = userAudioVolume;
-        };
-        shadow.getElementById("cv-vol-video").oninput = (e) => {
-          userVideoVolume = e.target.value / 100;
-          shadow.getElementById("cv-val-video").innerText = `${e.target.value}%`;
-          if (mainVideo) mainVideo.volume = userVideoVolume;
-        };
-        shadow.getElementById("cv-toggle-play").onclick = (e) => {
-          translationPaused = !translationPaused;
-          e.target.innerText = translationPaused ? "\u25B6\uFE0F Play" : "\u23F8 Pause";
-          syncAudio();
-        };
-        shadow.getElementById("cv-refresh").onclick = () => {
-          if (audioObj) {
-            audioObj.pause();
-            audioObj.src = "";
+      if (!panelHost && !panelInstance) {
+        panelInstance = new CrabPanel({
+          onClose: () => {
+            const homeUrl = localStorage.getItem("cv_home_url");
+            if (homeUrl) window.location.href = homeUrl;
+            else window.history.go(-(window.history.length - 1));
+          },
+          onAudioVolume: (val) => {
+            userAudioVolume = val;
+            if (audioObj) audioObj.volume = userAudioVolume;
+          },
+          onVideoVolume: (val) => {
+            userVideoVolume = val;
+            if (mainVideo) mainVideo.volume = userVideoVolume;
+          },
+          onTogglePlay: (paused) => {
+            translationPaused = paused;
+            syncAudio();
+          },
+          onRefresh: () => {
+            if (audioObj) {
+              audioObj.pause();
+              audioObj.src = "";
+            }
+            if (countdownInterval) {
+              clearInterval(countdownInterval);
+              countdownInterval = null;
+            }
+            translationPaused = false;
+            if (panelInstance) panelInstance.setPlayPauseState(false);
+            if (mainVideo) requestTranslation(mainVideo, true);
           }
-          if (countdownInterval) {
-            clearInterval(countdownInterval);
-            countdownInterval = null;
-          }
-          translationPaused = false;
-          shadow.getElementById("cv-toggle-play").innerText = "\u23F8 Pause";
-          if (mainVideo) requestTranslation(mainVideo, true);
-        };
+        });
+        document.documentElement.appendChild(panelInstance.host);
       }
       if (!mainVideo && !isTranslating) {
         let v = document.querySelector(".html5-video-container video, video.vjs-tech, .fp-player video");
