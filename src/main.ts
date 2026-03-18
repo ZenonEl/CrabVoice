@@ -186,7 +186,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         e.preventDefault();
         if (urlInputEl.value) {
             console.log(`Requested translation for: ${urlInputEl.value}`);
-            resultMsgEl.innerHTML = `<span style="color: #4CAF50;">${Icons.videoRedirectShow} ${t('url.redirecting')}</span>`;
+            resultMsgEl.innerHTML = `<span style="color: #4CAF50;"${Icons.videoRedirectShow} ${t('url.redirecting')}</span>`;
             window.location.href = urlInputEl.value;
         }
     });

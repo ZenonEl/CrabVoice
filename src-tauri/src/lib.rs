@@ -1,4 +1,5 @@
 mod domain;
+mod error;
 mod premium;
 mod settings;
 mod yandex_api;
@@ -7,7 +8,7 @@ use domain::{AppSettings, TranslationProvider, TranslationResult};
 use settings::SettingsManager;
 use yandex_api::YandexClient;
 
-use log::{error, info};
+use log::{error, info, warn};
 use std::fs;
 use std::sync::Arc;
 use tauri::{Manager, State};
@@ -20,7 +21,6 @@ struct AppState {
     settings_manager: SettingsManager,
 }
 
-// Команда-мост для инжектора (так как на внешних сайтах JS API плагина недоступен)
 #[tauri::command]
 fn log_message(source: String, msg: String) {
     if source == "error" || source.contains("Error") {
@@ -32,13 +32,16 @@ fn log_message(source: String, msg: String) {
 
 #[tauri::command]
 async fn get_logs(app: tauri::AppHandle) -> Result<String, String> {
-    let log_dir = app.path().app_log_dir().map_err(|e| e.to_string())?;
-    
+    let log_dir = app
+        .path()
+        .app_log_dir()
+        .map_err(|e| format!("Config error: {}", e))?;
+
     let mut all_logs = String::new();
     if let Ok(entries) = fs::read_dir(&log_dir) {
         let mut files: Vec<_> = entries.filter_map(|e| e.ok()).collect();
         files.sort_by_key(|a| a.metadata().and_then(|m| m.modified()).ok());
-        
+
         for entry in files {
             if entry.path().extension().map_or(false, |ext| ext == "log") {
                 if let Ok(content) = fs::read_to_string(entry.path()) {
@@ -48,7 +51,7 @@ async fn get_logs(app: tauri::AppHandle) -> Result<String, String> {
             }
         }
     }
-    
+
     if all_logs.is_empty() {
         Ok("Logs are empty or not found.".to_string())
     } else {
@@ -56,20 +59,22 @@ async fn get_logs(app: tauri::AppHandle) -> Result<String, String> {
     }
 }
 
-// Новая команда: надежный экспорт логов
 #[tauri::command]
 async fn export_logs(app: tauri::AppHandle) -> Result<String, String> {
     let logs = get_logs(app.clone()).await?;
-    
-    // Пытаемся сохранить в Загрузки, если не выйдет - в Документы
+
     let mut path = match app.path().download_dir() {
         Ok(p) => p,
-        Err(_) => app.path().document_dir().map_err(|e| e.to_string())?,
+        Err(_) => app
+            .path()
+            .document_dir()
+            .map_err(|e| format!("IO error: cannot find export directory: {}", e))?,
     };
-    
+
     path.push("crabvoice.log");
-    fs::write(&path, &logs).map_err(|e| format!("Failed to write file: {}", e))?;
-    
+    fs::write(&path, &logs).map_err(|e| format!("IO error: failed to write log file: {}", e))?;
+    info!("Logs exported to {}", path.display());
+
     Ok(path.to_string_lossy().into_owned())
 }
 
@@ -79,39 +84,57 @@ fn get_app_tier() -> &'static str {
     premium::get_tier()
 }
 
-// Команда получения сегментов с рекламой
 #[tauri::command]
-async fn get_skip_segments(video_id: String) -> Result<Vec<premium::SponsorSegment>, String> {
-    premium::fetch_sponsor_segments(&video_id).await
+async fn get_skip_segments(
+    video_id: String,
+) -> Result<Vec<premium::SponsorSegment>, String> {
+    premium::fetch_sponsor_segments(&video_id)
+        .await
+        .map_err(|e| {
+            warn!("SponsorBlock error for '{}': {}", video_id, e);
+            e.to_string()
+        })
 }
 
 #[tauri::command]
 async fn ping_proxy(proxy_url: String) -> Result<u128, String> {
     let mut client_builder = reqwest::Client::builder()
         .timeout(std::time::Duration::from_secs(5));
-        
+
     if !proxy_url.is_empty() {
-        if let Ok(proxy) = reqwest::Proxy::all(&proxy_url) {
-            client_builder = client_builder.proxy(proxy);
-        } else {
-            return Err("Invalid proxy URL format".into());
+        match reqwest::Proxy::all(&proxy_url) {
+            Ok(proxy) => client_builder = client_builder.proxy(proxy),
+            Err(e) => {
+                return Err(format!("Config error: invalid proxy URL: {}", e));
+            }
         }
     }
-    
-    let client = client_builder.build().map_err(|e| e.to_string())?;
-    
+
+    let client = client_builder
+        .build()
+        .map_err(|e| format!("Network error: {}", e))?;
+
     let start = std::time::Instant::now();
-    // Testing a very fast endpoint usually used for latency checks
     let res = client
         .get("http://gstatic.com/generate_204")
         .send()
         .await
-        .map_err(|e| format!("Proxy error: {}", e))?;
-        
+        .map_err(|e| {
+            if e.is_timeout() {
+                "Network error: proxy connection timed out".to_string()
+            } else if e.is_connect() {
+                "Network error: cannot connect through proxy".to_string()
+            } else {
+                format!("Network error: {}", e)
+            }
+        })?;
+
     if res.status().is_success() {
-        Ok(start.elapsed().as_millis())
+        let ms = start.elapsed().as_millis();
+        info!("Proxy ping: {} ms via {}", ms, proxy_url);
+        Ok(ms)
     } else {
-        Err(format!("HTTP Error: {}", res.status()))
+        Err(format!("API error: HTTP {}", res.status()))
     }
 }
 
@@ -128,7 +151,10 @@ async fn save_settings(
 ) -> Result<(), String> {
     let mut s = state.settings.lock().await;
     *s = new_settings.clone();
-    state.settings_manager.save(&new_settings)?;
+    state.settings_manager.save(&new_settings).map_err(|e| {
+        error!("Failed to save settings: {}", e);
+        e.to_string()
+    })?;
     Ok(())
 }
 
@@ -136,8 +162,11 @@ async fn save_settings(
 async fn save_yandex_token(token: String, state: State<'_, AppState>) -> Result<(), String> {
     let mut s = state.settings.lock().await;
     s.yandex_token = Some(token);
-    state.settings_manager.save(&s)?;
-    println!("✅ OAuth Token saved successfully!");
+    state.settings_manager.save(&s).map_err(|e| {
+        error!("Failed to save OAuth token: {}", e);
+        e.to_string()
+    })?;
+    info!("OAuth token saved successfully");
     Ok(())
 }
 
@@ -151,22 +180,21 @@ async fn translate(
 
     if current_settings.use_proxy {
         info!(
-            "Translate via Proxy ({}): {}",
+            "Translate via proxy ({}): {}",
             current_settings.proxy_url, url
         );
     } else {
-        info!("Translate via Direct Connection: {}", url);
+        info!("Translate via direct connection: {}", url);
     };
 
-    let result = state
+    state
         .yandex_translator
         .translate_video(&url, duration, &current_settings)
-        .await;
-
-    if let Err(e) = &result {
-        error!("Translate Error: {}", e);
-    }
-    result
+        .await
+        .map_err(|e| {
+            error!("Translation failed for '{}': {}", url, e);
+            e.to_string()
+        })
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
@@ -179,7 +207,9 @@ pub fn run() {
                 .level(log::LevelFilter::Info)
                 .clear_targets()
                 .target(Target::new(TargetKind::Stdout))
-                .target(Target::new(TargetKind::LogDir { file_name: Some("crabvoice.log".to_string()) }))
+                .target(Target::new(TargetKind::LogDir {
+                    file_name: Some("crabvoice.log".to_string()),
+                }))
                 .build(),
         )
         .plugin(tauri_plugin_opener::init())
@@ -198,7 +228,7 @@ pub fn run() {
         .setup(move |app| {
             let settings_manager = SettingsManager::new(app.handle());
             let settings = settings_manager.load();
-            info!("🦀 CrabVoice backend started");
+            info!("CrabVoice backend started (tier: {})", premium::get_tier());
 
             app.manage(AppState {
                 yandex_translator: Arc::new(YandexClient::new()),
@@ -206,7 +236,6 @@ pub fn run() {
                 settings_manager,
             });
 
-            // 3. Создаем окно
             let mut window_builder = tauri::WebviewWindowBuilder::new(
                 app,
                 "main",
@@ -218,10 +247,10 @@ pub fn run() {
                 match tauri::Url::parse(&settings.proxy_url) {
                     Ok(url) => {
                         window_builder = window_builder.proxy_url(url);
-                        info!("🌐 Webview Proxy enabled: {}", settings.proxy_url);
+                        info!("Webview proxy enabled: {}", settings.proxy_url);
                     }
                     Err(e) => {
-                        error!("❌ Invalid proxy URL: {}", e);
+                        warn!("Invalid proxy URL for webview: {}", e);
                     }
                 }
             }

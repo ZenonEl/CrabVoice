@@ -1,3 +1,4 @@
+use crate::error::AppError;
 use serde::Serialize;
 
 #[cfg(feature = "subscribers")]
@@ -25,7 +26,7 @@ pub fn get_tier() -> &'static str {
 // FREE: SponsorBlock is not available
 // --------------------------------------------------------
 #[cfg(not(feature = "subscribers"))]
-pub async fn fetch_sponsor_segments(_video_id: &str) -> Result<Vec<SponsorSegment>, String> {
+pub async fn fetch_sponsor_segments(_video_id: &str) -> Result<Vec<SponsorSegment>, AppError> {
     Ok(vec![])
 }
 
@@ -33,7 +34,9 @@ pub async fn fetch_sponsor_segments(_video_id: &str) -> Result<Vec<SponsorSegmen
 // SUBSCRIBERS+: Real SponsorBlock API integration
 // --------------------------------------------------------
 #[cfg(feature = "subscribers")]
-pub async fn fetch_sponsor_segments(video_id: &str) -> Result<Vec<SponsorSegment>, String> {
+pub async fn fetch_sponsor_segments(video_id: &str) -> Result<Vec<SponsorSegment>, AppError> {
+    use log::debug;
+
     #[derive(Deserialize)]
     struct ApiSegment {
         segment: [f32; 2],
@@ -46,22 +49,27 @@ pub async fn fetch_sponsor_segments(video_id: &str) -> Result<Vec<SponsorSegment
         r#"["sponsor","selfpromo","interaction","intro","outro"]"#
     );
 
-    let resp = reqwest::get(&url)
-        .await
-        .map_err(|e| format!("SponsorBlock request failed: {}", e))?;
+    let resp = reqwest::get(&url).await?;
 
     if resp.status() == 404 {
+        debug!("SponsorBlock: no segments for video {}", video_id);
         return Ok(vec![]);
     }
 
     if !resp.status().is_success() {
-        return Err(format!("SponsorBlock API error: {}", resp.status()));
+        return Err(AppError::Api(format!(
+            "SponsorBlock returned HTTP {}",
+            resp.status()
+        )));
     }
 
-    let api_segments: Vec<ApiSegment> = resp
-        .json()
-        .await
-        .map_err(|e| format!("SponsorBlock parse error: {}", e))?;
+    let api_segments: Vec<ApiSegment> = resp.json().await?;
+
+    debug!(
+        "SponsorBlock: loaded {} segments for video {}",
+        api_segments.len(),
+        video_id
+    );
 
     Ok(api_segments
         .into_iter()

@@ -1,7 +1,7 @@
 {
   "app.title": "CrabVoice",
   "app.subtitle": "Нативный голосовой перевод видео",
-  "app.version": "CrabVoice v0.3.3 Публичная бета",
+  "app.version": "CrabVoice v0.5.0 Публичная бета",
   "app.crafted_by": "Сделано с 🦀 от",
 
   "url.placeholder": "Вставьте ссылку на видео (YouTube, VK, Vimeo)...",
@@ -61,5 +61,14 @@
   "status.parse_error": "Ошибка VOT.js ❌",
   "status.skipped": "Пропущено: {category} ⏩",
   "status.login_success": "Вход выполнен!",
-  "status.returning": "Возврат в CrabVoice..."
+  "status.returning": "Возврат в CrabVoice...",
+
+  "error.network": "Ошибка подключения — проверьте сеть",
+  "error.api": "Ошибка сервиса перевода",
+  "error.parse": "Неожиданный ответ от сервера",
+  "error.config": "Ошибка конфигурации",
+  "error.io": "Ошибка файловой операции",
+  "error.unknown": "Что-то пошло не так",
+  "error.settings_save": "Не удалось сохранить настройки",
+  "error.settings_load": "Не удалось загрузить настройки"
 }

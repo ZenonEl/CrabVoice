@@ -1,7 +1,7 @@
 {
   "app.title": "CrabVoice",
   "app.subtitle": "Real-time Native Video Translation",
-  "app.version": "CrabVoice v0.3.3 Public Beta",
+  "app.version": "CrabVoice v0.5.0 Public Beta",
   "app.crafted_by": "Crafted with 🦀 by",
 
   "url.placeholder": "Paste video URL (YouTube, VK, Vimeo)...",
@@ -61,5 +61,14 @@
   "status.parse_error": "VOT.js Parse Error ❌",
   "status.skipped": "Skipped {category} ⏩",
   "status.login_success": "Login successful!",
-  "status.returning": "Returning to CrabVoice..."
+  "status.returning": "Returning to CrabVoice...",
+
+  "error.network": "Connection failed — check your network",
+  "error.api": "Translation service error",
+  "error.parse": "Unexpected response from server",
+  "error.config": "Configuration error",
+  "error.io": "File operation failed",
+  "error.unknown": "Something went wrong",
+  "error.settings_save": "Failed to save settings",
+  "error.settings_load": "Failed to load settings"
 }

@@ -1,6 +1,8 @@
 use crate::domain::{AppSettings, TranslationProvider, TranslationResult};
+use crate::error::AppError;
 use async_trait::async_trait;
 use hmac::{Hmac, Mac};
+use log::{debug, warn};
 use prost::Message;
 use reqwest::{header, Client};
 use sha2::Sha256;
@@ -28,8 +30,7 @@ impl TranslationProvider for YandexClient {
         video_url: &str,
         duration: f64,
         settings: &AppSettings,
-    ) -> Result<TranslationResult, String> {
-        // 1. Используем настройки, выбранные юзером
+    ) -> Result<TranslationResult, AppError> {
         let request = pb::VideoTranslationRequest {
             url: video_url.to_string(),
             language: settings.default_source_lang.clone(),
@@ -45,46 +46,47 @@ impl TranslationProvider for YandexClient {
             ..Default::default()
         };
 
-        // 2. Сериализуем в бинарный формат
         let mut buf = Vec::new();
-        request.encode(&mut buf).map_err(|e| e.to_string())?;
+        request.encode(&mut buf)?;
 
-        // 3. Создаем криптографическую подпись (HMAC-SHA256)
         let mut mac =
             Hmac::<Sha256>::new_from_slice(HMAC_KEY).expect("HMAC can take key of any size");
         mac.update(&buf);
-        let signature_bytes = mac.finalize().into_bytes();
-        let signature_hex = hex::encode(signature_bytes); // Переводим в 16-ричную строку
-
-        // 4. Генерируем уникальный токен сессии (Яндекс это требует)
+        let signature_hex = hex::encode(mac.finalize().into_bytes());
         let uuid_str = Uuid::new_v4().to_string();
 
-        // 5. Собираем HTTP клиент Яндекса на лету
+        debug!(
+            "Yandex API: {} -> {}, duration={:.0}s, lively={}",
+            settings.default_source_lang, settings.default_target_lang, duration, settings.use_lively_voice
+        );
+
         let mut headers = header::HeaderMap::new();
         headers.insert(header::USER_AGENT, header::HeaderValue::from_static("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.5845.836 YaBrowser/23.9.1.836 Yowser/2.5 Safari/537.36"));
-        headers.insert(
-            header::ACCEPT,
-            header::HeaderValue::from_static("application/x-protobuf"),
-        );
-        headers.insert(
-            header::CONTENT_TYPE,
-            header::HeaderValue::from_static("application/x-protobuf"),
-        );
+        headers.insert(header::ACCEPT, header::HeaderValue::from_static("application/x-protobuf"));
+        headers.insert(header::CONTENT_TYPE, header::HeaderValue::from_static("application/x-protobuf"));
 
         let mut client_builder = Client::builder().default_headers(headers);
 
-        // Применяем кастомный прокси, если включен
         if settings.use_proxy && !settings.proxy_url.is_empty() {
-            if let Ok(proxy) = reqwest::Proxy::all(&settings.proxy_url) {
-                client_builder = client_builder.proxy(proxy);
+            match reqwest::Proxy::all(&settings.proxy_url) {
+                Ok(proxy) => {
+                    debug!("Using proxy: {}", settings.proxy_url);
+                    client_builder = client_builder.proxy(proxy);
+                }
+                Err(e) => {
+                    warn!("Invalid proxy URL '{}': {}", settings.proxy_url, e);
+                    return Err(AppError::Config(format!(
+                        "Invalid proxy URL '{}': {}",
+                        settings.proxy_url, e
+                    )));
+                }
             }
         }
 
-        let client = client_builder
-            .build()
-            .map_err(|e| format!("Failed to build reqwest client: {}", e))?;
+        let client = client_builder.build().map_err(|e| {
+            AppError::Network(format!("Failed to create HTTP client: {}", e))
+        })?;
 
-        // 6. Отправляем POST запрос Яндексу
         let mut req_builder = client
             .post("https://api.browser.yandex.ru/video-translation/translate")
             .header("Vtrans-Signature", signature_hex)
@@ -95,24 +97,33 @@ impl TranslationProvider for YandexClient {
             req_builder = req_builder.header("Authorization", format!("OAuth {}", token));
         }
 
-        let response = req_builder
-            .send()
-            .await
-            .map_err(|e| format!("Network error: {}", e))?;
+        let response = req_builder.send().await.map_err(|e| {
+            if e.is_timeout() {
+                AppError::Network("Request timed out — check your connection or proxy".into())
+            } else if e.is_connect() {
+                AppError::Network("Cannot connect to Yandex API — check your network".into())
+            } else {
+                AppError::Network(e.to_string())
+            }
+        })?;
 
         if !response.status().is_success() {
             let status = response.status();
             let err_text = response.text().await.unwrap_or_default();
-            println!("❌ Yandex API Error: HTTP {} - {}", status, err_text);
-            return Err(format!("Yandex HTTP {}: {}", status, err_text));
+            warn!("Yandex API HTTP {}: {}", status, err_text);
+            return Err(AppError::Api(format!("Yandex HTTP {}", status)));
         }
 
-        // 4. Получаем бинарный ответ и десериализуем его
-        let response_bytes = response.bytes().await.map_err(|e| e.to_string())?;
-        let yandex_response = pb::VideoTranslationResponse::decode(response_bytes)
-            .map_err(|e| format!("Failed to decode protobuf: {}", e))?;
+        let response_bytes = response.bytes().await?;
+        let yandex_response = pb::VideoTranslationResponse::decode(response_bytes)?;
 
-        // 5. Мапим ответ Яндекса в нашу доменную сущность
+        debug!(
+            "Yandex response: status={}, url={}, remaining_time={:?}",
+            yandex_response.status,
+            yandex_response.url.as_deref().unwrap_or("none"),
+            yandex_response.remaining_time
+        );
+
         Ok(TranslationResult {
             url: yandex_response.url,
             status: yandex_response.status,

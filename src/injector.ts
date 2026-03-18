@@ -270,10 +270,15 @@ if (!window._cvInitialized) {
                         }, 1000);
                     }
                 } catch (e: any) {
-                    // Выводим ТОЧНУЮ причину ошибки из Rust
-                    appLog(`Rust Error: ${e.toString()}`);
-                    console.error("CrabVoice Rust Error:", e);
-                    updateStatus(e.toString().substring(0, 30) + " ⚠️", "#ff5e5e");
+                    const errStr = e?.toString() ?? '';
+                    appLog(`Backend error: ${errStr}`);
+                    // Map structured error categories to user-friendly i18n messages
+                    let userMsg = t('error.unknown');
+                    if (errStr.startsWith('Network error')) userMsg = t('error.network');
+                    else if (errStr.startsWith('API error')) userMsg = t('error.api');
+                    else if (errStr.startsWith('Parse error')) userMsg = t('error.parse');
+                    else if (errStr.startsWith('Config error')) userMsg = t('error.config');
+                    updateStatus(userMsg + " ⚠️", "#ff5e5e");
                     isTranslating = false;
                 }
             };
