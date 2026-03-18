@@ -29,6 +29,12 @@
   "auth.authorized": "✅ Authorized",
   "auth.not_authorized": "❌ Not authorized",
   "auth.redirecting": "Redirecting to Yandex...",
+  "auth.requesting_code": "Requesting code...",
+  "auth.waiting_for_auth": "Waiting for authorization...",
+  "auth.code_expired": "❌ Code expired — try again",
+  "auth.code_request_failed": "❌ Failed to get code",
+  "auth.enter_code": "Enter this code on the page:",
+  "auth.open_yandex_device": "Open yandex.ru/device",
 
   "logs.title": "App Logs",
   "logs.view": "View Logs",

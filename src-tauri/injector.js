@@ -3610,6 +3610,12 @@
     "auth.authorized": "\u2705 Authorized",
     "auth.not_authorized": "\u274C Not authorized",
     "auth.redirecting": "Redirecting to Yandex...",
+    "auth.requesting_code": "Requesting code...",
+    "auth.waiting_for_auth": "Waiting for authorization...",
+    "auth.code_expired": "\u274C Code expired \u2014 try again",
+    "auth.code_request_failed": "\u274C Failed to get code",
+    "auth.enter_code": "Enter this code on the page:",
+    "auth.open_yandex_device": "Open yandex.ru/device",
     "logs.title": "App Logs",
     "logs.view": "View Logs",
     "logs.export": "Export / Copy Logs",
@@ -3678,6 +3684,12 @@
     "auth.authorized": "\u2705 \u0410\u0432\u0442\u043E\u0440\u0438\u0437\u043E\u0432\u0430\u043D",
     "auth.not_authorized": "\u274C \u041D\u0435 \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u043E\u0432\u0430\u043D",
     "auth.redirecting": "\u041F\u0435\u0440\u0435\u043D\u0430\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u043D\u0430 \u042F\u043D\u0434\u0435\u043A\u0441...",
+    "auth.requesting_code": "\u0417\u0430\u043F\u0440\u043E\u0441 \u043A\u043E\u0434\u0430...",
+    "auth.waiting_for_auth": "\u041E\u0436\u0438\u0434\u0430\u043D\u0438\u0435 \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u0438...",
+    "auth.code_expired": "\u274C \u041A\u043E\u0434 \u0438\u0441\u0442\u0451\u043A \u2014 \u043F\u043E\u043F\u0440\u043E\u0431\u0443\u0439\u0442\u0435 \u0441\u043D\u043E\u0432\u0430",
+    "auth.code_request_failed": "\u274C \u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u043F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u043A\u043E\u0434",
+    "auth.enter_code": "\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u044D\u0442\u043E\u0442 \u043A\u043E\u0434 \u043D\u0430 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0435:",
+    "auth.open_yandex_device": "\u041E\u0442\u043A\u0440\u044B\u0442\u044C yandex.ru/device",
     "logs.title": "\u041B\u043E\u0433\u0438 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F",
     "logs.view": "\u041F\u0440\u043E\u0441\u043C\u043E\u0442\u0440 \u043B\u043E\u0433\u043E\u0432",
     "logs.export": "\u042D\u043A\u0441\u043F\u043E\u0440\u0442 / \u041A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C",
@@ -4138,25 +4150,6 @@ ${a.stack}`;
     }).join(" ");
     invokeLog("error", msg);
   };
-  if (window.location.href.includes("access_token=")) {
-    const hashOrSearch = window.location.hash ? window.location.hash.replace(/^#/, "") : window.location.search.replace(/^\?/, "");
-    const params = new URLSearchParams(hashOrSearch);
-    const token = params.get("access_token");
-    if (token && window.__TAURI__) {
-      try {
-        window.stop();
-      } catch (e) {
-      }
-      document.documentElement.innerHTML = `<body style='background:#121212;'><h2 style='color: #4CAF50; text-align: center; margin-top: 50px; font-family: sans-serif;'>${Icons.done} ${t("status.login_success")}<br><br><span style='color: #aaa; font-size: 16px;'>${t("status.returning")}</span></h2></body>`;
-      window.__TAURI__.core.invoke("save_yandex_token", { token }).then(() => {
-        const homeUrl = localStorage.getItem("cv_home_url");
-        setTimeout(() => {
-          if (homeUrl) window.location.href = homeUrl;
-          else window.history.go(-(window.history.length - 1));
-        }, 1e3);
-      });
-    }
-  }
   if (!window._cvInitialized) {
     let updateStatus = function(text, color) {
       if (panelInstance) {
@@ -4196,10 +4189,11 @@ ${a.stack}`;
     updateStatus2 = updateStatus, syncAudio2 = syncAudio;
     window._cvInitialized = true;
     const isHome = window.location.hostname === "localhost" || window.location.hostname === "tauri.localhost" || window.location.protocol === "tauri:";
-    if (isHome) {
-      localStorage.setItem("cv_home_url", window.location.href);
-    } else {
-      appLog(`CrabVoice Injector attached to ${window.location.hostname}`);
+    const skipDomains = ["oauth.yandex.", "passport.yandex.", "accounts.google.", "login.yandex.", "sso.yandex."];
+    const hostname = window.location.hostname;
+    const shouldSkipInjection = isHome || skipDomains.some((d) => hostname.includes(d));
+    if (!isHome) {
+      appLog(`CrabVoice Injector attached to ${window.location.hostname}${shouldSkipInjection ? " (skip mode)" : ""}`);
     }
     let mainVideo = null;
     let audioObj = null;
@@ -4361,7 +4355,7 @@ ${a.stack}`;
       });
     }
     const checkAndInject = () => {
-      if (isHome) return;
+      if (shouldSkipInjection) return;
       if (mainVideo && (!mainVideo.isConnected || window.location.href !== currentVideoUrl)) {
         mainVideo = null;
         if (audioObj) {
@@ -4379,9 +4373,7 @@ ${a.stack}`;
       if (!panelHost && !panelInstance) {
         panelInstance = new CrabPanel({
           onClose: () => {
-            const homeUrl = localStorage.getItem("cv_home_url");
-            if (homeUrl) window.location.href = homeUrl;
-            else window.history.go(-(window.history.length - 1));
+            history.back();
           },
           onAudioVolume: (val) => {
             userAudioVolume = val;

@@ -1,7 +1,6 @@
 import { getService, getVideoData } from "@vot.js/ext/utils/videoData";  
 import type { ServiceConf } from "@vot.js/ext/types/service";
 import { CrabPanel, type AppTier } from "./injectorPanel";
-import { Icons } from "./icons";
 import { t, setLocale, type Locale } from "./i18n";
 
 // Универсальная функция отправки логов из песочницы инжектора в Rust
@@ -35,6 +34,7 @@ declare global {
             core: { invoke(cmd: string, args?: any): Promise<any>; };
         };
         _cvInitialized?: boolean;
+        _cvHomeUrl?: string;
         trustedTypes?: any;
         _cvPolicy?: any;
     }
@@ -48,43 +48,17 @@ interface AppSettings {
     ui_language: string;
 }
 
-// Перехват OAuth редиректа от сервера Яндекса
-if (window.location.href.includes('access_token=')) {
-    const hashOrSearch = window.location.hash ? window.location.hash.replace(/^#/, '') : window.location.search.replace(/^\?/, '');
-    const params = new URLSearchParams(hashOrSearch);
-    const token = params.get('access_token');
-
-    if (token && window.__TAURI__) {
-        try { window.stop(); } catch(e){}
-        document.documentElement.innerHTML = `<body style='background:#121212;'><h2 style='color: #4CAF50; text-align: center; margin-top: 50px; font-family: sans-serif;'>${Icons.done} ${t('status.login_success')}<br><br><span style='color: #aaa; font-size: 16px;'>${t('status.returning')}</span></h2></body>`;
-
-        window.__TAURI__.core.invoke('save_yandex_token', { token: token }).then(() => {
-            setTimeout(() => {
-                // Navigate to home — use known Tauri home URLs
-                // localStorage is per-origin, so cv_home_url is NOT accessible from oauth.yandex.ru
-                // Use tauri:// or localhost directly, with replace() to avoid bfcache
-                if (window.location.protocol === 'tauri:') {
-                    window.location.replace('tauri://localhost');
-                } else {
-                    window.location.replace('http://localhost:1420');
-                }
-            }, 1000);
-        }).catch(() => {
-            // Token save failed — still try to go home
-            window.location.replace('http://localhost:1420');
-        });
-    }
-}
-
 if (!window._cvInitialized) {
     window._cvInitialized = true;
 
     const isHome = window.location.hostname === 'localhost' || window.location.hostname === 'tauri.localhost' || window.location.protocol === 'tauri:';
 
-    // Skip injection on pages where vot.js/panel are not needed
-    // OAuth pages, auth pages, etc. — injecting vot.js here causes webview hangs on Android
-    const skipHosts = ['oauth.yandex.ru', 'passport.yandex.ru', 'accounts.google.com'];
-    const shouldSkipInjection = isHome || skipHosts.some(h => window.location.hostname.includes(h));
+
+    // Skip vot.js/CrabPanel injection on non-video pages
+    // OAuth/auth pages cause webview hangs on Android when vot.js walks the DOM
+    const skipDomains = ['oauth.yandex.', 'passport.yandex.', 'accounts.google.', 'login.yandex.', 'sso.yandex.'];
+    const hostname = window.location.hostname;
+    const shouldSkipInjection = isHome || skipDomains.some(d => hostname.includes(d));
 
     if (!isHome) {
         appLog(`CrabVoice Injector attached to ${window.location.hostname}${shouldSkipInjection ? ' (skip mode)' : ''}`);
@@ -356,11 +330,7 @@ if (!window._cvInitialized) {
         if (!panelHost && !panelInstance) {
             panelInstance = new CrabPanel({
                 onClose: () => {
-                    if (window.location.protocol === 'tauri:') {
-                        window.location.replace('tauri://localhost');
-                    } else {
-                        window.location.replace('http://localhost:1420');
-                    }
+                    history.back();
                 },
                 onAudioVolume: (val: number) => {
                     userAudioVolume = val;

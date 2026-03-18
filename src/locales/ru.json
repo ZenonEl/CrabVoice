@@ -29,6 +29,12 @@
   "auth.authorized": "✅ Авторизован",
   "auth.not_authorized": "❌ Не авторизован",
   "auth.redirecting": "Перенаправление на Яндекс...",
+  "auth.requesting_code": "Запрос кода...",
+  "auth.waiting_for_auth": "Ожидание авторизации...",
+  "auth.code_expired": "❌ Код истёк — попробуйте снова",
+  "auth.code_request_failed": "❌ Не удалось получить код",
+  "auth.enter_code": "Введите этот код на странице:",
+  "auth.open_yandex_device": "Открыть yandex.ru/device",
 
   "logs.title": "Логи приложения",
   "logs.view": "Просмотр логов",

@@ -1,5 +1,6 @@
 import { invoke } from "@tauri-apps/api/core";
 import { info, warn, error, debug } from "@tauri-apps/plugin-log";
+import { openUrl } from "@tauri-apps/plugin-opener";
 import { Icons } from "./icons";
 import { t, setLocale, type Locale } from "./i18n";
 
@@ -114,28 +115,84 @@ window.addEventListener("DOMContentLoaded", async () => {
         console.error("Failed to load settings:", e);
     }
 
-    // Yandex OAuth
-    const YANDEX_OAUTH_URL = "https://oauth.yandex.ru/authorize?response_type=token&client_id=23cabbbdc6cd418abb4b39c32c41195d";
-    const isMobile = /android|iphone|ipad/i.test(navigator.userAgent);
+    // Device Code Flow elements
+    const deviceCodeFlow = document.querySelector("#device-code-flow") as HTMLElement;
+    const deviceUserCode = document.querySelector("#device-user-code") as HTMLElement;
+    const btnOpenDevicePage = document.querySelector("#btn-open-device-page") as HTMLButtonElement;
+    const deviceStatus = document.querySelector("#device-status") as HTMLElement;
+    let devicePollTimer: ReturnType<typeof setInterval> | null = null;
 
+    // Yandex OAuth via Device Code Flow (avoids WebView issues on Android)
     btnLogin.addEventListener("click", async (e) => {
         e.preventDefault();
-        authStatus.innerText = t('auth.redirecting');
+        if (devicePollTimer) return; // already in progress
+
+        authStatus.innerText = t('auth.requesting_code');
         authStatus.style.color = "#FFC131";
 
-        if (isMobile) {
-            // On mobile, open OAuth in system browser to avoid webview issues
-            // User will need to copy the token manually or use deep link
-            try {
-                const { openUrl } = await import("@tauri-apps/plugin-opener");
-                await openUrl(YANDEX_OAUTH_URL);
-            } catch (_) {
-                // Fallback: navigate in webview
-                window.location.href = YANDEX_OAUTH_URL;
-            }
-        } else {
-            // On desktop, navigate in webview (injector catches the redirect)
-            window.location.href = YANDEX_OAUTH_URL;
+        try {
+            const codeResp = await invoke("request_device_code") as {
+                device_code: string;
+                user_code: string;
+                verification_url: string;
+                interval: number;
+                expires_in: number;
+            };
+
+            // Show device code UI
+            deviceCodeFlow.style.display = "block";
+            deviceUserCode.textContent = codeResp.user_code;
+            deviceStatus.innerText = t('auth.waiting_for_auth');
+            deviceStatus.style.color = "#FFC131";
+            btnLogin.disabled = true;
+
+            // Open verification URL in system browser
+            btnOpenDevicePage.onclick = () => {
+                openUrl(codeResp.verification_url);
+            };
+
+            // Poll for token
+            const interval = Math.max(codeResp.interval || 5, 5) * 1000;
+            const expiresAt = Date.now() + codeResp.expires_in * 1000;
+
+            devicePollTimer = setInterval(async () => {
+                if (Date.now() > expiresAt) {
+                    clearInterval(devicePollTimer!);
+                    devicePollTimer = null;
+                    deviceCodeFlow.style.display = "none";
+                    btnLogin.disabled = false;
+                    authStatus.innerText = t('auth.code_expired');
+                    authStatus.style.color = "#ff5e5e";
+                    return;
+                }
+
+                try {
+                    const tokenResp = await invoke("poll_device_token", {
+                        deviceCode: codeResp.device_code
+                    }) as { access_token?: string; error?: string };
+
+                    if (tokenResp.access_token) {
+                        clearInterval(devicePollTimer!);
+                        devicePollTimer = null;
+
+                        // Save token
+                        await invoke("save_yandex_token", { token: tokenResp.access_token });
+                        isAuthorized = true;
+                        updateAuthStatus();
+                        deviceCodeFlow.style.display = "none";
+                        btnLogin.disabled = false;
+                        console.log("Device code auth successful");
+                    }
+                    // If error is "authorization_pending", just keep polling
+                } catch (err) {
+                    console.error("Poll error:", err);
+                }
+            }, interval);
+
+        } catch (err) {
+            console.error("Failed to request device code:", err);
+            authStatus.innerText = t('auth.code_request_failed');
+            authStatus.style.color = "#ff5e5e";
         }
     });
 
@@ -263,19 +320,6 @@ window.addEventListener("DOMContentLoaded", async () => {
         const iconName = el.getAttribute('data-icon');
         if (iconName && Icons[iconName]) {
             el.innerHTML = Icons[iconName];
-        }
-    });
-
-    // Handle bfcache restore (e.g. after OAuth redirect via history.back)
-    // DOMContentLoaded does NOT fire when page is restored from bfcache
-    window.addEventListener("pageshow", async (event) => {
-        if (event.persisted) {
-            console.log("Page restored from bfcache, refreshing auth status");
-            try {
-                const settings: AppSettings = await invoke("get_settings");
-                isAuthorized = !!settings.yandex_token;
-                updateAuthStatus();
-            } catch (_) {}
         }
     });
 
