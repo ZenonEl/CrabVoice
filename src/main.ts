@@ -249,5 +249,18 @@ window.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
+    // Handle bfcache restore (e.g. after OAuth redirect via history.back)
+    // DOMContentLoaded does NOT fire when page is restored from bfcache
+    window.addEventListener("pageshow", async (event) => {
+        if (event.persisted) {
+            console.log("Page restored from bfcache, refreshing auth status");
+            try {
+                const settings: AppSettings = await invoke("get_settings");
+                isAuthorized = !!settings.yandex_token;
+                updateAuthStatus();
+            } catch (_) {}
+        }
+    });
+
     console.log("Main UI loaded successfully");
 });

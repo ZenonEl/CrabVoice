@@ -53,17 +53,25 @@ if (window.location.href.includes('access_token=')) {
     const hashOrSearch = window.location.hash ? window.location.hash.replace(/^#/, '') : window.location.search.replace(/^\?/, '');
     const params = new URLSearchParams(hashOrSearch);
     const token = params.get('access_token');
-    
+
     if (token && window.__TAURI__) {
-        try { window.stop(); } catch(e){} // Стопаем загрузку страницы Яндекса
+        try { window.stop(); } catch(e){}
         document.documentElement.innerHTML = `<body style='background:#121212;'><h2 style='color: #4CAF50; text-align: center; margin-top: 50px; font-family: sans-serif;'>${Icons.done} ${t('status.login_success')}<br><br><span style='color: #aaa; font-size: 16px;'>${t('status.returning')}</span></h2></body>`;
-        
+
         window.__TAURI__.core.invoke('save_yandex_token', { token: token }).then(() => {
-            const homeUrl = localStorage.getItem('cv_home_url');
             setTimeout(() => {
-                if (homeUrl) window.location.href = homeUrl;
-                else window.history.go(-(window.history.length - 1));
+                // Navigate to home — use known Tauri home URLs
+                // localStorage is per-origin, so cv_home_url is NOT accessible from oauth.yandex.ru
+                // Use tauri:// or localhost directly, with replace() to avoid bfcache
+                if (window.location.protocol === 'tauri:') {
+                    window.location.replace('tauri://localhost');
+                } else {
+                    window.location.replace('http://localhost:1420');
+                }
             }, 1000);
+        }).catch(() => {
+            // Token save failed — still try to go home
+            window.location.replace('http://localhost:1420');
         });
     }
 }
@@ -72,9 +80,7 @@ if (!window._cvInitialized) {
     window._cvInitialized = true;
 
     const isHome = window.location.hostname === 'localhost' || window.location.hostname === 'tauri.localhost' || window.location.protocol === 'tauri:';
-    if (isHome) {
-        localStorage.setItem('cv_home_url', window.location.href);
-    } else {
+    if (!isHome) {
         appLog(`CrabVoice Injector attached to ${window.location.hostname}`);
     }
 
@@ -344,9 +350,11 @@ if (!window._cvInitialized) {
         if (!panelHost && !panelInstance) {
             panelInstance = new CrabPanel({
                 onClose: () => {
-                    const homeUrl = localStorage.getItem('cv_home_url');
-                    if (homeUrl) window.location.href = homeUrl;
-                    else window.history.go(-(window.history.length - 1));
+                    if (window.location.protocol === 'tauri:') {
+                        window.location.replace('tauri://localhost');
+                    } else {
+                        window.location.replace('http://localhost:1420');
+                    }
                 },
                 onAudioVolume: (val: number) => {
                     userAudioVolume = val;
