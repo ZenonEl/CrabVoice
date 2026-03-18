@@ -73,10 +73,10 @@ async fn export_logs(app: tauri::AppHandle) -> Result<String, String> {
     Ok(path.to_string_lossy().into_owned())
 }
 
-// Команда, чтобы UI знал, куплен ли Premium
+/// Returns the current app tier: "free", "subscribers", or "premium"
 #[tauri::command]
-fn is_premium_active() -> bool {
-    cfg!(feature = "premium")
+fn get_app_tier() -> &'static str {
+    premium::get_tier()
 }
 
 // Команда получения сегментов с рекламой
@@ -191,7 +191,7 @@ pub fn run() {
             log_message,
             get_logs,
             export_logs,
-            is_premium_active,
+            get_app_tier,
             get_skip_segments,
             ping_proxy
         ])

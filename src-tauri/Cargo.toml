@@ -37,5 +37,8 @@ log = "0.4.29"
 
 [features]
 default = []
-# Включаем эту фичу при сборке: pnpm tauri build -- --features premium
-premium = []
+# pnpm tauri build -- --features subscribers
+# pnpm tauri build -- --features premium
+# pnpm tauri build -- --features subscribers,premium
+subscribers = []
+premium = ["subscribers"]

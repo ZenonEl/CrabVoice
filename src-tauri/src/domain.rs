@@ -11,6 +11,12 @@ pub struct AppSettings {
     pub proxy_url: String,
     pub use_lively_voice: bool,
     pub yandex_token: Option<String>,
+    #[serde(default = "default_true")]
+    pub sponsorblock_enabled: bool,
+}
+
+fn default_true() -> bool {
+    true
 }
 
 impl Default for AppSettings {
@@ -23,6 +29,7 @@ impl Default for AppSettings {
             proxy_url: "".to_string(), // Теперь сюда можно писать http://... или socks5://...
             use_lively_voice: false,
             yandex_token: None,
+            sponsorblock_enabled: true,
         }
     }
 }

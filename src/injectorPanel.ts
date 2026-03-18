@@ -1,11 +1,19 @@
 import { Icons } from "./icons"; 
 
+export type AppTier = 'free' | 'subscribers' | 'premium';
+
 export interface PanelCallbacks {
     onClose: () => void;
     onAudioVolume: (val: number) => void;
     onVideoVolume: (val: number) => void;
     onTogglePlay: (paused: boolean) => void;
     onRefresh: () => void;
+    onSponsorBlockToggle: (enabled: boolean) => void;
+}
+
+export interface PanelOptions {
+    tier: AppTier;
+    sponsorBlockEnabled: boolean;
 }
 
 export class CrabPanel {
@@ -13,6 +21,8 @@ export class CrabPanel {
     private shadow: ShadowRoot;
     private translationPaused = false;
     private isCollapsed = false;
+    private tier: AppTier;
+    private sponsorBlockEnabled: boolean;
 
     // UI Элементы
     private wrapper!: HTMLElement;
@@ -23,8 +33,11 @@ export class CrabPanel {
     private btnTogglePlay!: HTMLElement;
     private sliderAudio!: HTMLInputElement;
     private sliderVideo!: HTMLInputElement;
+    private btnSponsorBlock!: HTMLElement | null;
 
-    constructor(private callbacks: PanelCallbacks) {
+    constructor(private callbacks: PanelCallbacks, options?: PanelOptions) {
+        this.tier = options?.tier ?? 'free';
+        this.sponsorBlockEnabled = options?.sponsorBlockEnabled ?? true;
         this.host = document.createElement('div');
         this.host.id = 'cv-panel-host';
         this.shadow = this.host.attachShadow({ mode: 'open' });
@@ -112,8 +125,28 @@ export class CrabPanel {
                     transition: border-color 0.2s !important;
                 }
                 .cv-fab:hover { border-color: #24c8db !important; }
-                
+
                 .cv-wrapper.collapsed .cv-fab { display: flex !important; }
+
+                .cv-tier-badge {
+                    font-size: 9px !important; padding: 2px 6px !important; border-radius: 4px !important;
+                    font-weight: bold !important; text-transform: uppercase !important; letter-spacing: 0.5px !important;
+                }
+                .cv-tier-free { background: #555 !important; color: #ccc !important; }
+                .cv-tier-subscribers { background: #6366f1 !important; color: #fff !important; }
+                .cv-tier-premium { background: #f59e0b !important; color: #000 !important; }
+
+                .cv-sb-btn {
+                    display: flex; align-items: center; justify-content: center; gap: 4px;
+                    background: #333 !important; color: #fff !important; border: 1px solid #555 !important;
+                    padding: 6px 10px !important; border-radius: 6px !important; font-size: 11px !important;
+                    cursor: pointer !important; width: 100% !important; transition: 0.2s; margin-bottom: 10px !important;
+                }
+                .cv-sb-btn:hover { background: #444 !important; }
+                .cv-sb-btn.active { border-color: #4CAF50 !important; background: #1b3a1b !important; }
+                .cv-sb-btn.disabled {
+                    opacity: 0.4 !important; cursor: not-allowed !important; pointer-events: none !important;
+                }
             </style>
 
             <div class="cv-wrapper" id="cv-wrapper">
@@ -121,7 +154,7 @@ export class CrabPanel {
                 
                 <div class="cv-panel" id="cv-panel">
                     <div class="cv-header" id="cv-header" title="Drag to move">
-                        <div>🦀 CrabVoice</div>
+                        <div style="display:flex;align-items:center;gap:6px;">🦀 CrabVoice <span class="cv-tier-badge cv-tier-${this.tier}" id="cv-tier-badge">${this.tier}</span></div>
                         <button class="cv-btn-collapse" id="cv-btn-collapse" title="Minimize">${Icons.collapse}</button>
                     </div>
                     <div class="cv-content">
@@ -138,6 +171,10 @@ export class CrabPanel {
                             <label>Original Vol: <span id="cv-val-video">15%</span></label>
                             <input type="range" class="cv-slider" id="cv-vol-video" min="0" max="100" value="15">
                         </div>
+
+                        <button class="cv-sb-btn ${this.tier === 'free' ? 'disabled' : ''} ${this.sponsorBlockEnabled && this.tier !== 'free' ? 'active' : ''}" id="cv-sb-toggle">
+                            ${Icons.sponsorblock || '⏭'} SponsorBlock: ${this.tier === 'free' ? 'N/A' : (this.sponsorBlockEnabled ? 'ON' : 'OFF')}
+                        </button>
 
                         <div class="cv-btn-group">
                             <button class="cv-btn" id="cv-toggle-play">⏸ Pause</button>
@@ -159,6 +196,7 @@ export class CrabPanel {
         this.btnTogglePlay = this.shadow.getElementById('cv-toggle-play')!;
         this.sliderAudio = this.shadow.getElementById('cv-vol-audio') as HTMLInputElement;
         this.sliderVideo = this.shadow.getElementById('cv-vol-video') as HTMLInputElement;
+        this.btnSponsorBlock = this.shadow.getElementById('cv-sb-toggle');
     }
 
     private toggleCollapse(collapsed: boolean) {
@@ -231,6 +269,14 @@ export class CrabPanel {
             this.setPlayPauseState(false);
             this.callbacks.onRefresh();
         };
+
+        if (this.btnSponsorBlock && this.tier !== 'free') {
+            this.btnSponsorBlock.onclick = () => {
+                this.sponsorBlockEnabled = !this.sponsorBlockEnabled;
+                this.updateSponsorBlockButton();
+                this.callbacks.onSponsorBlockToggle(this.sponsorBlockEnabled);
+            };
+        }
     }
 
     private setupDraggable() {
@@ -324,5 +370,22 @@ export class CrabPanel {
     public setPlayPauseState(paused: boolean) {
         this.translationPaused = paused;
         this.btnTogglePlay.innerText = paused ? "▶️ Play" : "⏸ Pause";
+    }
+
+    private updateSponsorBlockButton() {
+        if (!this.btnSponsorBlock || this.tier === 'free') return;
+        const icon = Icons.sponsorblock || '⏭';
+        if (this.sponsorBlockEnabled) {
+            this.btnSponsorBlock.classList.add('active');
+            this.safeSetHTML(this.btnSponsorBlock, `${icon} SponsorBlock: ON`);
+        } else {
+            this.btnSponsorBlock.classList.remove('active');
+            this.safeSetHTML(this.btnSponsorBlock, `${icon} SponsorBlock: OFF`);
+        }
+    }
+
+    public setSponsorBlockState(enabled: boolean) {
+        this.sponsorBlockEnabled = enabled;
+        this.updateSponsorBlockButton();
     }
 }

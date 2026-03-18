@@ -30,6 +30,7 @@ interface AppSettings {
     use_proxy: boolean;
     proxy_url: string;
     use_lively_voice: boolean;
+    sponsorblock_enabled: boolean;
 }
 
 window.addEventListener("DOMContentLoaded", async () => {
@@ -54,12 +55,12 @@ window.addEventListener("DOMContentLoaded", async () => {
     const btnDownloadLogs = document.querySelector("#btn-download-logs") as HTMLButtonElement;
     const logsArea = document.querySelector("#logs-area") as HTMLTextAreaElement;
 
-    // Проверка Premium
+    // Check app tier
     try {
-        const isPremium = await invoke("is_premium_active");
-        if (isPremium) {
-            document.body.classList.add("premium-mode");
-            console.log("Premium features activated ✨");
+        const tier = await invoke("get_app_tier") as string;
+        document.body.classList.add(`tier-${tier}`);
+        if (tier !== 'free') {
+            console.log(`${tier} features activated ✨`);
         }
     } catch (e) {}
 
@@ -97,13 +98,17 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     // 2. Функция сохранения
     const saveSettings = async () => {
+        // Load current settings first to preserve fields not managed by this UI
+        let currentSettings: any = {};
+        try { currentSettings = await invoke("get_settings"); } catch (_) {}
         const newSettings: AppSettings = {
             volume_ducking: parseInt(volDucking.value) / 100.0,
-            default_source_lang: "en", // Пока хардкодим source, чтобы не усложнять UI
+            default_source_lang: "en",
             default_target_lang: targetLang.value,
             use_proxy: useProxy.checked,
             proxy_url: proxyHost.value,
-            use_lively_voice: livelyVoice.checked
+            use_lively_voice: livelyVoice.checked,
+            sponsorblock_enabled: currentSettings.sponsorblock_enabled ?? true,
         };
         try {
             await invoke("save_settings", { newSettings });

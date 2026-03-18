@@ -1,6 +1,6 @@
 import { getService, getVideoData } from "@vot.js/ext/utils/videoData";  
 import type { ServiceConf } from "@vot.js/ext/types/service";
-import { CrabPanel } from "./injectorPanel";
+import { CrabPanel, type AppTier } from "./injectorPanel";
 import { Icons } from "./icons";
 
 // Универсальная функция отправки логов из песочницы инжектора в Rust
@@ -43,6 +43,7 @@ interface AppSettings {
     volume_ducking: number;
     default_source_lang: string;
     default_target_lang: string;
+    sponsorblock_enabled: boolean;
 }
 
 // Перехват OAuth редиректа от сервера Яндекса
@@ -88,6 +89,8 @@ if (!window._cvInitialized) {
     let userVideoVolume = 0.15; // По умолчанию будет перезаписано из настроек
 
     let panelInstance: CrabPanel | null = null;
+    let appTier: AppTier = 'free';
+    let sponsorBlockEnabled = true;
 
     function updateStatus(text: string, color?: string) {
         if (panelInstance) {
@@ -101,8 +104,8 @@ if (!window._cvInitialized) {
     function syncAudio() {
         if (!mainVideo || !audioObj) return;
         
-        // Спонсорблок: проверяем, не находимся ли мы внутри рекламного сегмента
-        if (sponsorSegments.length > 0 && !mainVideo.paused) {
+        // SponsorBlock: skip ad segments when enabled
+        if (sponsorBlockEnabled && sponsorSegments.length > 0 && !mainVideo.paused) {
             const ct = mainVideo.currentTime;
             for (let seg of sponsorSegments) {
                 if (ct >= seg.start && ct < seg.end) {
@@ -157,7 +160,11 @@ if (!window._cvInitialized) {
 
                 appSettings = await window.__TAURI__.core.invoke("get_settings");
                 userVideoVolume = appSettings!.volume_ducking;
-                if (panelInstance) panelInstance.setVideoVolumeSlider(userVideoVolume);
+                sponsorBlockEnabled = appSettings!.sponsorblock_enabled ?? true;
+                if (panelInstance) {
+                    panelInstance.setVideoVolumeSlider(userVideoVolume);
+                    panelInstance.setSponsorBlockState(sponsorBlockEnabled);
+                }
             } catch (e) { console.error("CrabVoice: Failed to fetch settings", e); }
         }
 
@@ -180,8 +187,8 @@ if (!window._cvInitialized) {
 
             const duration = videoData?.duration || v.duration || 344.0;
 
-            // Запрашиваем премиум-сегменты спонсорблока, если это YouTube
-            if (window.location.hostname.includes("youtube.com")) {
+            // Load SponsorBlock segments (subscribers+ tier, YouTube only)
+            if (appTier !== 'free' && sponsorBlockEnabled && window.location.hostname.includes("youtube.com")) {
                 const urlObj = new URL(window.location.href);
                 const videoId = urlObj.searchParams.get("v");
                 if (videoId && window.__TAURI__) {
@@ -304,6 +311,14 @@ if (!window._cvInitialized) {
         return null;
     };
 
+    // Load tier once at startup
+    if (window.__TAURI__) {
+        window.__TAURI__.core.invoke("get_app_tier").then((tier: string) => {
+            appTier = tier as AppTier;
+            appLog(`App tier: ${appTier}`);
+        }).catch(() => {});
+    }
+
     const checkAndInject = () => {
         if (isHome) return;
 
@@ -341,8 +356,17 @@ if (!window._cvInitialized) {
                     translationPaused = false;
                     if (panelInstance) panelInstance.setPlayPauseState(false);
                     if (mainVideo) requestTranslation(mainVideo, true);
+                },
+                onSponsorBlockToggle: (enabled: boolean) => {
+                    sponsorBlockEnabled = enabled;
+                    appLog(`SponsorBlock toggled: ${enabled}`);
+                    // Persist setting
+                    if (window.__TAURI__ && appSettings) {
+                        appSettings.sponsorblock_enabled = enabled;
+                        window.__TAURI__.core.invoke("save_settings", { newSettings: appSettings }).catch(() => {});
+                    }
                 }
-            });
+            }, { tier: appTier, sponsorBlockEnabled });
             document.documentElement.appendChild(panelInstance.host);
         }
 
