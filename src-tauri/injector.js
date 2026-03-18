@@ -3566,13 +3566,27 @@
     videoRedirectShow: `><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-clapperboard-icon lucide-clapperboard"><path d="m12.296 3.464 3.02 3.956"/><path d="M20.2 6 3 11l-.9-2.4c-.3-1.1.3-2.2 1.3-2.5l13.5-4c1.1-.3 2.2.3 2.5 1.3z"/><path d="M3 11h18v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="m6.18 5.276 3.1 3.899"/></svg>`,
     refresh: `<svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-refresh-ccw-icon lucide-refresh-ccw"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>`,
     done: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-circle-check-big-icon lucide-circle-check-big"><path d="M21.801 10A10 10 0 1 1 17 3.335"/><path d="m9 11 3 3L22 4"/></svg>`,
-    return: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-big-left-icon lucide-arrow-big-left"><path d="M13 9a1 1 0 0 1-1-1V5.061a1 1 0 0 0-1.811-.75l-6.835 6.836a1.207 1.207 0 0 0 0 1.707l6.835 6.835a1 1 0 0 0 1.811-.75V16a1 1 0 0 1 1-1h6a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1z"/></svg>`
+    return: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-arrow-big-left-icon lucide-arrow-big-left"><path d="M13 9a1 1 0 0 1-1-1V5.061a1 1 0 0 0-1.811-.75l-6.835 6.836a1.207 1.207 0 0 0 0 1.707l6.835 6.835a1 1 0 0 0 1.811-.75V16a1 1 0 0 1 1-1h6a1 1 0 0 0 1-1v-4a1 1 0 0 0-1-1z"/></svg>`,
+    // SponsorBlock icon placeholder — replace with actual SVG
+    sponsorblock: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 256 242">
+        <!-- SVG created with Arrow, by QuiverAI (https://quiver.ai) -->
+        <path d="m128 5.27h-0.06c-34.22 0-67.67 8.64-97.55 25.4-10.23 5.64-14.5 16.03-14.5 23.55 0 61.86 32.55 125.2 98.55 170.2 4.08 2.82 8.36 3.07 12.95 3.07h0.52c4.59 0 8.87-1.15 12.95-3.97 66-44.32 98.54-106.2 98.54-169.3 0-7.52-4.26-17.91-14.49-23.55-29.88-16.76-62.74-25.4-96.97-25.4h0.06z" fill="#f00"/>
+        <path d="m128 221.7c-5 0-9.07-1.4-12.81-4-58.1-39.04-92.13-95.85-92.13-164.9 0-7.09 3.73-13.86 10.13-17.59 28.14-16.14 60.27-25.77 94.81-25.77s66.67 9.63 94.81 25.77c6.4 3.73 10.13 10.5 10.13 17.59 0 68.42-34.03 126.4-92.14 164.9-3.97 2.76-7.82 4-12.8 4z" fill="#212429"/>
+        <path d="m128 18.64c-33.81 0-63.69 8.37-89.56 24.52-3.94 2.45-5.12 5.78-5.12 10.25 0 61.6 31.81 118 89.8 155.9 3.05 2.1 7 1.92 10.4-0.37 57.6-37.33 89.16-92.19 89.16-155.5 0-4.47-2.04-7.42-5.13-9.48-26.72-15.66-54.62-25.29-89.55-25.29z" fill="#f00"/>
+        <path d="m104.1 62.55v86.88l74.85-42.76-74.85-44.12z" fill="#fff"/>
+        </svg>`,
+    // Tier badge icons — replace with actual SVG
+    tierFree: ``,
+    tierSubscribers: `<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="#e3e3e3"><path d="M617.5-587.5Q600-605 600-630t17.5-42.5Q635-690 660-690t42.5 17.5Q720-655 720-630t-17.5 42.5Q685-570 660-570t-42.5-17.5Zm-360 0Q240-605 240-630t17.5-42.5Q275-690 300-690t42.5 17.5Q360-655 360-630t-17.5 42.5Q325-570 300-570t-42.5-17.5Zm180 110Q420-495 420-520t17.5-42.5Q455-580 480-580t42.5 17.5Q540-545 540-520t-17.5 42.5Q505-460 480-460t-42.5-17.5Zm0-220Q420-715 420-740t17.5-42.5Q455-800 480-800t42.5 17.5Q540-765 540-740t-17.5 42.5Q505-680 480-680t-42.5-17.5Zm2 534.5q-20.5-3-39.5-8v-143q0-35 23.5-60.5T480-400q33 0 56.5 25.5T560-314v143q-19 5-39.5 8t-40.5 3q-20 0-40.5-3ZM340-192q-20-8-38.5-18T266-232q-28-20-44.5-52T205-352q0-26-5.5-48.5T180-443q-10-13-37.5-39.5T92-532q-11-11-11-28t11-28q11-11 28-11t28 11l153 145q20 18 29.5 42.5T340-350v158Zm280 0v-158q0-26 10-51t29-42l153-145q12-11 28.5-11t27.5 11q11 11 11 28t-11 28q-23 23-50.5 49T780-443q-14 20-19.5 42.5T755-352q0 36-16.5 68.5T693-231q-16 11-34.5 21T620-192Z"/></svg>`,
+    tierPremium: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-crown-icon lucide-crown"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/><path d="M5 21h14"/></svg>`
   };
 
   // src/injectorPanel.ts
   var CrabPanel = class {
-    constructor(callbacks) {
+    constructor(callbacks, options) {
       this.callbacks = callbacks;
+      this.tier = options?.tier ?? "free";
+      this.sponsorBlockEnabled = options?.sponsorBlockEnabled ?? true;
       this.host = document.createElement("div");
       this.host.id = "cv-panel-host";
       this.shadow = this.host.attachShadow({ mode: "open" });
@@ -3584,6 +3598,8 @@
     shadow;
     translationPaused = false;
     isCollapsed = false;
+    tier;
+    sponsorBlockEnabled;
     // UI Элементы
     wrapper;
     fab;
@@ -3593,6 +3609,7 @@
     btnTogglePlay;
     sliderAudio;
     sliderVideo;
+    btnSponsorBlock;
     safeSetHTML(element, html) {
       if (window.trustedTypes && window.trustedTypes.createPolicy) {
         if (!window._cvPolicy) {
@@ -3610,43 +3627,70 @@
       }
       element.innerHTML = html;
     }
+    getTierStyles() {
+      const palettes = {
+        free: { accent: "#24c8db", glow: "transparent", headerBg: "#2a2a2a", fabBorder: "#444" },
+        subscribers: { accent: "#6366f1", glow: "rgba(99, 102, 241, 0.25)", headerBg: "#1e1e3a", fabBorder: "#6366f1" },
+        premium: { accent: "#FFD700", glow: "rgba(255, 215, 0, 0.2)", headerBg: "#2a2518", fabBorder: "#FFD700" }
+      };
+      const p = palettes[this.tier];
+      return `
+            --cv-accent: ${p.accent};
+            --cv-glow: ${p.glow};
+            --cv-header-bg: ${p.headerBg};
+            --cv-fab-border: ${p.fabBorder};
+        `;
+    }
     render() {
+      let headerTitle = "\u{1F980} CrabVoice";
+      if (this.tier === "subscribers") {
+        headerTitle = `\u{1F980} CrabVoice <span class="cv-tier-icon">${Icons.tierSubscribers}</span>`;
+      } else if (this.tier === "premium") {
+        headerTitle = `\u{1F980} CrabVoice <span class="cv-pro-label"><span class="cv-pro-crown">${Icons.tierPremium}</span>PRO</span>`;
+      }
       const template = `
             <style>
+                :host {
+                    ${this.getTierStyles()}
+                }
+
                 .cv-wrapper {
                     position: fixed !important; bottom: 20px !important; right: 20px !important;
-                    z-index: 2147483647 !important; font-family: sans-serif !important; 
+                    z-index: 2147483647 !important; font-family: sans-serif !important;
                     pointer-events: auto !important; color: #fff !important;
                 }
-                
+
                 .cv-panel {
                     background: rgba(0,0,0,0.85) !important; border-radius: 10px !important;
-                    min-width: 220px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.6) !important;
+                    min-width: 220px !important;
                     display: flex !important; flex-direction: column !important;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.6), 0 0 20px var(--cv-glow) !important;
+                    border: 1px solid rgba(255,255,255,0.05) !important;
+                    transition: box-shadow 0.3s !important;
                 }
-                
+
                 .cv-wrapper.collapsed .cv-panel { display: none !important; }
 
-                .cv-header { 
-                    font-size: 14px !important; font-weight: bold; background: #2a2a2a !important;
+                .cv-header {
+                    font-size: 14px !important; font-weight: bold; background: var(--cv-header-bg) !important;
                     padding: 10px 15px !important; border-radius: 10px 10px 0 0 !important;
                     display: flex !important; justify-content: space-between !important; align-items: center !important;
                     cursor: grab !important; user-select: none !important;
                 }
                 .cv-header div { pointer-events: none !important; }
                 .cv-header:active { cursor: grabbing !important; }
-                
+
                 .cv-btn-collapse {
-                    background: #444 !important; border: none; color: #fff; cursor: pointer; 
+                    background: #444 !important; border: none; color: #fff; cursor: pointer;
                     font-size: 12px; padding: 2px 8px; border-radius: 4px; transition: 0.2s;
                     line-height: 1; font-weight: bold;
                 }
                 .cv-btn-collapse:hover { background: #666 !important; }
-                
+
                 .cv-content { padding: 15px !important; }
                 .cv-row { display: flex !important; flex-direction: column !important; gap: 5px !important; margin-bottom: 10px !important; }
                 .cv-row label { font-size: 11px !important; color: #bbb !important; display: flex; justify-content: space-between; }
-                .cv-slider { width: 100% !important; accent-color: #24c8db !important; cursor: pointer; }
+                .cv-slider { width: 100% !important; accent-color: var(--cv-accent) !important; cursor: pointer; }
                 .cv-btn-group { display: flex !important; gap: 8px !important; margin-bottom: 10px !important; }
                 .cv-btn {
                     display: flex; justify-content: center; gap: 2px;
@@ -3666,13 +3710,46 @@
                     display: none !important; width: 48px !important; height: 48px !important;
                     background: rgba(0,0,0,0.85) !important; border-radius: 24px !important;
                     align-items: center !important; justify-content: center !important;
-                    font-size: 24px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.6) !important;
-                    cursor: pointer !important; user-select: none !important; border: 2px solid #444 !important;
-                    transition: border-color 0.2s !important;
+                    font-size: 24px !important;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.6), 0 0 12px var(--cv-glow) !important;
+                    cursor: pointer !important; user-select: none !important;
+                    border: 2px solid var(--cv-fab-border) !important;
+                    transition: border-color 0.2s, box-shadow 0.2s !important;
                 }
-                .cv-fab:hover { border-color: #24c8db !important; }
-                
+                .cv-fab:hover { border-color: var(--cv-accent) !important; box-shadow: 0 4px 15px rgba(0,0,0,0.6), 0 0 18px var(--cv-glow) !important; }
+
                 .cv-wrapper.collapsed .cv-fab { display: flex !important; }
+
+                /* Tier icon in header (subscribers) */
+                .cv-tier-icon {
+                    display: inline-flex; align-items: center; margin-left: 4px;
+                }
+                .cv-tier-icon svg { width: 16px; height: 16px; fill: #818cf8; filter: drop-shadow(0 0 4px rgba(99, 102, 241, 0.5)); }
+
+                /* PRO label with crown (premium) */
+                .cv-pro-label {
+                    position: relative; display: inline-flex; align-items: baseline;
+                    color: #FFD700; font-size: 10px; font-weight: bold; letter-spacing: 1px;
+                    margin-left: 6px; text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+                }
+                .cv-pro-crown {
+                    position: absolute; top: -9px; left: -4px;
+                    transform: rotate(-18deg);
+                }
+                .cv-pro-crown svg { width: 14px; height: 14px; stroke: #FFD700; filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.6)); }
+
+                .cv-sb-btn {
+                    display: flex; align-items: center; justify-content: center; gap: 4px;
+                    background: #333 !important; color: #fff !important; border: 1px solid #555 !important;
+                    padding: 6px 10px !important; border-radius: 6px !important; font-size: 11px !important;
+                    cursor: pointer !important; width: 100% !important; transition: 0.2s; margin-bottom: 10px !important;
+                    box-sizing: border-box !important;
+                }
+                .cv-sb-btn:hover { background: #444 !important; }
+                .cv-sb-btn.active { border-color: #4CAF50 !important; background: #1b3a1b !important; }
+                .cv-sb-btn.disabled {
+                    opacity: 0.4 !important; cursor: not-allowed !important; pointer-events: none !important;
+                }
             </style>
 
             <div class="cv-wrapper" id="cv-wrapper">
@@ -3680,7 +3757,7 @@
                 
                 <div class="cv-panel" id="cv-panel">
                     <div class="cv-header" id="cv-header" title="Drag to move">
-                        <div>\u{1F980} CrabVoice</div>
+                        <div style="display:flex;align-items:center;gap:2px;">${headerTitle}</div>
                         <button class="cv-btn-collapse" id="cv-btn-collapse" title="Minimize">${Icons.collapse}</button>
                     </div>
                     <div class="cv-content">
@@ -3697,6 +3774,10 @@
                             <label>Original Vol: <span id="cv-val-video">15%</span></label>
                             <input type="range" class="cv-slider" id="cv-vol-video" min="0" max="100" value="15">
                         </div>
+
+                        <button class="cv-sb-btn ${this.tier === "free" ? "disabled" : ""} ${this.sponsorBlockEnabled && this.tier !== "free" ? "active" : ""}" id="cv-sb-toggle">
+                            ${Icons.sponsorblock || "\u23ED"} SponsorBlock: ${this.tier === "free" ? "N/A" : this.sponsorBlockEnabled ? "ON" : "OFF"}
+                        </button>
 
                         <div class="cv-btn-group">
                             <button class="cv-btn" id="cv-toggle-play">\u23F8 Pause</button>
@@ -3717,6 +3798,7 @@
       this.btnTogglePlay = this.shadow.getElementById("cv-toggle-play");
       this.sliderAudio = this.shadow.getElementById("cv-vol-audio");
       this.sliderVideo = this.shadow.getElementById("cv-vol-video");
+      this.btnSponsorBlock = this.shadow.getElementById("cv-sb-toggle");
     }
     toggleCollapse(collapsed) {
       this.isCollapsed = collapsed;
@@ -3774,6 +3856,13 @@
         this.setPlayPauseState(false);
         this.callbacks.onRefresh();
       };
+      if (this.btnSponsorBlock && this.tier !== "free") {
+        this.btnSponsorBlock.onclick = () => {
+          this.sponsorBlockEnabled = !this.sponsorBlockEnabled;
+          this.updateSponsorBlockButton();
+          this.callbacks.onSponsorBlockToggle(this.sponsorBlockEnabled);
+        };
+      }
     }
     setupDraggable() {
       const header = this.shadow.getElementById("cv-header");
@@ -3842,6 +3931,21 @@
       this.translationPaused = paused;
       this.btnTogglePlay.innerText = paused ? "\u25B6\uFE0F Play" : "\u23F8 Pause";
     }
+    updateSponsorBlockButton() {
+      if (!this.btnSponsorBlock || this.tier === "free") return;
+      const icon = Icons.sponsorblock || "\u23ED";
+      if (this.sponsorBlockEnabled) {
+        this.btnSponsorBlock.classList.add("active");
+        this.safeSetHTML(this.btnSponsorBlock, `${icon} SponsorBlock: ON`);
+      } else {
+        this.btnSponsorBlock.classList.remove("active");
+        this.safeSetHTML(this.btnSponsorBlock, `${icon} SponsorBlock: OFF`);
+      }
+    }
+    setSponsorBlockState(enabled) {
+      this.sponsorBlockEnabled = enabled;
+      this.updateSponsorBlockButton();
+    }
   };
 
   // src/injector.ts
@@ -3892,7 +3996,7 @@ ${a.stack}`;
       }
     }, syncAudio = function() {
       if (!mainVideo || !audioObj) return;
-      if (sponsorSegments.length > 0 && !mainVideo.paused) {
+      if (sponsorBlockEnabled && sponsorSegments.length > 0 && !mainVideo.paused) {
         const ct = mainVideo.currentTime;
         for (let seg of sponsorSegments) {
           if (ct >= seg.start && ct < seg.end) {
@@ -3939,6 +4043,8 @@ ${a.stack}`;
     let userAudioVolume = 1;
     let userVideoVolume = 0.15;
     let panelInstance = null;
+    let appTier = "free";
+    let sponsorBlockEnabled = true;
     let sponsorSegments = [];
     async function requestTranslation(v, forceRefresh = false) {
       if (isTranslating && !forceRefresh) return;
@@ -3951,7 +4057,11 @@ ${a.stack}`;
         try {
           appSettings = await window.__TAURI__.core.invoke("get_settings");
           userVideoVolume = appSettings.volume_ducking;
-          if (panelInstance) panelInstance.setVideoVolumeSlider(userVideoVolume);
+          sponsorBlockEnabled = appSettings.sponsorblock_enabled ?? true;
+          if (panelInstance) {
+            panelInstance.setVideoVolumeSlider(userVideoVolume);
+            panelInstance.setSponsorBlockState(sponsorBlockEnabled);
+          }
         } catch (e) {
           console.error("CrabVoice: Failed to fetch settings", e);
         }
@@ -3968,7 +4078,7 @@ ${a.stack}`;
         updateStatus("VOT.js extracting... \u{1F50D}", "#24c8db");
         const videoData = await getVideoData(service);
         const duration = videoData?.duration || v.duration || 344;
-        if (window.location.hostname.includes("youtube.com")) {
+        if (appTier !== "free" && sponsorBlockEnabled && window.location.hostname.includes("youtube.com")) {
           const urlObj = new URL(window.location.href);
           const videoId = urlObj.searchParams.get("v");
           if (videoId && window.__TAURI__) {
@@ -4067,6 +4177,13 @@ ${a.stack}`;
       }
       return null;
     };
+    if (window.__TAURI__) {
+      window.__TAURI__.core.invoke("get_app_tier").then((tier) => {
+        appTier = tier;
+        appLog(`App tier: ${appTier}`);
+      }).catch(() => {
+      });
+    }
     const checkAndInject = () => {
       if (isHome) return;
       if (mainVideo && (!mainVideo.isConnected || window.location.href !== currentVideoUrl)) {
@@ -4114,8 +4231,17 @@ ${a.stack}`;
             translationPaused = false;
             if (panelInstance) panelInstance.setPlayPauseState(false);
             if (mainVideo) requestTranslation(mainVideo, true);
+          },
+          onSponsorBlockToggle: (enabled) => {
+            sponsorBlockEnabled = enabled;
+            appLog(`SponsorBlock toggled: ${enabled}`);
+            if (window.__TAURI__ && appSettings) {
+              appSettings.sponsorblock_enabled = enabled;
+              window.__TAURI__.core.invoke("save_settings", { newSettings: appSettings }).catch(() => {
+              });
+            }
           }
-        });
+        }, { tier: appTier, sponsorBlockEnabled });
         document.documentElement.appendChild(panelInstance.host);
       }
       if (!mainVideo && !isTranslating) {
