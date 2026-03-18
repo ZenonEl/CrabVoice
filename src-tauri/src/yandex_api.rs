@@ -7,6 +7,7 @@ use sha2::Sha256;
 use uuid::Uuid;
 
 pub mod pb {
+    #![allow(dead_code)]
     include!(concat!(env!("OUT_DIR"), "/_.rs"));
 }
 
