@@ -219,6 +219,7 @@ export class CrabPanel {
                         <button class="cv-sb-btn ${this.tier === 'free' ? 'disabled' : ''} ${this.sponsorBlockEnabled && this.tier !== 'free' ? 'active' : ''}" id="cv-sb-toggle">
                             ${Icons.sponsorblock || '⏭'} ${this.tier === 'free' ? t('panel.sb_na') : (this.sponsorBlockEnabled ? t('panel.sb_on') : t('panel.sb_off'))}
                         </button>
+                        ${this.tier !== 'free' ? '<div style="font-size:9px;color:#666;text-align:center;margin-top:-8px;margin-bottom:8px;">(Using <a href="https://sponsor.ajay.app/" target="_blank" style="color:#888;">sponsor.ajay.app</a>)</div>' : ''}
 
                         <div class="cv-btn-group">
                             <button class="cv-btn" id="cv-toggle-play">${t('panel.pause')}</button>

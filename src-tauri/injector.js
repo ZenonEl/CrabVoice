@@ -3581,6 +3581,157 @@
     tierPremium: `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-crown-icon lucide-crown"><path d="M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z"/><path d="M5 21h14"/></svg>`
   };
 
+  // src/locales/en.json
+  var en_default = {
+    "app.title": "CrabVoice",
+    "app.subtitle": "Real-time Native Video Translation",
+    "app.version": "CrabVoice v0.3.3 Public Beta",
+    "app.crafted_by": "Crafted with \u{1F980} by",
+    "url.placeholder": "Paste video URL (YouTube, VK, Vimeo)...",
+    "url.open": "Open Video",
+    "url.redirecting": "Redirecting... Translation will start automatically.",
+    "settings.title": "Settings",
+    "settings.translate_to": "Translate to:",
+    "settings.volume_ducking": "Video Volume Ducking:",
+    "settings.lively_voices": "Use Lively Voices",
+    "settings.login_yandex": "Login Yandex",
+    "settings.use_proxy": "Use Custom Proxy (HTTP/SOCKS5)",
+    "settings.proxy_url": "Proxy URL:",
+    "settings.proxy_ping": "Ping",
+    "settings.proxy_pinging": "Pinging...",
+    "settings.proxy_success": "Success: {ms} ms",
+    "settings.proxy_failed": "Failed: {error}",
+    "settings.proxy_restart_title": "App Restart Required:",
+    "settings.proxy_restart_desc": "Changes to the Proxy URL only take effect after a restart.",
+    "settings.proxy_auth_title": "Authentication:",
+    "settings.proxy_auth_desc": "Supports standard socks5://user:pass@host:port format.",
+    "settings.ui_language": "Interface Language:",
+    "settings.theme": "Theme:",
+    "auth.authorized": "\u2705 Authorized",
+    "auth.not_authorized": "\u274C Not authorized",
+    "auth.redirecting": "Redirecting to Yandex...",
+    "logs.title": "App Logs",
+    "logs.view": "View Logs",
+    "logs.export": "Export / Copy Logs",
+    "logs.empty": "Logs are empty.",
+    "logs.copied": "\u{1F4CB} Logs copied to clipboard!",
+    "logs.saved": "\u2705 Logs saved to:\n{path}",
+    "logs.copy_failed": "\u274C Failed to copy logs.",
+    "theme.dark": "Dark",
+    "theme.light": "Light",
+    "panel.searching": "Searching video...",
+    "panel.translation_vol": "Translation Vol:",
+    "panel.original_vol": "Original Vol:",
+    "panel.pause": "\u23F8 Pause",
+    "panel.play": "\u25B6\uFE0F Play",
+    "panel.refresh": "Refresh",
+    "panel.back": "Back to App",
+    "panel.sb_on": "SponsorBlock: ON",
+    "panel.sb_off": "SponsorBlock: OFF",
+    "panel.sb_na": "SponsorBlock: N/A",
+    "status.searching_new": "Searching new video...",
+    "status.extracting": "VOT.js extracting... \u{1F50D}",
+    "status.requesting": "Requesting Yandex... \u23F3",
+    "status.linked": "Linked & Translated \u2705",
+    "status.processing": "Processing... (~{seconds}s) \u23F3",
+    "status.timeout": "Timeout \u274C",
+    "status.parse_error": "VOT.js Parse Error \u274C",
+    "status.skipped": "Skipped {category} \u23E9",
+    "status.login_success": "Login successful!",
+    "status.returning": "Returning to CrabVoice..."
+  };
+
+  // src/locales/ru.json
+  var ru_default = {
+    "app.title": "CrabVoice",
+    "app.subtitle": "\u041D\u0430\u0442\u0438\u0432\u043D\u044B\u0439 \u0433\u043E\u043B\u043E\u0441\u043E\u0432\u043E\u0439 \u043F\u0435\u0440\u0435\u0432\u043E\u0434 \u0432\u0438\u0434\u0435\u043E",
+    "app.version": "CrabVoice v0.3.3 \u041F\u0443\u0431\u043B\u0438\u0447\u043D\u0430\u044F \u0431\u0435\u0442\u0430",
+    "app.crafted_by": "\u0421\u0434\u0435\u043B\u0430\u043D\u043E \u0441 \u{1F980} \u043E\u0442",
+    "url.placeholder": "\u0412\u0441\u0442\u0430\u0432\u044C\u0442\u0435 \u0441\u0441\u044B\u043B\u043A\u0443 \u043D\u0430 \u0432\u0438\u0434\u0435\u043E (YouTube, VK, Vimeo)...",
+    "url.open": "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u0432\u0438\u0434\u0435\u043E",
+    "url.redirecting": "\u041F\u0435\u0440\u0435\u043D\u0430\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435... \u041F\u0435\u0440\u0435\u0432\u043E\u0434 \u043D\u0430\u0447\u043D\u0451\u0442\u0441\u044F \u0430\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438.",
+    "settings.title": "\u041D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438",
+    "settings.translate_to": "\u041F\u0435\u0440\u0435\u0432\u043E\u0434\u0438\u0442\u044C \u043D\u0430:",
+    "settings.volume_ducking": "\u0413\u0440\u043E\u043C\u043A\u043E\u0441\u0442\u044C \u043E\u0440\u0438\u0433\u0438\u043D\u0430\u043B\u0430:",
+    "settings.lively_voices": "\u0416\u0438\u0432\u044B\u0435 \u0433\u043E\u043B\u043E\u0441\u0430",
+    "settings.login_yandex": "\u0412\u043E\u0439\u0442\u0438 \u0432 \u042F\u043D\u0434\u0435\u043A\u0441",
+    "settings.use_proxy": "\u0421\u0432\u043E\u0439 \u043F\u0440\u043E\u043A\u0441\u0438 (HTTP/SOCKS5)",
+    "settings.proxy_url": "URL \u043F\u0440\u043E\u043A\u0441\u0438:",
+    "settings.proxy_ping": "\u041F\u0438\u043D\u0433",
+    "settings.proxy_pinging": "\u041F\u0440\u043E\u0432\u0435\u0440\u043A\u0430...",
+    "settings.proxy_success": "\u0423\u0441\u043F\u0435\u0448\u043D\u043E: {ms} \u043C\u0441",
+    "settings.proxy_failed": "\u041E\u0448\u0438\u0431\u043A\u0430: {error}",
+    "settings.proxy_restart_title": "\u0422\u0440\u0435\u0431\u0443\u0435\u0442\u0441\u044F \u043F\u0435\u0440\u0435\u0437\u0430\u043F\u0443\u0441\u043A:",
+    "settings.proxy_restart_desc": "\u0418\u0437\u043C\u0435\u043D\u0435\u043D\u0438\u044F URL \u043F\u0440\u043E\u043A\u0441\u0438 \u0432\u0441\u0442\u0443\u043F\u044F\u0442 \u0432 \u0441\u0438\u043B\u0443 \u0442\u043E\u043B\u044C\u043A\u043E \u043F\u043E\u0441\u043B\u0435 \u043F\u0435\u0440\u0435\u0437\u0430\u043F\u0443\u0441\u043A\u0430.",
+    "settings.proxy_auth_title": "\u0410\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u044F:",
+    "settings.proxy_auth_desc": "\u041F\u043E\u0434\u0434\u0435\u0440\u0436\u0438\u0432\u0430\u0435\u0442\u0441\u044F \u0444\u043E\u0440\u043C\u0430\u0442 socks5://user:pass@host:port.",
+    "settings.ui_language": "\u042F\u0437\u044B\u043A \u0438\u043D\u0442\u0435\u0440\u0444\u0435\u0439\u0441\u0430:",
+    "settings.theme": "\u0422\u0435\u043C\u0430:",
+    "auth.authorized": "\u2705 \u0410\u0432\u0442\u043E\u0440\u0438\u0437\u043E\u0432\u0430\u043D",
+    "auth.not_authorized": "\u274C \u041D\u0435 \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u043E\u0432\u0430\u043D",
+    "auth.redirecting": "\u041F\u0435\u0440\u0435\u043D\u0430\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u043D\u0430 \u042F\u043D\u0434\u0435\u043A\u0441...",
+    "logs.title": "\u041B\u043E\u0433\u0438 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F",
+    "logs.view": "\u041F\u0440\u043E\u0441\u043C\u043E\u0442\u0440 \u043B\u043E\u0433\u043E\u0432",
+    "logs.export": "\u042D\u043A\u0441\u043F\u043E\u0440\u0442 / \u041A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C",
+    "logs.empty": "\u041B\u043E\u0433\u0438 \u043F\u0443\u0441\u0442\u044B.",
+    "logs.copied": "\u{1F4CB} \u041B\u043E\u0433\u0438 \u0441\u043A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u043D\u044B \u0432 \u0431\u0443\u0444\u0435\u0440 \u043E\u0431\u043C\u0435\u043D\u0430!",
+    "logs.saved": "\u2705 \u041B\u043E\u0433\u0438 \u0441\u043E\u0445\u0440\u0430\u043D\u0435\u043D\u044B:\n{path}",
+    "logs.copy_failed": "\u274C \u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u043A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C \u043B\u043E\u0433\u0438.",
+    "theme.dark": "\u0422\u0451\u043C\u043D\u0430\u044F",
+    "theme.light": "\u0421\u0432\u0435\u0442\u043B\u0430\u044F",
+    "panel.searching": "\u041F\u043E\u0438\u0441\u043A \u0432\u0438\u0434\u0435\u043E...",
+    "panel.translation_vol": "\u0413\u0440\u043E\u043C\u043A\u043E\u0441\u0442\u044C \u043F\u0435\u0440\u0435\u0432\u043E\u0434\u0430:",
+    "panel.original_vol": "\u0413\u0440\u043E\u043C\u043A\u043E\u0441\u0442\u044C \u043E\u0440\u0438\u0433\u0438\u043D\u0430\u043B\u0430:",
+    "panel.pause": "\u23F8 \u041F\u0430\u0443\u0437\u0430",
+    "panel.play": "\u25B6\uFE0F \u0412\u043E\u0441\u043F\u0440.",
+    "panel.refresh": "\u041E\u0431\u043D\u043E\u0432\u0438\u0442\u044C",
+    "panel.back": "\u041D\u0430\u0437\u0430\u0434 \u0432 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u0435",
+    "panel.sb_on": "SponsorBlock: \u0412\u041A\u041B",
+    "panel.sb_off": "SponsorBlock: \u0412\u042B\u041A\u041B",
+    "panel.sb_na": "SponsorBlock: \u041D/\u0414",
+    "status.searching_new": "\u041F\u043E\u0438\u0441\u043A \u043D\u043E\u0432\u043E\u0433\u043E \u0432\u0438\u0434\u0435\u043E...",
+    "status.extracting": "VOT.js \u0438\u0437\u0432\u043B\u0435\u043A\u0430\u0435\u0442... \u{1F50D}",
+    "status.requesting": "\u0417\u0430\u043F\u0440\u043E\u0441 \u043A \u042F\u043D\u0434\u0435\u043A\u0441\u0443... \u23F3",
+    "status.linked": "\u0421\u0432\u044F\u0437\u0430\u043D\u043E \u0438 \u043F\u0435\u0440\u0435\u0432\u0435\u0434\u0435\u043D\u043E \u2705",
+    "status.processing": "\u041E\u0431\u0440\u0430\u0431\u043E\u0442\u043A\u0430... (~{seconds}\u0441) \u23F3",
+    "status.timeout": "\u0422\u0430\u0439\u043C\u0430\u0443\u0442 \u274C",
+    "status.parse_error": "\u041E\u0448\u0438\u0431\u043A\u0430 VOT.js \u274C",
+    "status.skipped": "\u041F\u0440\u043E\u043F\u0443\u0449\u0435\u043D\u043E: {category} \u23E9",
+    "status.login_success": "\u0412\u0445\u043E\u0434 \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D!",
+    "status.returning": "\u0412\u043E\u0437\u0432\u0440\u0430\u0442 \u0432 CrabVoice..."
+  };
+
+  // src/i18n.ts
+  var locales = { en: en_default, ru: ru_default };
+  var currentLocale = "en";
+  function t(key, params) {
+    let text = locales[currentLocale]?.[key] ?? locales["en"]?.[key] ?? key;
+    if (params) {
+      for (const [k, v] of Object.entries(params)) {
+        text = text.replace(`{${k}}`, String(v));
+      }
+    }
+    return text;
+  }
+  function setLocale(locale, applyDOM = true) {
+    currentLocale = locale;
+    if (applyDOM) applyToDOM();
+  }
+  function applyToDOM(root = document) {
+    root.querySelectorAll("[data-i18n]").forEach((el) => {
+      const key = el.getAttribute("data-i18n");
+      el.textContent = t(key);
+    });
+    root.querySelectorAll("[data-i18n-placeholder]").forEach((el) => {
+      const key = el.getAttribute("data-i18n-placeholder");
+      el.placeholder = t(key);
+    });
+    root.querySelectorAll("[data-i18n-title]").forEach((el) => {
+      const key = el.getAttribute("data-i18n-title");
+      el.title = t(key);
+    });
+  }
+
   // src/injectorPanel.ts
   var CrabPanel = class {
     constructor(callbacks, options) {
@@ -3762,29 +3913,29 @@
                     </div>
                     <div class="cv-content">
                         <div style="font-size:12px; margin-bottom: 12px; text-align:center;">
-                            <span id="cv-status" style="color:#FFC131">Searching video...</span>
+                            <span id="cv-status" style="color:#FFC131">${t("panel.searching")}</span>
                         </div>
-                        
+
                         <div class="cv-row">
-                            <label>Translation Vol: <span id="cv-val-audio">100%</span></label>
+                            <label>${t("panel.translation_vol")} <span id="cv-val-audio">100%</span></label>
                             <input type="range" class="cv-slider" id="cv-vol-audio" min="0" max="100" value="100">
                         </div>
-                        
+
                         <div class="cv-row">
-                            <label>Original Vol: <span id="cv-val-video">15%</span></label>
+                            <label>${t("panel.original_vol")} <span id="cv-val-video">15%</span></label>
                             <input type="range" class="cv-slider" id="cv-vol-video" min="0" max="100" value="15">
                         </div>
 
                         <button class="cv-sb-btn ${this.tier === "free" ? "disabled" : ""} ${this.sponsorBlockEnabled && this.tier !== "free" ? "active" : ""}" id="cv-sb-toggle">
-                            ${Icons.sponsorblock || "\u23ED"} SponsorBlock: ${this.tier === "free" ? "N/A" : this.sponsorBlockEnabled ? "ON" : "OFF"}
+                            ${Icons.sponsorblock || "\u23ED"} ${this.tier === "free" ? t("panel.sb_na") : this.sponsorBlockEnabled ? t("panel.sb_on") : t("panel.sb_off")}
                         </button>
 
                         <div class="cv-btn-group">
-                            <button class="cv-btn" id="cv-toggle-play">\u23F8 Pause</button>
-                            <button class="cv-btn" id="cv-refresh">${Icons.refresh} Refresh</button>
+                            <button class="cv-btn" id="cv-toggle-play">${t("panel.pause")}</button>
+                            <button class="cv-btn" id="cv-refresh">${Icons.refresh} ${t("panel.refresh")}</button>
                         </div>
 
-                        <button class="cv-btn-close" id="cv-close-full">${Icons.return} Back to App</button>
+                        <button class="cv-btn-close" id="cv-close-full">${Icons.return} ${t("panel.back")}</button>
                     </div>
                 </div>
             </div>
@@ -3929,17 +4080,17 @@
     }
     setPlayPauseState(paused) {
       this.translationPaused = paused;
-      this.btnTogglePlay.innerText = paused ? "\u25B6\uFE0F Play" : "\u23F8 Pause";
+      this.btnTogglePlay.innerText = paused ? t("panel.play") : t("panel.pause");
     }
     updateSponsorBlockButton() {
       if (!this.btnSponsorBlock || this.tier === "free") return;
       const icon = Icons.sponsorblock || "\u23ED";
       if (this.sponsorBlockEnabled) {
         this.btnSponsorBlock.classList.add("active");
-        this.safeSetHTML(this.btnSponsorBlock, `${icon} SponsorBlock: ON`);
+        this.safeSetHTML(this.btnSponsorBlock, `${icon} ${t("panel.sb_on")}`);
       } else {
         this.btnSponsorBlock.classList.remove("active");
-        this.safeSetHTML(this.btnSponsorBlock, `${icon} SponsorBlock: OFF`);
+        this.safeSetHTML(this.btnSponsorBlock, `${icon} ${t("panel.sb_off")}`);
       }
     }
     setSponsorBlockState(enabled) {
@@ -3979,7 +4130,7 @@ ${a.stack}`;
         window.stop();
       } catch (e) {
       }
-      document.documentElement.innerHTML = `<body style='background:#121212;'><h2 style='color: #4CAF50; text-align: center; margin-top: 50px; font-family: sans-serif;'>${Icons.done} Login successful!<br><br><span style='color: #aaa; font-size: 16px;'>Returning to CrabVoice...</span></h2></body>`;
+      document.documentElement.innerHTML = `<body style='background:#121212;'><h2 style='color: #4CAF50; text-align: center; margin-top: 50px; font-family: sans-serif;'>${Icons.done} ${t("status.login_success")}<br><br><span style='color: #aaa; font-size: 16px;'>${t("status.returning")}</span></h2></body>`;
       window.__TAURI__.core.invoke("save_yandex_token", { token }).then(() => {
         const homeUrl = localStorage.getItem("cv_home_url");
         setTimeout(() => {
@@ -4002,8 +4153,8 @@ ${a.stack}`;
           if (ct >= seg.start && ct < seg.end) {
             mainVideo.currentTime = seg.end;
             appLog(`SponsorBlock: Skipped ${seg.category} (${seg.start.toFixed(1)}s -> ${seg.end.toFixed(1)}s)`);
-            updateStatus(`Skipped ${seg.category} \u23E9`, "#FFD700");
-            setTimeout(() => updateStatus("Linked & Translated \u2705", "#4CAF50"), 3e3);
+            updateStatus(t("status.skipped", { category: seg.category }), "#FFD700");
+            setTimeout(() => updateStatus(t("status.linked"), "#4CAF50"), 3e3);
             break;
           }
         }
@@ -4058,6 +4209,9 @@ ${a.stack}`;
           appSettings = await window.__TAURI__.core.invoke("get_settings");
           userVideoVolume = appSettings.volume_ducking;
           sponsorBlockEnabled = appSettings.sponsorblock_enabled ?? true;
+          if (appSettings.ui_language) {
+            setLocale(appSettings.ui_language, false);
+          }
           if (panelInstance) {
             panelInstance.setVideoVolumeSlider(userVideoVolume);
             panelInstance.setSponsorBlockState(sponsorBlockEnabled);
@@ -4075,7 +4229,7 @@ ${a.stack}`;
         }
         const service = services[0];
         appLog("Extracting video data via VOT.js");
-        updateStatus("VOT.js extracting... \u{1F50D}", "#24c8db");
+        updateStatus(t("status.extracting"), "#24c8db");
         const videoData = await getVideoData(service);
         const duration = videoData?.duration || v.duration || 344;
         if (appTier !== "free" && sponsorBlockEnabled && window.location.hostname.includes("youtube.com")) {
@@ -4100,7 +4254,7 @@ ${a.stack}`;
             clearInterval(countdownInterval);
             countdownInterval = null;
           }
-          updateStatus("Requesting Yandex... \u23F3", "#FFC131");
+          updateStatus(t("status.requesting"), "#FFC131");
           try {
             const invoke = window.__TAURI__ ? window.__TAURI__.core.invoke : null;
             if (!invoke) return;
@@ -4108,7 +4262,7 @@ ${a.stack}`;
             const res = await invoke("translate", { url: window.location.href, duration });
             if (res.status === 1 && res.url) {
               appLog("Translation successful! Playing native audio...");
-              updateStatus("Linked & Translated \u2705", "#4CAF50");
+              updateStatus(t("status.linked"), "#4CAF50");
               if (audioObj) {
                 audioObj.pause();
                 audioObj.src = "";
@@ -4122,7 +4276,7 @@ ${a.stack}`;
             } else {
               attempts++;
               if (attempts > 30) {
-                updateStatus("Timeout \u274C", "#ff5e5e");
+                updateStatus(t("status.timeout"), "#ff5e5e");
                 isTranslating = false;
                 return;
               }
@@ -4135,7 +4289,7 @@ ${a.stack}`;
                 }
                 timeLeft--;
                 if (timeLeft > 0) {
-                  updateStatus(`Processing... (~${timeLeft}s) \u23F3`, "#FFC131");
+                  updateStatus(t("status.processing", { seconds: timeLeft }), "#FFC131");
                 } else {
                   clearInterval(countdownInterval);
                   pollTranslation();
@@ -4151,7 +4305,7 @@ ${a.stack}`;
         };
         pollTranslation();
       } catch (error) {
-        updateStatus("VOT.js Parse Error \u274C", "#ff5e5e");
+        updateStatus(t("status.parse_error"), "#ff5e5e");
         isTranslating = false;
       }
     }
@@ -4197,7 +4351,7 @@ ${a.stack}`;
           countdownInterval = null;
         }
         isTranslating = false;
-        updateStatus("Searching new video...", "#FFC131");
+        updateStatus(t("status.searching_new"), "#FFC131");
       }
       let panelHost = document.getElementById("cv-panel-host");
       if (!panelHost && !panelInstance) {

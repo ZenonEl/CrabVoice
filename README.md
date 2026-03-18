@@ -16,7 +16,9 @@ By leveraging the power of Rust on the backend, CrabVoice successfully bypasses 
 - **Auto-Sync:** Native video event hooks automatically sync playback, pausing, and scrubbing between the original video and the translated audio track.
 
 ## 🙏 Acknowledgements
-A huge thank you to the [vot.js](https://github.com/FOSWLY/vot.js) project! Their incredible work on video data extraction, player detection, and API reverse-engineering made the frontend integration of CrabVoice incredibly robust. 
+A huge thank you to the [vot.js](https://github.com/FOSWLY/vot.js) project! Their incredible work on video data extraction, player detection, and API reverse-engineering made the frontend integration of CrabVoice incredibly robust.
+
+Uses [SponsorBlock](https://sponsor.ajay.app/) data licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/) from https://sponsor.ajay.app/.
 
 ## ⚠️ Legal Disclaimer
 The app was created exclusively for research purposes and isn't intended for commercial use. All rights to the original software belong to their respective right holders. The app isn't affiliated with the original rights holders.
