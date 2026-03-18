@@ -1,3 +1,4 @@
+use crate::error::AppError;
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 
@@ -66,5 +67,5 @@ pub trait TranslationProvider: Send + Sync {
         video_url: &str,
         duration: f64,
         settings: &AppSettings,
-    ) -> Result<TranslationResult, String>;
+    ) -> Result<TranslationResult, AppError>;
 }
