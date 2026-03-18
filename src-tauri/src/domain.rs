@@ -13,10 +13,22 @@ pub struct AppSettings {
     pub yandex_token: Option<String>,
     #[serde(default = "default_true")]
     pub sponsorblock_enabled: bool,
+    #[serde(default = "default_lang")]
+    pub ui_language: String,
+    #[serde(default = "default_theme")]
+    pub theme: String,
 }
 
 fn default_true() -> bool {
     true
+}
+
+fn default_lang() -> String {
+    "en".to_string()
+}
+
+fn default_theme() -> String {
+    "dark".to_string()
 }
 
 impl Default for AppSettings {
@@ -30,6 +42,8 @@ impl Default for AppSettings {
             use_lively_voice: false,
             yandex_token: None,
             sponsorblock_enabled: true,
+            ui_language: "en".to_string(),
+            theme: "dark".to_string(),
         }
     }
 }
