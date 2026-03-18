@@ -4,7 +4,7 @@ mod premium;
 mod settings;
 mod yandex_api;
 
-use domain::{AppSettings, TranslationProvider, TranslationResult};
+use domain::{AppSettings, DeviceCodeResponse, DeviceTokenResponse, TranslationProvider, TranslationResult};
 use settings::SettingsManager;
 use yandex_api::YandexClient;
 
@@ -14,6 +14,9 @@ use std::sync::Arc;
 use tauri::{Manager, State};
 use tauri_plugin_log::{Target, TargetKind};
 use tokio::sync::Mutex;
+
+const YANDEX_CLIENT_ID: &str = env!("YANDEX_CLIENT_ID");
+const YANDEX_CLIENT_SECRET: &str = env!("YANDEX_CLIENT_SECRET");
 
 struct AppState {
     yandex_translator: Arc<dyn TranslationProvider>,
@@ -171,6 +174,49 @@ async fn save_yandex_token(token: String, state: State<'_, AppState>) -> Result<
 }
 
 #[tauri::command]
+async fn request_device_code() -> Result<DeviceCodeResponse, String> {
+    let client = reqwest::Client::new();
+    let resp = client
+        .post("https://oauth.yandex.com/device/code")
+        .form(&[("client_id", YANDEX_CLIENT_ID)])
+        .send()
+        .await
+        .map_err(|e| format!("Network error: {}", e))?;
+
+    if !resp.status().is_success() {
+        let status = resp.status();
+        let body = resp.text().await.unwrap_or_default();
+        return Err(format!("API error: HTTP {} — {}", status, body));
+    }
+
+    let code_resp: DeviceCodeResponse = resp.json().await.map_err(|e| format!("Parse error: {}", e))?;
+    info!("Device code requested, user_code: {}", code_resp.user_code);
+    Ok(code_resp)
+}
+
+#[tauri::command]
+async fn poll_device_token(device_code: String) -> Result<DeviceTokenResponse, String> {
+    let client = reqwest::Client::new();
+    let resp = client
+        .post("https://oauth.yandex.com/token")
+        .form(&[
+            ("grant_type", "device_code"),
+            ("code", &device_code),
+            ("client_id", YANDEX_CLIENT_ID),
+            ("client_secret", YANDEX_CLIENT_SECRET),
+        ])
+        .send()
+        .await
+        .map_err(|e| format!("Network error: {}", e))?;
+
+    let token_resp: DeviceTokenResponse = resp.json().await.map_err(|e| format!("Parse error: {}", e))?;
+    if let Some(ref token) = token_resp.access_token {
+        info!("Device code flow: token obtained (len={})", token.len());
+    }
+    Ok(token_resp)
+}
+
+#[tauri::command]
 async fn translate(
     url: String,
     duration: f64,
@@ -223,7 +269,9 @@ pub fn run() {
             export_logs,
             get_app_tier,
             get_skip_segments,
-            ping_proxy
+            ping_proxy,
+            request_device_code,
+            poll_device_token
         ])
         .setup(move |app| {
             let settings_manager = SettingsManager::new(app.handle());
@@ -241,7 +289,17 @@ pub fn run() {
                 "main",
                 tauri::WebviewUrl::App("index.html".into()),
             )
-            .initialization_script(init_script);
+            .initialization_script(init_script)
+            .on_navigation(|url| {
+                let url_str = url.as_str();
+                // Block non-http(s) schemes (yandexauth://, intent://, etc.)
+                // These cause white screen on Android webview
+                if !url_str.starts_with("http://") && !url_str.starts_with("https://") && !url_str.starts_with("tauri://") {
+                    warn!("Blocked navigation to unsupported scheme: {}", url_str);
+                    return false;
+                }
+                true
+            });
 
             if settings.use_proxy && !settings.proxy_url.is_empty() {
                 match tauri::Url::parse(&settings.proxy_url) {

@@ -40,3 +40,5 @@ dist-ssr
 /src-tauri/gen
 src-tauri/injector.js
 /.claude
+.env
+src-tauri/.env

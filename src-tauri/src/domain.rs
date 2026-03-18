@@ -58,6 +58,25 @@ pub struct TranslationResult {
     pub remaining_time: Option<i32>,
 }
 
+/// Response from Yandex OAuth Device Code request
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeviceCodeResponse {
+    pub device_code: String,
+    pub user_code: String,
+    pub verification_url: String,
+    pub interval: u64,
+    pub expires_in: u64,
+}
+
+/// Response from Yandex OAuth token polling
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DeviceTokenResponse {
+    pub access_token: Option<String>,
+    pub token_type: Option<String>,
+    pub expires_in: Option<u64>,
+    pub error: Option<String>,
+}
+
 /// Порт (Интерфейс) для инверсии зависимостей.
 #[async_trait]
 pub trait TranslationProvider: Send + Sync {

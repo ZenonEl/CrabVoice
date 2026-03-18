@@ -3585,7 +3585,7 @@
   var en_default = {
     "app.title": "CrabVoice",
     "app.subtitle": "Real-time Native Video Translation",
-    "app.version": "CrabVoice v0.5.0 Public Beta",
+    "app.version": "CrabVoice v0.6.0 Public Beta",
     "app.crafted_by": "Crafted with \u{1F980} by",
     "url.placeholder": "Paste video URL (YouTube, VK, Vimeo)...",
     "url.open": "Open Video",
@@ -3610,6 +3610,12 @@
     "auth.authorized": "\u2705 Authorized",
     "auth.not_authorized": "\u274C Not authorized",
     "auth.redirecting": "Redirecting to Yandex...",
+    "auth.requesting_code": "Requesting code...",
+    "auth.waiting_for_auth": "Waiting for authorization...",
+    "auth.code_expired": "\u274C Code expired \u2014 try again",
+    "auth.code_request_failed": "\u274C Failed to get code",
+    "auth.enter_code": "Enter this code on the page:",
+    "auth.open_yandex_device": "Open yandex.ru/device",
     "logs.title": "App Logs",
     "logs.view": "View Logs",
     "logs.export": "Export / Copy Logs",
@@ -3638,14 +3644,22 @@
     "status.parse_error": "VOT.js Parse Error \u274C",
     "status.skipped": "Skipped {category} \u23E9",
     "status.login_success": "Login successful!",
-    "status.returning": "Returning to CrabVoice..."
+    "status.returning": "Returning to CrabVoice...",
+    "error.network": "Connection failed \u2014 check your network",
+    "error.api": "Translation service error",
+    "error.parse": "Unexpected response from server",
+    "error.config": "Configuration error",
+    "error.io": "File operation failed",
+    "error.unknown": "Something went wrong",
+    "error.settings_save": "Failed to save settings",
+    "error.settings_load": "Failed to load settings"
   };
 
   // src/locales/ru.json
   var ru_default = {
     "app.title": "CrabVoice",
     "app.subtitle": "\u041D\u0430\u0442\u0438\u0432\u043D\u044B\u0439 \u0433\u043E\u043B\u043E\u0441\u043E\u0432\u043E\u0439 \u043F\u0435\u0440\u0435\u0432\u043E\u0434 \u0432\u0438\u0434\u0435\u043E",
-    "app.version": "CrabVoice v0.5.0 \u041F\u0443\u0431\u043B\u0438\u0447\u043D\u0430\u044F \u0431\u0435\u0442\u0430",
+    "app.version": "CrabVoice v0.6.0 \u041F\u0443\u0431\u043B\u0438\u0447\u043D\u0430\u044F \u0431\u0435\u0442\u0430",
     "app.crafted_by": "\u0421\u0434\u0435\u043B\u0430\u043D\u043E \u0441 \u{1F980} \u043E\u0442",
     "url.placeholder": "\u0412\u0441\u0442\u0430\u0432\u044C\u0442\u0435 \u0441\u0441\u044B\u043B\u043A\u0443 \u043D\u0430 \u0432\u0438\u0434\u0435\u043E (YouTube, VK, Vimeo)...",
     "url.open": "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u0432\u0438\u0434\u0435\u043E",
@@ -3670,6 +3684,12 @@
     "auth.authorized": "\u2705 \u0410\u0432\u0442\u043E\u0440\u0438\u0437\u043E\u0432\u0430\u043D",
     "auth.not_authorized": "\u274C \u041D\u0435 \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u043E\u0432\u0430\u043D",
     "auth.redirecting": "\u041F\u0435\u0440\u0435\u043D\u0430\u043F\u0440\u0430\u0432\u043B\u0435\u043D\u0438\u0435 \u043D\u0430 \u042F\u043D\u0434\u0435\u043A\u0441...",
+    "auth.requesting_code": "\u0417\u0430\u043F\u0440\u043E\u0441 \u043A\u043E\u0434\u0430...",
+    "auth.waiting_for_auth": "\u041E\u0436\u0438\u0434\u0430\u043D\u0438\u0435 \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u0430\u0446\u0438\u0438...",
+    "auth.code_expired": "\u274C \u041A\u043E\u0434 \u0438\u0441\u0442\u0451\u043A \u2014 \u043F\u043E\u043F\u0440\u043E\u0431\u0443\u0439\u0442\u0435 \u0441\u043D\u043E\u0432\u0430",
+    "auth.code_request_failed": "\u274C \u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u043F\u043E\u043B\u0443\u0447\u0438\u0442\u044C \u043A\u043E\u0434",
+    "auth.enter_code": "\u0412\u0432\u0435\u0434\u0438\u0442\u0435 \u044D\u0442\u043E\u0442 \u043A\u043E\u0434 \u043D\u0430 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u0435:",
+    "auth.open_yandex_device": "\u041E\u0442\u043A\u0440\u044B\u0442\u044C yandex.ru/device",
     "logs.title": "\u041B\u043E\u0433\u0438 \u043F\u0440\u0438\u043B\u043E\u0436\u0435\u043D\u0438\u044F",
     "logs.view": "\u041F\u0440\u043E\u0441\u043C\u043E\u0442\u0440 \u043B\u043E\u0433\u043E\u0432",
     "logs.export": "\u042D\u043A\u0441\u043F\u043E\u0440\u0442 / \u041A\u043E\u043F\u0438\u0440\u043E\u0432\u0430\u0442\u044C",
@@ -3698,7 +3718,15 @@
     "status.parse_error": "\u041E\u0448\u0438\u0431\u043A\u0430 VOT.js \u274C",
     "status.skipped": "\u041F\u0440\u043E\u043F\u0443\u0449\u0435\u043D\u043E: {category} \u23E9",
     "status.login_success": "\u0412\u0445\u043E\u0434 \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D!",
-    "status.returning": "\u0412\u043E\u0437\u0432\u0440\u0430\u0442 \u0432 CrabVoice..."
+    "status.returning": "\u0412\u043E\u0437\u0432\u0440\u0430\u0442 \u0432 CrabVoice...",
+    "error.network": "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u0438\u044F \u2014 \u043F\u0440\u043E\u0432\u0435\u0440\u044C\u0442\u0435 \u0441\u0435\u0442\u044C",
+    "error.api": "\u041E\u0448\u0438\u0431\u043A\u0430 \u0441\u0435\u0440\u0432\u0438\u0441\u0430 \u043F\u0435\u0440\u0435\u0432\u043E\u0434\u0430",
+    "error.parse": "\u041D\u0435\u043E\u0436\u0438\u0434\u0430\u043D\u043D\u044B\u0439 \u043E\u0442\u0432\u0435\u0442 \u043E\u0442 \u0441\u0435\u0440\u0432\u0435\u0440\u0430",
+    "error.config": "\u041E\u0448\u0438\u0431\u043A\u0430 \u043A\u043E\u043D\u0444\u0438\u0433\u0443\u0440\u0430\u0446\u0438\u0438",
+    "error.io": "\u041E\u0448\u0438\u0431\u043A\u0430 \u0444\u0430\u0439\u043B\u043E\u0432\u043E\u0439 \u043E\u043F\u0435\u0440\u0430\u0446\u0438\u0438",
+    "error.unknown": "\u0427\u0442\u043E-\u0442\u043E \u043F\u043E\u0448\u043B\u043E \u043D\u0435 \u0442\u0430\u043A",
+    "error.settings_save": "\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0441\u043E\u0445\u0440\u0430\u043D\u0438\u0442\u044C \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438",
+    "error.settings_load": "\u041D\u0435 \u0443\u0434\u0430\u043B\u043E\u0441\u044C \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044C \u043D\u0430\u0441\u0442\u0440\u043E\u0439\u043A\u0438"
   };
 
   // src/i18n.ts
@@ -4122,25 +4150,6 @@ ${a.stack}`;
     }).join(" ");
     invokeLog("error", msg);
   };
-  if (window.location.href.includes("access_token=")) {
-    const hashOrSearch = window.location.hash ? window.location.hash.replace(/^#/, "") : window.location.search.replace(/^\?/, "");
-    const params = new URLSearchParams(hashOrSearch);
-    const token = params.get("access_token");
-    if (token && window.__TAURI__) {
-      try {
-        window.stop();
-      } catch (e) {
-      }
-      document.documentElement.innerHTML = `<body style='background:#121212;'><h2 style='color: #4CAF50; text-align: center; margin-top: 50px; font-family: sans-serif;'>${Icons.done} ${t("status.login_success")}<br><br><span style='color: #aaa; font-size: 16px;'>${t("status.returning")}</span></h2></body>`;
-      window.__TAURI__.core.invoke("save_yandex_token", { token }).then(() => {
-        const homeUrl = localStorage.getItem("cv_home_url");
-        setTimeout(() => {
-          if (homeUrl) window.location.href = homeUrl;
-          else window.history.go(-(window.history.length - 1));
-        }, 1e3);
-      });
-    }
-  }
   if (!window._cvInitialized) {
     let updateStatus = function(text, color) {
       if (panelInstance) {
@@ -4180,10 +4189,11 @@ ${a.stack}`;
     updateStatus2 = updateStatus, syncAudio2 = syncAudio;
     window._cvInitialized = true;
     const isHome = window.location.hostname === "localhost" || window.location.hostname === "tauri.localhost" || window.location.protocol === "tauri:";
-    if (isHome) {
-      localStorage.setItem("cv_home_url", window.location.href);
-    } else {
-      appLog(`CrabVoice Injector attached to ${window.location.hostname}`);
+    const skipDomains = ["oauth.yandex.", "passport.yandex.", "accounts.google.", "login.yandex.", "sso.yandex."];
+    const hostname = window.location.hostname;
+    const shouldSkipInjection = isHome || skipDomains.some((d) => hostname.includes(d));
+    if (!isHome) {
+      appLog(`CrabVoice Injector attached to ${window.location.hostname}${shouldSkipInjection ? " (skip mode)" : ""}`);
     }
     let mainVideo = null;
     let audioObj = null;
@@ -4298,9 +4308,14 @@ ${a.stack}`;
               }, 1e3);
             }
           } catch (e) {
-            appLog(`Rust Error: ${e.toString()}`);
-            console.error("CrabVoice Rust Error:", e);
-            updateStatus(e.toString().substring(0, 30) + " \u26A0\uFE0F", "#ff5e5e");
+            const errStr = e?.toString() ?? "";
+            appLog(`Backend error: ${errStr}`);
+            let userMsg = t("error.unknown");
+            if (errStr.startsWith("Network error")) userMsg = t("error.network");
+            else if (errStr.startsWith("API error")) userMsg = t("error.api");
+            else if (errStr.startsWith("Parse error")) userMsg = t("error.parse");
+            else if (errStr.startsWith("Config error")) userMsg = t("error.config");
+            updateStatus(userMsg + " \u26A0\uFE0F", "#ff5e5e");
             isTranslating = false;
           }
         };
@@ -4340,7 +4355,7 @@ ${a.stack}`;
       });
     }
     const checkAndInject = () => {
-      if (isHome) return;
+      if (shouldSkipInjection) return;
       if (mainVideo && (!mainVideo.isConnected || window.location.href !== currentVideoUrl)) {
         mainVideo = null;
         if (audioObj) {
@@ -4358,9 +4373,7 @@ ${a.stack}`;
       if (!panelHost && !panelInstance) {
         panelInstance = new CrabPanel({
           onClose: () => {
-            const homeUrl = localStorage.getItem("cv_home_url");
-            if (homeUrl) window.location.href = homeUrl;
-            else window.history.go(-(window.history.length - 1));
+            history.back();
           },
           onAudioVolume: (val) => {
             userAudioVolume = val;
