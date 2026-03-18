@@ -115,11 +115,28 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
 
     // Yandex OAuth
-    btnLogin.addEventListener("click", (e) => {
+    const YANDEX_OAUTH_URL = "https://oauth.yandex.ru/authorize?response_type=token&client_id=23cabbbdc6cd418abb4b39c32c41195d";
+    const isMobile = /android|iphone|ipad/i.test(navigator.userAgent);
+
+    btnLogin.addEventListener("click", async (e) => {
         e.preventDefault();
         authStatus.innerText = t('auth.redirecting');
         authStatus.style.color = "#FFC131";
-        window.location.href = "https://oauth.yandex.ru/authorize?response_type=token&client_id=23cabbbdc6cd418abb4b39c32c41195d";
+
+        if (isMobile) {
+            // On mobile, open OAuth in system browser to avoid webview issues
+            // User will need to copy the token manually or use deep link
+            try {
+                const { openUrl } = await import("@tauri-apps/plugin-opener");
+                await openUrl(YANDEX_OAUTH_URL);
+            } catch (_) {
+                // Fallback: navigate in webview
+                window.location.href = YANDEX_OAUTH_URL;
+            }
+        } else {
+            // On desktop, navigate in webview (injector catches the redirect)
+            window.location.href = YANDEX_OAUTH_URL;
+        }
     });
 
     // Save settings helper — loads current settings first to preserve fields not in UI

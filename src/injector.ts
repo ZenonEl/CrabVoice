@@ -80,8 +80,14 @@ if (!window._cvInitialized) {
     window._cvInitialized = true;
 
     const isHome = window.location.hostname === 'localhost' || window.location.hostname === 'tauri.localhost' || window.location.protocol === 'tauri:';
+
+    // Skip injection on pages where vot.js/panel are not needed
+    // OAuth pages, auth pages, etc. — injecting vot.js here causes webview hangs on Android
+    const skipHosts = ['oauth.yandex.ru', 'passport.yandex.ru', 'accounts.google.com'];
+    const shouldSkipInjection = isHome || skipHosts.some(h => window.location.hostname.includes(h));
+
     if (!isHome) {
-        appLog(`CrabVoice Injector attached to ${window.location.hostname}`);
+        appLog(`CrabVoice Injector attached to ${window.location.hostname}${shouldSkipInjection ? ' (skip mode)' : ''}`);
     }
 
     let mainVideo: HTMLVideoElement | null = null;
@@ -336,7 +342,7 @@ if (!window._cvInitialized) {
     }
 
     const checkAndInject = () => {
-        if (isHome) return;
+        if (shouldSkipInjection) return;
 
         if (mainVideo && (!mainVideo.isConnected || window.location.href !== currentVideoUrl)) {
             mainVideo = null;
