@@ -241,7 +241,17 @@ pub fn run() {
                 "main",
                 tauri::WebviewUrl::App("index.html".into()),
             )
-            .initialization_script(init_script);
+            .initialization_script(init_script)
+            .on_navigation(|url| {
+                let url_str = url.as_str();
+                // Block non-http(s) schemes (yandexauth://, intent://, etc.)
+                // These cause white screen on Android webview
+                if !url_str.starts_with("http://") && !url_str.starts_with("https://") && !url_str.starts_with("tauri://") {
+                    warn!("Blocked navigation to unsupported scheme: {}", url_str);
+                    return false;
+                }
+                true
+            });
 
             if settings.use_proxy && !settings.proxy_url.is_empty() {
                 match tauri::Url::parse(&settings.proxy_url) {

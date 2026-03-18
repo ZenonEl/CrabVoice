@@ -32,6 +32,7 @@ interface AppSettings {
     sponsorblock_enabled: boolean;
     ui_language: string;
     theme: string;
+    yandex_token?: string;
 }
 
 function applyTheme(theme: string) {
@@ -61,6 +62,19 @@ window.addEventListener("DOMContentLoaded", async () => {
     const btnDownloadLogs = document.querySelector("#btn-download-logs") as HTMLButtonElement;
     const logsArea = document.querySelector("#logs-area") as HTMLTextAreaElement;
 
+    // Auth state tracked explicitly (not via CSS color)
+    let isAuthorized = false;
+
+    function updateAuthStatus() {
+        if (isAuthorized) {
+            authStatus.innerText = t('auth.authorized');
+            authStatus.style.color = "#4CAF50";
+        } else {
+            authStatus.innerText = t('auth.not_authorized');
+            authStatus.style.color = "#aaa";
+        }
+    }
+
     // Check app tier
     try {
         const tier = await invoke("get_app_tier") as string;
@@ -72,18 +86,9 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     // Load settings
     try {
-        // @ts-ignore - yandex_token added in backend
-        const settings: AppSettings & { yandex_token?: string } = await invoke("get_settings");
+        const settings: AppSettings = await invoke("get_settings");
 
-        targetLang.value = settings.default_target_lang;
-        volDucking.value = (settings.volume_ducking * 100).toString();
-        volVal.innerText = `${volDucking.value}%`;
-        livelyVoice.checked = settings.use_lively_voice;
-        useProxy.checked = settings.use_proxy;
-        proxyHost.value = settings.proxy_url;
-        proxyContainer.style.display = useProxy.checked ? "flex" : "none";
-
-        // Apply i18n
+        // Apply i18n first (so t() calls below use correct locale)
         const locale = (settings.ui_language || 'en') as Locale;
         uiLanguage.value = locale;
         setLocale(locale);
@@ -93,12 +98,18 @@ window.addEventListener("DOMContentLoaded", async () => {
         themeSelect.value = theme;
         applyTheme(theme);
 
-        if (settings.yandex_token) {
-            authStatus.innerText = t('auth.authorized');
-            authStatus.style.color = "#4CAF50";
-        } else {
-            authStatus.innerText = t('auth.not_authorized');
-        }
+        // Apply settings to UI
+        targetLang.value = settings.default_target_lang;
+        volDucking.value = (settings.volume_ducking * 100).toString();
+        volVal.innerText = `${volDucking.value}%`;
+        livelyVoice.checked = settings.use_lively_voice;
+        useProxy.checked = settings.use_proxy;
+        proxyHost.value = settings.proxy_url;
+        proxyContainer.style.display = useProxy.checked ? "flex" : "none";
+
+        // Auth status
+        isAuthorized = !!settings.yandex_token;
+        updateAuthStatus();
     } catch (e) {
         console.error("Failed to load settings:", e);
     }
@@ -107,13 +118,14 @@ window.addEventListener("DOMContentLoaded", async () => {
     btnLogin.addEventListener("click", (e) => {
         e.preventDefault();
         authStatus.innerText = t('auth.redirecting');
+        authStatus.style.color = "#FFC131";
         window.location.href = "https://oauth.yandex.ru/authorize?response_type=token&client_id=23cabbbdc6cd418abb4b39c32c41195d";
     });
 
-    // Save settings helper
+    // Save settings helper — loads current settings first to preserve fields not in UI
     const saveSettings = async () => {
-        let currentSettings: any = {};
-        try { currentSettings = await invoke("get_settings"); } catch (_) {}
+        let current: AppSettings | null = null;
+        try { current = await invoke("get_settings"); } catch (_) {}
         const newSettings: AppSettings = {
             volume_ducking: parseInt(volDucking.value) / 100.0,
             default_source_lang: "en",
@@ -121,9 +133,10 @@ window.addEventListener("DOMContentLoaded", async () => {
             use_proxy: useProxy.checked,
             proxy_url: proxyHost.value,
             use_lively_voice: livelyVoice.checked,
-            sponsorblock_enabled: currentSettings.sponsorblock_enabled ?? true,
+            sponsorblock_enabled: current?.sponsorblock_enabled ?? true,
             ui_language: uiLanguage.value,
             theme: themeSelect.value,
+            yandex_token: current?.yandex_token,
         };
         try {
             await invoke("save_settings", { newSettings });
@@ -150,12 +163,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     // Language selector — hot-reload
     uiLanguage.addEventListener("change", () => {
         setLocale(uiLanguage.value as Locale);
-        // Re-apply dynamic texts
-        if (authStatus.style.color === "rgb(76, 175, 80)") {
-            authStatus.innerText = t('auth.authorized');
-        } else {
-            authStatus.innerText = t('auth.not_authorized');
-        }
+        updateAuthStatus();
         saveSettings();
     });
 
