@@ -64,43 +64,73 @@ export class CrabPanel {
         element.innerHTML = html;
     }
 
+    private getTierStyles(): string {
+        const palettes: Record<AppTier, { accent: string; glow: string; headerBg: string; fabBorder: string }> = {
+            free:        { accent: '#24c8db', glow: 'transparent',                  headerBg: '#2a2a2a', fabBorder: '#444' },
+            subscribers: { accent: '#6366f1', glow: 'rgba(99, 102, 241, 0.25)',     headerBg: '#1e1e3a', fabBorder: '#6366f1' },
+            premium:     { accent: '#FFD700', glow: 'rgba(255, 215, 0, 0.2)',       headerBg: '#2a2518', fabBorder: '#FFD700' },
+        };
+        const p = palettes[this.tier];
+        return `
+            --cv-accent: ${p.accent};
+            --cv-glow: ${p.glow};
+            --cv-header-bg: ${p.headerBg};
+            --cv-fab-border: ${p.fabBorder};
+        `;
+    }
+
     private render() {
+        // Build tier-specific header content
+        let headerTitle = '🦀 CrabVoice';
+        if (this.tier === 'subscribers') {
+            headerTitle = `🦀 CrabVoice <span class="cv-tier-icon">${Icons.tierSubscribers}</span>`;
+        } else if (this.tier === 'premium') {
+            headerTitle = `🦀 CrabVoice <span class="cv-pro-label"><span class="cv-pro-crown">${Icons.tierPremium}</span>PRO</span>`;
+        }
+
         const template = `
             <style>
+                :host {
+                    ${this.getTierStyles()}
+                }
+
                 .cv-wrapper {
                     position: fixed !important; bottom: 20px !important; right: 20px !important;
-                    z-index: 2147483647 !important; font-family: sans-serif !important; 
+                    z-index: 2147483647 !important; font-family: sans-serif !important;
                     pointer-events: auto !important; color: #fff !important;
                 }
-                
+
                 .cv-panel {
                     background: rgba(0,0,0,0.85) !important; border-radius: 10px !important;
-                    min-width: 220px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.6) !important;
+                    min-width: 220px !important;
                     display: flex !important; flex-direction: column !important;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.6), 0 0 20px var(--cv-glow) !important;
+                    border: 1px solid rgba(255,255,255,0.05) !important;
+                    transition: box-shadow 0.3s !important;
                 }
-                
+
                 .cv-wrapper.collapsed .cv-panel { display: none !important; }
 
-                .cv-header { 
-                    font-size: 14px !important; font-weight: bold; background: #2a2a2a !important;
+                .cv-header {
+                    font-size: 14px !important; font-weight: bold; background: var(--cv-header-bg) !important;
                     padding: 10px 15px !important; border-radius: 10px 10px 0 0 !important;
                     display: flex !important; justify-content: space-between !important; align-items: center !important;
                     cursor: grab !important; user-select: none !important;
                 }
                 .cv-header div { pointer-events: none !important; }
                 .cv-header:active { cursor: grabbing !important; }
-                
+
                 .cv-btn-collapse {
-                    background: #444 !important; border: none; color: #fff; cursor: pointer; 
+                    background: #444 !important; border: none; color: #fff; cursor: pointer;
                     font-size: 12px; padding: 2px 8px; border-radius: 4px; transition: 0.2s;
                     line-height: 1; font-weight: bold;
                 }
                 .cv-btn-collapse:hover { background: #666 !important; }
-                
+
                 .cv-content { padding: 15px !important; }
                 .cv-row { display: flex !important; flex-direction: column !important; gap: 5px !important; margin-bottom: 10px !important; }
                 .cv-row label { font-size: 11px !important; color: #bbb !important; display: flex; justify-content: space-between; }
-                .cv-slider { width: 100% !important; accent-color: #24c8db !important; cursor: pointer; }
+                .cv-slider { width: 100% !important; accent-color: var(--cv-accent) !important; cursor: pointer; }
                 .cv-btn-group { display: flex !important; gap: 8px !important; margin-bottom: 10px !important; }
                 .cv-btn {
                     display: flex; justify-content: center; gap: 2px;
@@ -120,27 +150,40 @@ export class CrabPanel {
                     display: none !important; width: 48px !important; height: 48px !important;
                     background: rgba(0,0,0,0.85) !important; border-radius: 24px !important;
                     align-items: center !important; justify-content: center !important;
-                    font-size: 24px !important; box-shadow: 0 4px 15px rgba(0,0,0,0.6) !important;
-                    cursor: pointer !important; user-select: none !important; border: 2px solid #444 !important;
-                    transition: border-color 0.2s !important;
+                    font-size: 24px !important;
+                    box-shadow: 0 4px 15px rgba(0,0,0,0.6), 0 0 12px var(--cv-glow) !important;
+                    cursor: pointer !important; user-select: none !important;
+                    border: 2px solid var(--cv-fab-border) !important;
+                    transition: border-color 0.2s, box-shadow 0.2s !important;
                 }
-                .cv-fab:hover { border-color: #24c8db !important; }
+                .cv-fab:hover { border-color: var(--cv-accent) !important; box-shadow: 0 4px 15px rgba(0,0,0,0.6), 0 0 18px var(--cv-glow) !important; }
 
                 .cv-wrapper.collapsed .cv-fab { display: flex !important; }
 
-                .cv-tier-badge {
-                    font-size: 9px !important; padding: 2px 6px !important; border-radius: 4px !important;
-                    font-weight: bold !important; text-transform: uppercase !important; letter-spacing: 0.5px !important;
+                /* Tier icon in header (subscribers) */
+                .cv-tier-icon {
+                    display: inline-flex; align-items: center; margin-left: 4px;
                 }
-                .cv-tier-free { background: #555 !important; color: #ccc !important; }
-                .cv-tier-subscribers { background: #6366f1 !important; color: #fff !important; }
-                .cv-tier-premium { background: #f59e0b !important; color: #000 !important; }
+                .cv-tier-icon svg { width: 16px; height: 16px; fill: #818cf8; filter: drop-shadow(0 0 4px rgba(99, 102, 241, 0.5)); }
+
+                /* PRO label with crown (premium) */
+                .cv-pro-label {
+                    position: relative; display: inline-flex; align-items: baseline;
+                    color: #FFD700; font-size: 10px; font-weight: bold; letter-spacing: 1px;
+                    margin-left: 6px; text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+                }
+                .cv-pro-crown {
+                    position: absolute; top: -9px; left: -4px;
+                    transform: rotate(-18deg);
+                }
+                .cv-pro-crown svg { width: 14px; height: 14px; stroke: #FFD700; filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.6)); }
 
                 .cv-sb-btn {
                     display: flex; align-items: center; justify-content: center; gap: 4px;
                     background: #333 !important; color: #fff !important; border: 1px solid #555 !important;
                     padding: 6px 10px !important; border-radius: 6px !important; font-size: 11px !important;
                     cursor: pointer !important; width: 100% !important; transition: 0.2s; margin-bottom: 10px !important;
+                    box-sizing: border-box !important;
                 }
                 .cv-sb-btn:hover { background: #444 !important; }
                 .cv-sb-btn.active { border-color: #4CAF50 !important; background: #1b3a1b !important; }
@@ -154,7 +197,7 @@ export class CrabPanel {
                 
                 <div class="cv-panel" id="cv-panel">
                     <div class="cv-header" id="cv-header" title="Drag to move">
-                        <div style="display:flex;align-items:center;gap:6px;">🦀 CrabVoice <span class="cv-tier-badge cv-tier-${this.tier}" id="cv-tier-badge">${this.tier}</span></div>
+                        <div style="display:flex;align-items:center;gap:2px;">${headerTitle}</div>
                         <button class="cv-btn-collapse" id="cv-btn-collapse" title="Minimize">${Icons.collapse}</button>
                     </div>
                     <div class="cv-content">

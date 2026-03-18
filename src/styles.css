@@ -1,7 +1,15 @@
+/* === Tier palette system (CSS custom properties) === */
 :root {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   background-color: #121212;
   color: #ffffff;
+
+  /* Free tier palette (default) */
+  --cv-accent: #24c8db;
+  --cv-accent-hover: #1ebacb;
+  --cv-glow: transparent;
+  --cv-title-color: #FFC131;
+  --cv-icon-filter: none;
 }
 
 body {
@@ -88,22 +96,97 @@ body {
   margin-top: 5px;
 }
 
-/* Premium UI Mode */
-.premium-mode #app-title {
-  color: #FFD700;
-  text-shadow: 0 0 12px rgba(255, 215, 0, 0.4);
+/* === Subscribers tier palette === */
+.tier-subscribers {
+  --cv-accent: #6366f1;
+  --cv-accent-hover: #4f46e5;
+  --cv-glow: rgba(99, 102, 241, 0.25);
+  --cv-title-color: #818cf8;
+  --cv-icon-filter: drop-shadow(0 0 6px rgba(99, 102, 241, 0.4));
 }
-.premium-mode #app-subtitle::after {
-  content: " PRO";
+
+.tier-subscribers #app-title {
+  color: var(--cv-title-color);
+  text-shadow: 0 0 14px var(--cv-glow);
+}
+
+.tier-subscribers .header-logo {
+  fill: var(--cv-title-color);
+  filter: var(--cv-icon-filter);
+}
+
+.tier-subscribers .card {
+  border: 1px solid rgba(99, 102, 241, 0.15);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3), 0 0 15px var(--cv-glow);
+}
+
+.tier-subscribers .tier-icon-sub { display: inline-flex !important; }
+
+/* === Premium tier palette === */
+.tier-premium {
+  --cv-accent: #f59e0b;
+  --cv-accent-hover: #d97706;
+  --cv-glow: rgba(255, 215, 0, 0.2);
+  --cv-title-color: #FFD700;
+  --cv-icon-filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.4));
+}
+
+.tier-premium #app-title {
+  color: var(--cv-title-color);
+  text-shadow: 0 0 14px var(--cv-glow);
+}
+
+.tier-premium .header-logo {
+  fill: var(--cv-title-color);
+  filter: var(--cv-icon-filter);
+}
+
+.tier-premium .card {
+  border: 1px solid rgba(255, 215, 0, 0.12);
+  box-shadow: 0 4px 6px rgba(0,0,0,0.3), 0 0 15px var(--cv-glow);
+}
+
+.tier-premium .tier-icon-pro { display: inline-flex !important; }
+
+/* PRO badge next to subtitle */
+.pro-badge {
+  display: none;
+  position: relative;
   color: #FFD700;
   font-weight: bold;
   font-size: 12px;
-  vertical-align: super;
+  margin-left: 6px;
+  letter-spacing: 1px;
 }
-.premium-mode svg {
+.pro-badge .pro-crown {
+  position: absolute;
+  top: -10px;
+  left: -2px;
+  width: 16px;
+  height: 16px;
+  transform: rotate(-15deg);
+}
+.pro-badge .pro-crown svg {
+  width: 16px;
+  height: 16px;
   stroke: #FFD700;
-  filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.4));
+  filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.5));
 }
+.tier-premium .pro-badge { display: inline-flex; align-items: baseline; }
+
+/* Tier icon in header (hidden by default, shown for sub/premium) */
+.tier-icon {
+  display: none !important;
+  width: 20px;
+  height: 20px;
+  margin-left: 4px;
+}
+.tier-icon svg {
+  width: 20px;
+  height: 20px;
+}
+.tier-subscribers .tier-icon svg { fill: #818cf8; filter: var(--cv-icon-filter); }
+.tier-premium .tier-icon svg { stroke: #FFD700; filter: var(--cv-icon-filter); }
 
 .card {
   background-color: #1e1e1e;
@@ -128,11 +211,11 @@ input[type="url"], input[type="text"], select {
 }
 
 input[type="url"]:focus, input[type="text"]:focus, select:focus {
-  border-color: #24c8db;
+  border-color: var(--cv-accent);
 }
 
 .btn-primary {
-  background-color: #24c8db;
+  background-color: var(--cv-accent);
   color: #121212;
   font-weight: bold;
   border: none;
@@ -150,7 +233,7 @@ input[type="url"]:focus, input[type="text"]:focus, select:focus {
 }
 
 .btn-primary:hover {
-  background-color: #1ebacb;
+  background-color: var(--cv-accent-hover);
 }
 
 .settings-card h3 {
@@ -186,13 +269,13 @@ input[type="url"]:focus, input[type="text"]:focus, select:focus {
 .row-checkbox input {
   width: 18px;
   height: 18px;
-  accent-color: #24c8db;
+  accent-color: var(--cv-accent);
 }
 
 /* Info Box for settings */
 .info-box {
   background: #2a2a2a;
-  border-left: 3px solid #24c8db;
+  border-left: 3px solid var(--cv-accent);
   padding: 10px;
   border-radius: 4px;
   font-size: 12px;
@@ -222,7 +305,7 @@ input[type="url"]:focus, input[type="text"]:focus, select:focus {
 }
 
 .app-footer a {
-  color: #24c8db;
+  color: var(--cv-accent);
   text-decoration: none;
   font-weight: bold;
   transition: color 0.2s;
