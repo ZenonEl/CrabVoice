@@ -39,3 +39,4 @@ dist-ssr
 *.sw?
 /src-tauri/gen
 src-tauri/injector.js
+/.claude

@@ -177,7 +177,7 @@ pub fn run() {
         .plugin(
             tauri_plugin_log::Builder::new()
                 .level(log::LevelFilter::Info)
-                .clear_targets() // ❗️ Фикс дублирования логов: очищаем дефолтные таргеты перед добавлением своих
+                .clear_targets()
                 .target(Target::new(TargetKind::Stdout))
                 .target(Target::new(TargetKind::LogDir { file_name: Some("crabvoice.log".to_string()) }))
                 .build(),

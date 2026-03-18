@@ -3942,6 +3942,8 @@ ${a.stack}`;
     let sponsorSegments = [];
     async function requestTranslation(v, forceRefresh = false) {
       if (isTranslating && !forceRefresh) return;
+      appLog(`Current URL: ${window.location.href}`);
+      appLog(`Hostname: ${window.location.hostname}`);
       isTranslating = true;
       currentVideoUrl = window.location.href;
       let attempts = 0;
@@ -3956,6 +3958,7 @@ ${a.stack}`;
       }
       try {
         const services = getService();
+        appLog(`Services found: ${JSON.stringify(services)}`);
         if (!services.length) {
           console.error("\u0421\u0435\u0440\u0432\u0438\u0441 \u043D\u0435 \u043E\u043F\u0440\u0435\u0434\u0435\u043B\u0435\u043D \u0434\u043B\u044F \u0442\u0435\u043A\u0443\u0449\u0435\u0439 \u0441\u0442\u0440\u0430\u043D\u0438\u0446\u044B");
           throw new Error("Unknown service");
@@ -4043,12 +4046,22 @@ ${a.stack}`;
       }
     }
     const walkDOMForVideo = (root) => {
-      let node = root.querySelector("video");
-      if (node && node.duration > 0 && node.offsetWidth > 100) return node;
-      let els = root.querySelectorAll("*");
+      const videos = root.querySelectorAll("video");
+      if (videos.length > 0) {
+        appLog(`Found ${videos.length} video elements in current context.`);
+        for (let i = 0; i < videos.length; i++) {
+          const v = videos[i];
+          appLog(`Checking video #${i}: duration=${v.duration}, width=${v.offsetWidth}, src=${v.src?.substring(0, 30)}...`);
+          if (v.duration > 0 && v.offsetWidth > 100) {
+            appLog(`SUCCESS: Found valid video at index ${i}`);
+            return v;
+          }
+        }
+      }
+      const els = root.querySelectorAll("*");
       for (let el of els) {
         if (el.shadowRoot) {
-          let res = walkDOMForVideo(el.shadowRoot);
+          const res = walkDOMForVideo(el.shadowRoot);
           if (res) return res;
         }
       }
@@ -4108,6 +4121,7 @@ ${a.stack}`;
       if (!mainVideo && !isTranslating) {
         let v = document.querySelector(".html5-video-container video, video.vjs-tech, .fp-player video");
         if (!v || v.duration === 0) v = walkDOMForVideo(document);
+        appLog(`Found video element: ${!!v}`);
         if (v && v.duration > 0 && v.offsetWidth > 100) {
           mainVideo = v;
           requestTranslation(v);

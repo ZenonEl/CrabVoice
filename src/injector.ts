@@ -143,6 +143,9 @@ if (!window._cvInitialized) {
 
     async function requestTranslation(v: HTMLVideoElement, forceRefresh: boolean = false) {
         if (isTranslating && !forceRefresh) return;
+
+        appLog(`Current URL: ${window.location.href}`);
+        appLog(`Hostname: ${window.location.hostname}`);
         
         isTranslating = true;
         currentVideoUrl = window.location.href;
@@ -160,7 +163,8 @@ if (!window._cvInitialized) {
 
         try {
             // Получаем конфигурацию сервиса для текущей страницы  
-            const services = getService();  
+            const services = getService();
+            appLog(`Services found: ${JSON.stringify(services)}`);
             if (!services.length) {  
                 console.error("Сервис не определен для текущей страницы");  
                 throw new Error("Unknown service");
@@ -271,12 +275,29 @@ if (!window._cvInitialized) {
     }
 
     const walkDOMForVideo = (root: any): HTMLVideoElement | null => {
-        let node = root.querySelector('video');
-        if (node && node.duration > 0 && node.offsetWidth > 100) return node;
-        let els = root.querySelectorAll('*');
+        // Сначала соберем все видео в текущем контексте
+        const videos = root.querySelectorAll('video');
+        
+        if (videos.length > 0) {
+            appLog(`Found ${videos.length} video elements in current context.`);
+            for (let i = 0; i < videos.length; i++) {
+                const v = videos[i];
+                appLog(`Checking video #${i}: duration=${v.duration}, width=${v.offsetWidth}, src=${v.src?.substring(0, 30)}...`);
+                
+                // Проверяем критерии
+                if (v.duration > 0 && v.offsetWidth > 100) {
+                    appLog(`SUCCESS: Found valid video at index ${i}`);
+                    return v;
+                }
+            }
+        }
+
+        // Если не нашли, идем в Shadow DOM
+        const els = root.querySelectorAll('*');
         for (let el of els) {
             if (el.shadowRoot) {
-                let res = walkDOMForVideo(el.shadowRoot);
+                // Рекурсивно проверяем Shadow DOM
+                const res = walkDOMForVideo(el.shadowRoot);
                 if (res) return res;
             }
         }
@@ -328,6 +349,7 @@ if (!window._cvInitialized) {
         if (!mainVideo && !isTranslating) {
             let v = document.querySelector(".html5-video-container video, video.vjs-tech, .fp-player video") as HTMLVideoElement;
             if (!v || v.duration === 0) v = walkDOMForVideo(document) as HTMLVideoElement;
+            appLog(`Found video element: ${!!v}`);
             if (v && v.duration > 0 && v.offsetWidth > 100) {
                 mainVideo = v;
                 requestTranslation(v);
