@@ -16,20 +16,36 @@
                 <span class="tier-icon tier-icon-sub" data-icon="tierSubscribers"></span>
                 <span class="tier-icon tier-icon-pro" data-icon="tierPremium"></span>
             </div>
-            <p id="app-subtitle">Real-time Native Video Translation <span class="pro-badge"><span class="pro-crown" data-icon="tierPremium"></span>PRO</span></p>
+            <p id="app-subtitle"><span data-i18n="app.subtitle">Real-time Native Video Translation</span> <span class="pro-badge"><span class="pro-crown" data-icon="tierPremium"></span>PRO</span></p>
         </div>
 
         <form id="translate-form" class="card">
-            <input id="url-input" type="url" placeholder="Paste video URL (YouTube, VK, Vimeo)..." required />
-            <button type="submit" class="btn-primary"> <div data-icon="rocket"></div>Open Video</button>
+            <input id="url-input" type="url" data-i18n-placeholder="url.placeholder" placeholder="Paste video URL (YouTube, VK, Vimeo)..." required />
+            <button type="submit" class="btn-primary"> <div data-icon="rocket"></div><span data-i18n="url.open">Open Video</span></button>
             <div id="result-msg"></div>
         </form>
-        
+
         <div class="card settings-card">
-            <h3><div data-icon="gear"></div>Settings</h3>
-            
+            <h3><div data-icon="gear"></div><span data-i18n="settings.title">Settings</span></h3>
+
             <div class="setting-group">
-                <label>Translate to:</label>
+                <label data-i18n="settings.ui_language">Interface Language:</label>
+                <select id="set-ui-language">
+                    <option value="en">English</option>
+                    <option value="ru">Русский</option>
+                </select>
+            </div>
+
+            <div class="setting-group">
+                <label data-i18n="settings.theme">Theme:</label>
+                <select id="set-theme">
+                    <option value="dark" data-i18n="theme.dark">Dark</option>
+                    <option value="light" data-i18n="theme.light">Light</option>
+                </select>
+            </div>
+
+            <div class="setting-group">
+                <label data-i18n="settings.translate_to">Translate to:</label>
                 <select id="set-target-lang">
                     <option value="ru">Русский (Russian)</option>
                     <option value="en">English</option>
@@ -38,55 +54,55 @@
             </div>
 
             <div class="setting-group">
-                <label>Video Volume Ducking: <span id="vol-val">15%</span></label>
+                <label><span data-i18n="settings.volume_ducking">Video Volume Ducking:</span> <span id="vol-val">15%</span></label>
                 <input type="range" id="set-volume" min="0" max="100" value="15" />
             </div>
 
             <div class="setting-group row-checkbox" style="display: flex; justify-content: space-between; align-items: center;">
                 <div style="display: flex; align-items: stretch; gap: 10px;">
                     <input type="checkbox" id="set-lively">
-                    <label for="set-lively">Use Lively Voices <div data-icon="audioLines"></div></label>
+                    <label for="set-lively"><span data-i18n="settings.lively_voices">Use Lively Voices</span> <div data-icon="audioLines"></div></label>
                 </div>
                 <button id="btn-login-yandex" class="btn-icon">
                     <div data-icon="key"></div>
-                    Login Yandex
+                    <span data-i18n="settings.login_yandex">Login Yandex</span>
                 </button>
             </div>
             <div id="auth-status" style="font-size:12px; color:#aaa; text-align:right;"></div>
 
             <div class="setting-group row-checkbox">
                 <input type="checkbox" id="set-use-proxy" />
-                <label for="set-use-proxy">Use Custom Proxy (HTTP/SOCKS5) <div data-icon="waypoints"></div></label>
+                <label for="set-use-proxy"><span data-i18n="settings.use_proxy">Use Custom Proxy (HTTP/SOCKS5)</span> <div data-icon="waypoints"></div></label>
             </div>
 
             <div class="setting-group proxy-host-group" id="proxy-container">
-                <label>Proxy URL:</label>
+                <label data-i18n="settings.proxy_url">Proxy URL:</label>
                 <div style="display: flex; gap: 10px;">
                     <input type="text" id="set-proxy-host" placeholder="socks5://user:pass@127.0.0.1:1080" style="flex: 1;" />
-                    <button type="button" id="btn-ping-proxy" class="btn-primary" style="padding: 8px 12px; min-width: 60px;">Ping</button>
+                    <button type="button" id="btn-ping-proxy" class="btn-primary" style="padding: 8px 12px; min-width: 60px;" data-i18n="settings.proxy_ping">Ping</button>
                 </div>
                 <div id="proxy-ping-result" style="font-size: 12px; margin-top: 5px;"></div>
-                
+
                 <div class="info-box">
-                    <p><strong><div data-icon="warn"></div> App Restart Required:</strong> Changes to the Proxy URL only take effect after a restart.</p>
-                    <p><strong><div data-icon="auth"></div> Authentication:</strong> Supports standard <code>socks5://user:pass@host:port</code> format.</p>
+                    <p><strong><div data-icon="warn"></div> <span data-i18n="settings.proxy_restart_title">App Restart Required:</span></strong> <span data-i18n="settings.proxy_restart_desc">Changes to the Proxy URL only take effect after a restart.</span></p>
+                    <p><strong><div data-icon="auth"></div> <span data-i18n="settings.proxy_auth_title">Authentication:</span></strong> <span data-i18n="settings.proxy_auth_desc">Supports standard socks5://user:pass@host:port format.</span></p>
                 </div>
             </div>
         </div>
-        
+
         <div class="card settings-card">
-            <h3><div data-icon="appLogs"></div>App Logs</h3>
+            <h3><div data-icon="appLogs"></div><span data-i18n="logs.title">App Logs</span></h3>
             <div style="display: flex; gap: 10px;">
-                <button type="button" id="btn-view-logs" class="btn-primary" style="flex:1; background:#4CAF50;">View Logs</button>
-                <button type="button" id="btn-download-logs" class="btn-primary" style="flex:1;">Export / Copy Logs</button>
+                <button type="button" id="btn-view-logs" class="btn-primary" style="flex:1; background:#4CAF50;"><span data-i18n="logs.view">View Logs</span></button>
+                <button type="button" id="btn-download-logs" class="btn-primary" style="flex:1;"><span data-i18n="logs.export">Export / Copy Logs</span></button>
             </div>
             <textarea id="logs-area" style="display:none; width: 100%; height: 150px; margin-top: 10px; font-family: monospace; font-size: 11px; background: #111; color: #0f0; border: 1px solid #333; border-radius: 6px; padding: 8px; box-sizing: border-box;" readonly></textarea>
         </div>
 
         <div class="app-footer">
-            <p>Crafted with 🦀 by <a href="https://github.com/ZenonEl" target="_blank">ZenonEl</a></p>
-            <p class="version-info">CrabVoice v0.3.3 Public Beta</p>
-            
+            <p><span data-i18n="app.crafted_by">Crafted with 🦀 by</span> <a href="https://github.com/ZenonEl" target="_blank">ZenonEl</a></p>
+            <p class="version-info" data-i18n="app.version">CrabVoice v0.3.3 Public Beta</p>
+
             <!-- Socials -->
             <div class="header-socials">
                 <a href="https://github.com/ZenonEl/CrabVoice" target="_blank" title="GitHub" data-icon="github">

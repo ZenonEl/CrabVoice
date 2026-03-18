@@ -1,4 +1,5 @@
-import { Icons } from "./icons"; 
+import { Icons } from "./icons";
+import { t } from "./i18n";
 
 export type AppTier = 'free' | 'subscribers' | 'premium';
 
@@ -202,29 +203,29 @@ export class CrabPanel {
                     </div>
                     <div class="cv-content">
                         <div style="font-size:12px; margin-bottom: 12px; text-align:center;">
-                            <span id="cv-status" style="color:#FFC131">Searching video...</span>
+                            <span id="cv-status" style="color:#FFC131">${t('panel.searching')}</span>
                         </div>
-                        
+
                         <div class="cv-row">
-                            <label>Translation Vol: <span id="cv-val-audio">100%</span></label>
+                            <label>${t('panel.translation_vol')} <span id="cv-val-audio">100%</span></label>
                             <input type="range" class="cv-slider" id="cv-vol-audio" min="0" max="100" value="100">
                         </div>
-                        
+
                         <div class="cv-row">
-                            <label>Original Vol: <span id="cv-val-video">15%</span></label>
+                            <label>${t('panel.original_vol')} <span id="cv-val-video">15%</span></label>
                             <input type="range" class="cv-slider" id="cv-vol-video" min="0" max="100" value="15">
                         </div>
 
                         <button class="cv-sb-btn ${this.tier === 'free' ? 'disabled' : ''} ${this.sponsorBlockEnabled && this.tier !== 'free' ? 'active' : ''}" id="cv-sb-toggle">
-                            ${Icons.sponsorblock || '⏭'} SponsorBlock: ${this.tier === 'free' ? 'N/A' : (this.sponsorBlockEnabled ? 'ON' : 'OFF')}
+                            ${Icons.sponsorblock || '⏭'} ${this.tier === 'free' ? t('panel.sb_na') : (this.sponsorBlockEnabled ? t('panel.sb_on') : t('panel.sb_off'))}
                         </button>
 
                         <div class="cv-btn-group">
-                            <button class="cv-btn" id="cv-toggle-play">⏸ Pause</button>
-                            <button class="cv-btn" id="cv-refresh">${Icons.refresh} Refresh</button>
+                            <button class="cv-btn" id="cv-toggle-play">${t('panel.pause')}</button>
+                            <button class="cv-btn" id="cv-refresh">${Icons.refresh} ${t('panel.refresh')}</button>
                         </div>
 
-                        <button class="cv-btn-close" id="cv-close-full">${Icons.return} Back to App</button>
+                        <button class="cv-btn-close" id="cv-close-full">${Icons.return} ${t('panel.back')}</button>
                     </div>
                 </div>
             </div>
@@ -412,7 +413,7 @@ export class CrabPanel {
     
     public setPlayPauseState(paused: boolean) {
         this.translationPaused = paused;
-        this.btnTogglePlay.innerText = paused ? "▶️ Play" : "⏸ Pause";
+        this.btnTogglePlay.innerText = paused ? t('panel.play') : t('panel.pause');
     }
 
     private updateSponsorBlockButton() {
@@ -420,10 +421,10 @@ export class CrabPanel {
         const icon = Icons.sponsorblock || '⏭';
         if (this.sponsorBlockEnabled) {
             this.btnSponsorBlock.classList.add('active');
-            this.safeSetHTML(this.btnSponsorBlock, `${icon} SponsorBlock: ON`);
+            this.safeSetHTML(this.btnSponsorBlock, `${icon} ${t('panel.sb_on')}`);
         } else {
             this.btnSponsorBlock.classList.remove('active');
-            this.safeSetHTML(this.btnSponsorBlock, `${icon} SponsorBlock: OFF`);
+            this.safeSetHTML(this.btnSponsorBlock, `${icon} ${t('panel.sb_off')}`);
         }
     }
 

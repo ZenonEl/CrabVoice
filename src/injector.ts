@@ -2,6 +2,7 @@ import { getService, getVideoData } from "@vot.js/ext/utils/videoData";
 import type { ServiceConf } from "@vot.js/ext/types/service";
 import { CrabPanel, type AppTier } from "./injectorPanel";
 import { Icons } from "./icons";
+import { t, setLocale, type Locale } from "./i18n";
 
 // Универсальная функция отправки логов из песочницы инжектора в Rust
 // Инжектор работает на внешних сайтах, где JS API плагина недоступен, поэтому вызываем кастомную Rust-команду
@@ -44,6 +45,7 @@ interface AppSettings {
     default_source_lang: string;
     default_target_lang: string;
     sponsorblock_enabled: boolean;
+    ui_language: string;
 }
 
 // Перехват OAuth редиректа от сервера Яндекса
@@ -54,7 +56,7 @@ if (window.location.href.includes('access_token=')) {
     
     if (token && window.__TAURI__) {
         try { window.stop(); } catch(e){} // Стопаем загрузку страницы Яндекса
-        document.documentElement.innerHTML = `<body style='background:#121212;'><h2 style='color: #4CAF50; text-align: center; margin-top: 50px; font-family: sans-serif;'>${Icons.done} Login successful!<br><br><span style='color: #aaa; font-size: 16px;'>Returning to CrabVoice...</span></h2></body>`;
+        document.documentElement.innerHTML = `<body style='background:#121212;'><h2 style='color: #4CAF50; text-align: center; margin-top: 50px; font-family: sans-serif;'>${Icons.done} ${t('status.login_success')}<br><br><span style='color: #aaa; font-size: 16px;'>${t('status.returning')}</span></h2></body>`;
         
         window.__TAURI__.core.invoke('save_yandex_token', { token: token }).then(() => {
             const homeUrl = localStorage.getItem('cv_home_url');
@@ -111,8 +113,8 @@ if (!window._cvInitialized) {
                 if (ct >= seg.start && ct < seg.end) {
                     mainVideo.currentTime = seg.end;
                     appLog(`SponsorBlock: Skipped ${seg.category} (${seg.start.toFixed(1)}s -> ${seg.end.toFixed(1)}s)`);
-                    updateStatus(`Skipped ${seg.category} ⏩`, "#FFD700");
-                    setTimeout(() => updateStatus("Linked & Translated ✅", "#4CAF50"), 3000);
+                    updateStatus(t('status.skipped', { category: seg.category }), "#FFD700");
+                    setTimeout(() => updateStatus(t('status.linked'), "#4CAF50"), 3000);
                     break;
                 }
             }
@@ -161,6 +163,9 @@ if (!window._cvInitialized) {
                 appSettings = await window.__TAURI__.core.invoke("get_settings");
                 userVideoVolume = appSettings!.volume_ducking;
                 sponsorBlockEnabled = appSettings!.sponsorblock_enabled ?? true;
+                if (appSettings!.ui_language) {
+                    setLocale(appSettings!.ui_language as Locale, false);
+                }
                 if (panelInstance) {
                     panelInstance.setVideoVolumeSlider(userVideoVolume);
                     panelInstance.setSponsorBlockState(sponsorBlockEnabled);
@@ -181,7 +186,7 @@ if (!window._cvInitialized) {
             const service: ServiceConf = services[0];
 
             appLog("Extracting video data via VOT.js");
-            updateStatus("VOT.js extracting... 🔍", "#24c8db");
+            updateStatus(t('status.extracting'), "#24c8db");
 
             const videoData = await getVideoData(service);
 
@@ -214,7 +219,7 @@ if (!window._cvInitialized) {
                     countdownInterval = null;
                 }
 
-                updateStatus("Requesting Yandex... ⏳", "#FFC131");
+                updateStatus(t('status.requesting'), "#FFC131");
 
                 try {
                     const invoke = window.__TAURI__ ? window.__TAURI__.core.invoke : null;
@@ -225,7 +230,7 @@ if (!window._cvInitialized) {
                     
                     if (res.status === 1 && res.url) {
                         appLog("Translation successful! Playing native audio...");
-                        updateStatus("Linked & Translated ✅", "#4CAF50");
+                        updateStatus(t('status.linked'), "#4CAF50");
                         
                         if (audioObj) {
                             audioObj.pause();
@@ -242,7 +247,7 @@ if (!window._cvInitialized) {
                     } else {
                         attempts++;
                         if (attempts > 30) {
-                            updateStatus("Timeout ❌", "#ff5e5e");
+                            updateStatus(t('status.timeout'), "#ff5e5e");
                             isTranslating = false;
                             return;
                         }
@@ -257,7 +262,7 @@ if (!window._cvInitialized) {
                             }
                             timeLeft--;
                             if (timeLeft > 0) {
-                                updateStatus(`Processing... (~${timeLeft}s) ⏳`, "#FFC131");
+                                updateStatus(t('status.processing', { seconds: timeLeft }), "#FFC131");
                             } else {
                                 clearInterval(countdownInterval);
                                 pollTranslation();
@@ -276,7 +281,7 @@ if (!window._cvInitialized) {
             pollTranslation();
 
         } catch (error) {
-            updateStatus("VOT.js Parse Error ❌", "#ff5e5e");
+            updateStatus(t('status.parse_error'), "#ff5e5e");
             isTranslating = false;
         }
     }
@@ -327,7 +332,7 @@ if (!window._cvInitialized) {
             if (audioObj) { audioObj.pause(); audioObj = null; }
             if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
             isTranslating = false;
-            updateStatus("Searching new video...", "#FFC131");
+            updateStatus(t('status.searching_new'), "#FFC131");
         }
 
         let panelHost = document.getElementById('cv-panel-host');
