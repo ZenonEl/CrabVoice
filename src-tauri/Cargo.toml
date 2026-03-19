@@ -1,6 +1,6 @@
 [package]
 name = "CrabVoice"
-version = "0.6.0"
+version = "0.7.0"
 description = "Cross-platform real-time voice-over translation app for video platforms. Features native audio sync, vot.js integration, and mobile support"
 authors = ["Zenonel"]
 edition = "2021"

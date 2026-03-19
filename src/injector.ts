@@ -212,7 +212,10 @@ if (!window._cvInitialized) {
                     if (!invoke) return;
 
                     appLog("Sent translation request to Rust backend");
-                    const res = await invoke("translate", { url: window.location.href, duration: duration });
+                    const res = await Promise.race([
+                        invoke("translate", { url: window.location.href, duration, firstRequest: attempts === 0 }),
+                        new Promise((_, reject) => setTimeout(() => reject(new Error("Network error")), 35000))
+                    ]) as any;
                     
                     if (res.status === 1 && res.url) {
                         appLog("Translation successful! Playing native audio...");

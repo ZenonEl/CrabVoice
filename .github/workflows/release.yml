@@ -1,0 +1,203 @@
+name: Release
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      tier:
+        description: "Build tier"
+        required: true
+        default: "free"
+        type: choice
+        options:
+          - free
+          - subscribers
+          - premium
+
+jobs:
+  check-permissions:
+    if: github.event.inputs.tier != 'free' && github.event.inputs.tier != ''
+    runs-on: ubuntu-latest
+    steps:
+      - name: Only repo owner can build non-free tiers
+        if: github.actor != github.repository_owner
+        run: |
+          echo "::error::Only the repository owner can build non-free tiers"
+          exit 1
+
+  desktop:
+    needs: [check-permissions]
+    if: always() && (needs.check-permissions.result == 'success' || needs.check-permissions.result == 'skipped')
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: ubuntu-latest
+            args: ""
+          - platform: windows-latest
+            args: ""
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: Install Linux dependencies
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf protobuf-compiler
+
+      - name: Install protoc (Windows)
+        if: matrix.platform == 'windows-latest'
+        uses: arduino/setup-protoc@v3
+
+      - name: Install frontend dependencies
+        run: pnpm install
+
+      - name: Create .env
+        working-directory: src-tauri
+        shell: bash
+        run: |
+          echo "YANDEX_CLIENT_ID=${{ secrets.YANDEX_CLIENT_ID }}" > .env
+          echo "YANDEX_CLIENT_SECRET=${{ secrets.YANDEX_CLIENT_SECRET }}" >> .env
+
+      - name: Determine features
+        id: features
+        shell: bash
+        run: |
+          TIER="${{ github.event.inputs.tier || 'free' }}"
+          if [ "$TIER" = "premium" ]; then
+            echo "args=--features premium" >> "$GITHUB_OUTPUT"
+          elif [ "$TIER" = "subscribers" ]; then
+            echo "args=--features subscribers" >> "$GITHUB_OUTPUT"
+          else
+            echo "args=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build with tauri-action
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.event.release.tag_name || '' }}
+          releaseName: ${{ github.event.release.name || '' }}
+          releaseId: ${{ github.event.release.id || '' }}
+          args: ${{ steps.features.outputs.args }}
+
+  android:
+    needs: [check-permissions]
+    if: always() && (needs.check-permissions.result == 'success' || needs.check-permissions.result == 'skipped')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install Android NDK
+        run: sdkmanager "ndk;27.0.12077973"
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android,armv7-linux-androideabi,i686-linux-android,x86_64-linux-android
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri -> target
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y protobuf-compiler
+
+      - name: Install frontend dependencies
+        run: pnpm install
+
+      - name: Create .env
+        working-directory: src-tauri
+        run: |
+          echo "YANDEX_CLIENT_ID=${{ secrets.YANDEX_CLIENT_ID }}" > .env
+          echo "YANDEX_CLIENT_SECRET=${{ secrets.YANDEX_CLIENT_SECRET }}" >> .env
+
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_B64 }}" | base64 -d > /tmp/release.keystore
+
+      - name: Write keystore.properties
+        run: |
+          cat > src-tauri/gen/android/keystore.properties << EOF
+          password=${{ secrets.ANDROID_KEY_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          storeFile=/tmp/release.keystore
+          EOF
+
+      - name: Determine features
+        id: features
+        run: |
+          TIER="${{ github.event.inputs.tier || 'free' }}"
+          if [ "$TIER" = "premium" ]; then
+            echo "args=--features premium" >> "$GITHUB_OUTPUT"
+          elif [ "$TIER" = "subscribers" ]; then
+            echo "args=--features subscribers" >> "$GITHUB_OUTPUT"
+          else
+            echo "args=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build Android APK
+        run: |
+          export NDK_HOME="$ANDROID_HOME/ndk/27.0.12077973"
+          npx tauri android build ${{ steps.features.outputs.args }}
+
+      - name: Upload APK to release
+        if: github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload APK as artifact
+        if: github.event_name == 'workflow_dispatch'
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk

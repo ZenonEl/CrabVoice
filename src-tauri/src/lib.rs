@@ -220,6 +220,7 @@ async fn poll_device_token(device_code: String) -> Result<DeviceTokenResponse, S
 async fn translate(
     url: String,
     duration: f64,
+    first_request: bool,
     state: State<'_, AppState>,
 ) -> Result<TranslationResult, String> {
     let current_settings = state.settings.lock().await.clone();
@@ -235,7 +236,7 @@ async fn translate(
 
     state
         .yandex_translator
-        .translate_video(&url, duration, &current_settings)
+        .translate_video(&url, duration, first_request, &current_settings)
         .await
         .map_err(|e| {
             error!("Translation failed for '{}': {}", url, e);
@@ -294,7 +295,7 @@ pub fn run() {
                 let url_str = url.as_str();
                 // Block non-http(s) schemes (yandexauth://, intent://, etc.)
                 // These cause white screen on Android webview
-                if !url_str.starts_with("http://") && !url_str.starts_with("https://") && !url_str.starts_with("tauri://") {
+                if !url_str.starts_with("http://") && !url_str.starts_with("https://") && !url_str.starts_with("tauri://") && !url_str.starts_with("about:") {
                     warn!("Blocked navigation to unsupported scheme: {}", url_str);
                     return false;
                 }

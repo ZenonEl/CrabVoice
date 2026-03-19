@@ -85,6 +85,7 @@ pub trait TranslationProvider: Send + Sync {
         &self,
         video_url: &str,
         duration: f64,
+        first_request: bool,
         settings: &AppSettings,
     ) -> Result<TranslationResult, AppError>;
 }

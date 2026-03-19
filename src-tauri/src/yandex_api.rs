@@ -29,13 +29,14 @@ impl TranslationProvider for YandexClient {
         &self,
         video_url: &str,
         duration: f64,
+        first_request: bool,
         settings: &AppSettings,
     ) -> Result<TranslationResult, AppError> {
         let request = pb::VideoTranslationRequest {
             url: video_url.to_string(),
             language: settings.default_source_lang.clone(),
             response_language: settings.default_target_lang.clone(),
-            first_request: true,
+            first_request,
             duration,
             unknown0: 1,
             unknown1: 0,
@@ -65,7 +66,9 @@ impl TranslationProvider for YandexClient {
         headers.insert(header::ACCEPT, header::HeaderValue::from_static("application/x-protobuf"));
         headers.insert(header::CONTENT_TYPE, header::HeaderValue::from_static("application/x-protobuf"));
 
-        let mut client_builder = Client::builder().default_headers(headers);
+        let mut client_builder = Client::builder()
+            .default_headers(headers)
+            .timeout(std::time::Duration::from_secs(30));
 
         if settings.use_proxy && !settings.proxy_url.is_empty() {
             match reqwest::Proxy::all(&settings.proxy_url) {
