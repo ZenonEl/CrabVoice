@@ -1,7 +1,7 @@
 {
   "app.title": "CrabVoice",
   "app.subtitle": "Real-time Native Video Translation",
-  "app.version": "CrabVoice v0.9.0 Public Beta",
+  "app.version": "CrabVoice v1.0.0 Public Beta",
   "app.crafted_by": "Crafted with 🦀 by",
 
   "url.placeholder": "Paste video URL (YouTube, VK, Vimeo)...",

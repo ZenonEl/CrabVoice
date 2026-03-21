@@ -182,6 +182,7 @@ jobs:
 
       - name: Write keystore.properties
         run: |
+          mkdir -p src-tauri/gen/android
           cat > src-tauri/gen/android/keystore.properties << 'PROPS'
           password=${{ secrets.ANDROID_KEY_PASSWORD }}
           keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
