@@ -1,7 +1,7 @@
 {
   "app.title": "CrabVoice",
   "app.subtitle": "Нативный голосовой перевод видео",
-  "app.version": "CrabVoice v0.7.0 Публичная бета",
+  "app.version": "CrabVoice v0.8.0 Публичная бета",
   "app.crafted_by": "Сделано с 🦀 от",
 
   "url.placeholder": "Вставьте ссылку на видео (YouTube, VK, Vimeo)...",
@@ -68,6 +68,17 @@
   "status.skipped": "Пропущено: {category} ⏩",
   "status.login_success": "Вход выполнен!",
   "status.returning": "Возврат в CrabVoice...",
+
+  "status.retrying": "Повтор... (попытка {attempt}/3) ⏳",
+
+  "indicator.proxy.ok": "Прокси подключён",
+  "indicator.proxy.off": "Прокси не настроен",
+  "indicator.proxy.error": "Ошибка подключения прокси",
+  "indicator.auth.ok": "Яндекс авторизован",
+  "indicator.auth.off": "Яндекс не авторизован",
+  "indicator.sb.ok": "SponsorBlock активен",
+  "indicator.sb.off": "SponsorBlock отключён",
+  "indicator.sb.error": "Ошибка загрузки SponsorBlock",
 
   "error.network": "Ошибка подключения — проверьте сеть",
   "error.api": "Ошибка сервиса перевода",

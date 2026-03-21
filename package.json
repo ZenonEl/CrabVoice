@@ -1,11 +1,12 @@
 {
   "name": "CrabVoice",
   "private": true,
-  "version": "0.7.0",
+  "version": "0.8.0",
   "type": "module",
   "scripts": {
     "dev": "vite --host localhost",
-    "build": "tsc && vite build",
+    "build:injector": "pnpm dlx esbuild src/injector.ts --bundle --outfile=src-tauri/injector.js --platform=browser \"--external:node:*\"",
+    "build": "pnpm build:injector && tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri"
   },
@@ -19,6 +20,7 @@
   },
   "devDependencies": {
     "@tauri-apps/cli": "^2",
+    "esbuild": "^0.27.4",
     "typescript": "~5.6.2",
     "vite": "^6.0.3"
   }

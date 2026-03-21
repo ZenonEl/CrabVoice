@@ -3585,7 +3585,7 @@
   var en_default = {
     "app.title": "CrabVoice",
     "app.subtitle": "Real-time Native Video Translation",
-    "app.version": "CrabVoice v0.7.0 Public Beta",
+    "app.version": "CrabVoice v0.8.0 Public Beta",
     "app.crafted_by": "Crafted with \u{1F980} by",
     "url.placeholder": "Paste video URL (YouTube, VK, Vimeo)...",
     "url.open": "Open Video",
@@ -3645,6 +3645,15 @@
     "status.skipped": "Skipped {category} \u23E9",
     "status.login_success": "Login successful!",
     "status.returning": "Returning to CrabVoice...",
+    "status.retrying": "Retrying... (attempt {attempt}/3) \u23F3",
+    "indicator.proxy.ok": "Proxy connected",
+    "indicator.proxy.off": "Proxy not configured",
+    "indicator.proxy.error": "Proxy connection failed",
+    "indicator.auth.ok": "Yandex authorized",
+    "indicator.auth.off": "Yandex not authorized",
+    "indicator.sb.ok": "SponsorBlock active",
+    "indicator.sb.off": "SponsorBlock disabled",
+    "indicator.sb.error": "SponsorBlock failed to load",
     "error.network": "Connection failed \u2014 check your network",
     "error.api": "Translation service error",
     "error.parse": "Unexpected response from server",
@@ -3659,7 +3668,7 @@
   var ru_default = {
     "app.title": "CrabVoice",
     "app.subtitle": "\u041D\u0430\u0442\u0438\u0432\u043D\u044B\u0439 \u0433\u043E\u043B\u043E\u0441\u043E\u0432\u043E\u0439 \u043F\u0435\u0440\u0435\u0432\u043E\u0434 \u0432\u0438\u0434\u0435\u043E",
-    "app.version": "CrabVoice v0.7.0 \u041F\u0443\u0431\u043B\u0438\u0447\u043D\u0430\u044F \u0431\u0435\u0442\u0430",
+    "app.version": "CrabVoice v0.8.0 \u041F\u0443\u0431\u043B\u0438\u0447\u043D\u0430\u044F \u0431\u0435\u0442\u0430",
     "app.crafted_by": "\u0421\u0434\u0435\u043B\u0430\u043D\u043E \u0441 \u{1F980} \u043E\u0442",
     "url.placeholder": "\u0412\u0441\u0442\u0430\u0432\u044C\u0442\u0435 \u0441\u0441\u044B\u043B\u043A\u0443 \u043D\u0430 \u0432\u0438\u0434\u0435\u043E (YouTube, VK, Vimeo)...",
     "url.open": "\u041E\u0442\u043A\u0440\u044B\u0442\u044C \u0432\u0438\u0434\u0435\u043E",
@@ -3719,6 +3728,15 @@
     "status.skipped": "\u041F\u0440\u043E\u043F\u0443\u0449\u0435\u043D\u043E: {category} \u23E9",
     "status.login_success": "\u0412\u0445\u043E\u0434 \u0432\u044B\u043F\u043E\u043B\u043D\u0435\u043D!",
     "status.returning": "\u0412\u043E\u0437\u0432\u0440\u0430\u0442 \u0432 CrabVoice...",
+    "status.retrying": "\u041F\u043E\u0432\u0442\u043E\u0440... (\u043F\u043E\u043F\u044B\u0442\u043A\u0430 {attempt}/3) \u23F3",
+    "indicator.proxy.ok": "\u041F\u0440\u043E\u043A\u0441\u0438 \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0451\u043D",
+    "indicator.proxy.off": "\u041F\u0440\u043E\u043A\u0441\u0438 \u043D\u0435 \u043D\u0430\u0441\u0442\u0440\u043E\u0435\u043D",
+    "indicator.proxy.error": "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u0438\u044F \u043F\u0440\u043E\u043A\u0441\u0438",
+    "indicator.auth.ok": "\u042F\u043D\u0434\u0435\u043A\u0441 \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u043E\u0432\u0430\u043D",
+    "indicator.auth.off": "\u042F\u043D\u0434\u0435\u043A\u0441 \u043D\u0435 \u0430\u0432\u0442\u043E\u0440\u0438\u0437\u043E\u0432\u0430\u043D",
+    "indicator.sb.ok": "SponsorBlock \u0430\u043A\u0442\u0438\u0432\u0435\u043D",
+    "indicator.sb.off": "SponsorBlock \u043E\u0442\u043A\u043B\u044E\u0447\u0451\u043D",
+    "indicator.sb.error": "\u041E\u0448\u0438\u0431\u043A\u0430 \u0437\u0430\u0433\u0440\u0443\u0437\u043A\u0438 SponsorBlock",
     "error.network": "\u041E\u0448\u0438\u0431\u043A\u0430 \u043F\u043E\u0434\u043A\u043B\u044E\u0447\u0435\u043D\u0438\u044F \u2014 \u043F\u0440\u043E\u0432\u0435\u0440\u044C\u0442\u0435 \u0441\u0435\u0442\u044C",
     "error.api": "\u041E\u0448\u0438\u0431\u043A\u0430 \u0441\u0435\u0440\u0432\u0438\u0441\u0430 \u043F\u0435\u0440\u0435\u0432\u043E\u0434\u0430",
     "error.parse": "\u041D\u0435\u043E\u0436\u0438\u0434\u0430\u043D\u043D\u044B\u0439 \u043E\u0442\u0432\u0435\u0442 \u043E\u0442 \u0441\u0435\u0440\u0432\u0435\u0440\u0430",
@@ -3917,6 +3935,21 @@
                 }
                 .cv-pro-crown svg { width: 14px; height: 14px; stroke: #FFD700; filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.6)); }
 
+                .cv-indicators {
+                    display: flex; justify-content: center; gap: 12px;
+                    margin-bottom: 10px; font-size: 10px; color: #aaa;
+                }
+                .cv-indicator {
+                    display: inline-flex; align-items: center; gap: 4px;
+                }
+                .cv-dot {
+                    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+                    transition: background-color 0.3s;
+                }
+                .cv-dot--ok { background-color: #4CAF50; }
+                .cv-dot--off { background-color: #666; }
+                .cv-dot--error { background-color: #ff5e5e; }
+
                 .cv-sb-btn {
                     display: flex; align-items: center; justify-content: center; gap: 4px;
                     background: #333 !important; color: #fff !important; border: 1px solid #555 !important;
@@ -3940,8 +3973,13 @@
                         <button class="cv-btn-collapse" id="cv-btn-collapse" title="Minimize">${Icons.collapse}</button>
                     </div>
                     <div class="cv-content">
-                        <div style="font-size:12px; margin-bottom: 12px; text-align:center;">
+                        <div style="font-size:12px; margin-bottom: 6px; text-align:center;">
                             <span id="cv-status" style="color:#FFC131">${t("panel.searching")}</span>
+                        </div>
+                        <div class="cv-indicators" id="cv-indicators">
+                            <span class="cv-indicator" id="cv-ind-proxy" title="${t("indicator.proxy.off")}"><span class="cv-dot cv-dot--off"></span> Proxy</span>
+                            <span class="cv-indicator" id="cv-ind-auth" title="${t("indicator.auth.off")}"><span class="cv-dot cv-dot--off"></span> Auth</span>
+                            <span class="cv-indicator" id="cv-ind-sponsorblock" style="display:${this.tier !== "free" ? "inline-flex" : "none"}" title="${t("indicator.sb.off")}"><span class="cv-dot cv-dot--off"></span> SB</span>
                         </div>
 
                         <div class="cv-row">
@@ -4126,6 +4164,16 @@
       this.sponsorBlockEnabled = enabled;
       this.updateSponsorBlockButton();
     }
+    updateIndicator(id, status) {
+      const el = this.shadow.getElementById(`cv-ind-${id}`);
+      if (!el) return;
+      const dot = el.querySelector(".cv-dot");
+      if (dot) {
+        dot.className = `cv-dot cv-dot--${status}`;
+      }
+      const tooltipKey = id === "sponsorblock" ? `indicator.sb.${status}` : `indicator.${id}.${status}`;
+      el.title = t(tooltipKey);
+    }
   };
 
   // src/injector.ts
@@ -4215,6 +4263,7 @@ ${a.stack}`;
       isTranslating = true;
       currentVideoUrl = window.location.href;
       let attempts = 0;
+      let apiErrorRetries = 0;
       if (!appSettings && window.__TAURI__) {
         try {
           appSettings = await window.__TAURI__.core.invoke("get_settings");
@@ -4226,6 +4275,18 @@ ${a.stack}`;
           if (panelInstance) {
             panelInstance.setVideoVolumeSlider(userVideoVolume);
             panelInstance.setSponsorBlockState(sponsorBlockEnabled);
+            panelInstance.updateIndicator("sponsorblock", sponsorBlockEnabled ? "ok" : "off");
+            panelInstance.updateIndicator("auth", appSettings.yandex_token ? "ok" : "off");
+            if (appSettings.use_proxy && appSettings.proxy_url) {
+              panelInstance.updateIndicator("proxy", "ok");
+              try {
+                await window.__TAURI__.core.invoke("ping_proxy", { proxyUrl: appSettings.proxy_url });
+              } catch {
+                panelInstance.updateIndicator("proxy", "error");
+              }
+            } else {
+              panelInstance.updateIndicator("proxy", "off");
+            }
           }
         } catch (e) {
           console.error("CrabVoice: Failed to fetch settings", e);
@@ -4243,6 +4304,7 @@ ${a.stack}`;
         updateStatus(t("status.extracting"), "#24c8db");
         const videoData = await getVideoData(service);
         const duration = videoData?.duration || v.duration || 344;
+        appLog(`Video data: service=${JSON.stringify(service.host)}, duration=${duration}, videoId=${videoData?.videoId ?? "unknown"}`);
         if (appTier !== "free" && sponsorBlockEnabled && window.location.hostname.includes("youtube.com")) {
           const urlObj = new URL(window.location.href);
           const videoId = urlObj.searchParams.get("v");
@@ -4252,12 +4314,15 @@ ${a.stack}`;
               if (sponsorSegments.length > 0) {
                 appLog(`SponsorBlock: Loaded ${sponsorSegments.length} segments`);
               }
+              if (panelInstance) panelInstance.updateIndicator("sponsorblock", "ok");
             } catch (e) {
+              if (panelInstance) panelInstance.updateIndicator("sponsorblock", "error");
             }
           }
         }
         const pollTranslation = async () => {
           if (window.location.href !== currentVideoUrl) {
+            appLog("URL changed, stopping poll");
             isTranslating = false;
             return;
           }
@@ -4269,11 +4334,12 @@ ${a.stack}`;
           try {
             const invoke = window.__TAURI__ ? window.__TAURI__.core.invoke : null;
             if (!invoke) return;
-            appLog("Sent translation request to Rust backend");
+            appLog(`Poll attempt=${attempts}, firstRequest=${attempts === 0}`);
             const res = await Promise.race([
               invoke("translate", { url: window.location.href, duration, firstRequest: attempts === 0 }),
               new Promise((_, reject) => setTimeout(() => reject(new Error("Network error")), 35e3))
             ]);
+            appLog(`Response: status=${res.status}, remaining_time=${res.remaining_time ?? "none"}, hasUrl=${!!res.url}`);
             if (res.status === 1 && res.url) {
               appLog("Translation successful! Playing native audio...");
               updateStatus(t("status.linked"), "#4CAF50");
@@ -4312,10 +4378,19 @@ ${a.stack}`;
             }
           } catch (e) {
             const errStr = e?.toString() ?? "";
-            appLog(`Backend error: ${errStr}`);
+            appLog(`Backend error (attempt=${attempts}): ${errStr}`);
+            const isApiError = errStr.includes("API error");
+            if (isApiError && apiErrorRetries < 3) {
+              apiErrorRetries++;
+              appLog(`API error retry ${apiErrorRetries}/3 \u2014 restarting session in 10s`);
+              updateStatus(t("status.retrying", { attempt: apiErrorRetries }), "#FFC131");
+              attempts = 0;
+              setTimeout(pollTranslation, 1e4);
+              return;
+            }
             let userMsg = t("error.unknown");
             if (errStr.startsWith("Network error")) userMsg = t("error.network");
-            else if (errStr.startsWith("API error")) userMsg = t("error.api");
+            else if (isApiError) userMsg = t("error.api");
             else if (errStr.startsWith("Parse error")) userMsg = t("error.parse");
             else if (errStr.startsWith("Config error")) userMsg = t("error.config");
             updateStatus(userMsg + " \u26A0\uFE0F", "#ff5e5e");
@@ -4405,6 +4480,7 @@ ${a.stack}`;
           },
           onSponsorBlockToggle: (enabled) => {
             sponsorBlockEnabled = enabled;
+            if (panelInstance) panelInstance.updateIndicator("sponsorblock", enabled ? "ok" : "off");
             appLog(`SponsorBlock toggled: ${enabled}`);
             if (window.__TAURI__ && appSettings) {
               appSettings.sponsorblock_enabled = enabled;

@@ -1,7 +1,7 @@
 {
   "app.title": "CrabVoice",
   "app.subtitle": "Real-time Native Video Translation",
-  "app.version": "CrabVoice v0.7.0 Public Beta",
+  "app.version": "CrabVoice v0.8.0 Public Beta",
   "app.crafted_by": "Crafted with 🦀 by",
 
   "url.placeholder": "Paste video URL (YouTube, VK, Vimeo)...",
@@ -68,6 +68,17 @@
   "status.skipped": "Skipped {category} ⏩",
   "status.login_success": "Login successful!",
   "status.returning": "Returning to CrabVoice...",
+
+  "status.retrying": "Retrying... (attempt {attempt}/3) ⏳",
+
+  "indicator.proxy.ok": "Proxy connected",
+  "indicator.proxy.off": "Proxy not configured",
+  "indicator.proxy.error": "Proxy connection failed",
+  "indicator.auth.ok": "Yandex authorized",
+  "indicator.auth.off": "Yandex not authorized",
+  "indicator.sb.ok": "SponsorBlock active",
+  "indicator.sb.off": "SponsorBlock disabled",
+  "indicator.sb.error": "SponsorBlock failed to load",
 
   "error.network": "Connection failed — check your network",
   "error.api": "Translation service error",
