@@ -2,7 +2,7 @@ use crate::domain::{AppSettings, TranslationProvider, TranslationResult};
 use crate::error::AppError;
 use async_trait::async_trait;
 use hmac::{Hmac, Mac};
-use log::{debug, warn};
+use log::{debug, info, warn};
 use prost::Message;
 use reqwest::{header, Client};
 use sha2::Sha256;
@@ -56,9 +56,9 @@ impl TranslationProvider for YandexClient {
         let signature_hex = hex::encode(mac.finalize().into_bytes());
         let uuid_str = Uuid::new_v4().to_string();
 
-        debug!(
-            "Yandex API: {} -> {}, duration={:.0}s, lively={}",
-            settings.default_source_lang, settings.default_target_lang, duration, settings.use_lively_voice
+        info!(
+            "Yandex API request: {} -> {}, duration={:.0}s, lively={}, first_request={}",
+            settings.default_source_lang, settings.default_target_lang, duration, settings.use_lively_voice, first_request
         );
 
         let mut headers = header::HeaderMap::new();
@@ -68,7 +68,7 @@ impl TranslationProvider for YandexClient {
 
         let mut client_builder = Client::builder()
             .default_headers(headers)
-            .timeout(std::time::Duration::from_secs(30));
+            .timeout(std::time::Duration::from_secs(60));
 
         if settings.use_proxy && !settings.proxy_url.is_empty() {
             match reqwest::Proxy::all(&settings.proxy_url) {
@@ -114,13 +114,13 @@ impl TranslationProvider for YandexClient {
             let status = response.status();
             let err_text = response.text().await.unwrap_or_default();
             warn!("Yandex API HTTP {}: {}", status, err_text);
-            return Err(AppError::Api(format!("Yandex HTTP {}", status)));
+            return Err(AppError::Api(format!("Yandex HTTP {}: {}", status, err_text)));
         }
 
         let response_bytes = response.bytes().await?;
         let yandex_response = pb::VideoTranslationResponse::decode(response_bytes)?;
 
-        debug!(
+        info!(
             "Yandex response: status={}, url={}, remaining_time={:?}",
             yandex_response.status,
             yandex_response.url.as_deref().unwrap_or("none"),

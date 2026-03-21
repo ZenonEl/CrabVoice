@@ -15,6 +15,17 @@ By leveraging the power of Rust on the backend, CrabVoice successfully bypasses 
 - **SPA & CSP Resistance:** Survives aggressive Single Page Application navigation and bypasses strict YouTube/VK CSP policies using isolated `Shadow DOM` and `TrustedHTML`.
 - **Auto-Sync:** Native video event hooks automatically sync playback, pausing, and scrubbing between the original video and the translated audio track.
 
+## 🌐 Supported Platforms
+
+CrabVoice uses [vot.js](https://github.com/FOSWLY/vot.js) for video detection across **55+ platforms**. Translation quality and availability depends on the Yandex API's ability to process each platform.
+
+Full list of potentially supported sites: [voice-over-translation wiki](https://github.com/ilyhalight/voice-over-translation/wiki/%5BEN%5D-Supported-sites).
+
+### Known Limitations
+- **TikTok:** Yandex API requires direct video file URLs (`translationHelp`) for non-YouTube platforms. Currently under investigation (#11).
+- **Long videos (4h+):** Yandex API does not support videos longer than 4 hours.
+- **Some platforms** may require proxy for API access depending on your region.
+
 ## 🙏 Acknowledgements
 A huge thank you to the [vot.js](https://github.com/FOSWLY/vot.js) project! Their incredible work on video data extraction, player detection, and API reverse-engineering made the frontend integration of CrabVoice incredibly robust.
 
