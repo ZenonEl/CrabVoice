@@ -103,6 +103,21 @@ jobs:
           releaseId: ${{ github.event.release.id || '' }}
           args: ${{ steps.features.outputs.args }}
 
+      - name: Upload portable binary (Linux)
+        if: matrix.platform == 'ubuntu-latest' && github.event_name == 'release'
+        run: |
+          cp src-tauri/target/release/CrabVoice CrabVoice-linux-portable
+          chmod +x CrabVoice-linux-portable
+        shell: bash
+
+      - name: Attach portable binary to release
+        if: matrix.platform == 'ubuntu-latest' && github.event_name == 'release'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: CrabVoice-linux-portable
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
   android:
     needs: [check-permissions]
     if: always() && (needs.check-permissions.result == 'success' || needs.check-permissions.result == 'skipped')
@@ -190,12 +205,15 @@ jobs:
           export NDK_HOME="${{ steps.ndk.outputs.ndk_home }}"
           npx tauri android build ${{ steps.features.outputs.args }}
 
+      - name: Rename APK
+        run: |
+          cp src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk CrabVoice-universal-release.apk
+
       - name: Upload APK to release
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+          files: CrabVoice-universal-release.apk
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -204,4 +222,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
-          path: src-tauri/gen/android/app/build/outputs/apk/universal/release/*.apk
+          path: CrabVoice-universal-release.apk
