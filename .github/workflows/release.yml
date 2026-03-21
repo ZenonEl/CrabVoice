@@ -180,14 +180,14 @@ jobs:
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_B64 }}" | base64 -d > /tmp/release.keystore
 
+      - name: Init Android project
+        run: npx tauri android init
+
       - name: Write keystore.properties
         run: |
-          mkdir -p src-tauri/gen/android
-          cat > src-tauri/gen/android/keystore.properties << 'PROPS'
-          password=${{ secrets.ANDROID_KEY_PASSWORD }}
-          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
-          storeFile=/tmp/release.keystore
-          PROPS
+          echo "password=${{ secrets.ANDROID_KEY_PASSWORD }}" > src-tauri/gen/android/keystore.properties
+          echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> src-tauri/gen/android/keystore.properties
+          echo "storeFile=/tmp/release.keystore" >> src-tauri/gen/android/keystore.properties
 
       - name: Determine features
         id: features
