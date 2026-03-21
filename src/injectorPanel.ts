@@ -2,6 +2,8 @@ import { Icons } from "./icons";
 import { t } from "./i18n";
 
 export type AppTier = 'free' | 'subscribers' | 'premium';
+export type IndicatorStatus = 'ok' | 'off' | 'error';
+export type IndicatorId = 'proxy' | 'auth' | 'sponsorblock';
 
 export interface PanelCallbacks {
     onClose: () => void;
@@ -179,6 +181,21 @@ export class CrabPanel {
                 }
                 .cv-pro-crown svg { width: 14px; height: 14px; stroke: #FFD700; filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.6)); }
 
+                .cv-indicators {
+                    display: flex; justify-content: center; gap: 12px;
+                    margin-bottom: 10px; font-size: 10px; color: #aaa;
+                }
+                .cv-indicator {
+                    display: inline-flex; align-items: center; gap: 4px;
+                }
+                .cv-dot {
+                    display: inline-block; width: 8px; height: 8px; border-radius: 50%;
+                    transition: background-color 0.3s;
+                }
+                .cv-dot--ok { background-color: #4CAF50; }
+                .cv-dot--off { background-color: #666; }
+                .cv-dot--error { background-color: #ff5e5e; }
+
                 .cv-sb-btn {
                     display: flex; align-items: center; justify-content: center; gap: 4px;
                     background: #333 !important; color: #fff !important; border: 1px solid #555 !important;
@@ -202,8 +219,13 @@ export class CrabPanel {
                         <button class="cv-btn-collapse" id="cv-btn-collapse" title="Minimize">${Icons.collapse}</button>
                     </div>
                     <div class="cv-content">
-                        <div style="font-size:12px; margin-bottom: 12px; text-align:center;">
+                        <div style="font-size:12px; margin-bottom: 6px; text-align:center;">
                             <span id="cv-status" style="color:#FFC131">${t('panel.searching')}</span>
+                        </div>
+                        <div class="cv-indicators" id="cv-indicators">
+                            <span class="cv-indicator" id="cv-ind-proxy" title="${t('indicator.proxy.off')}"><span class="cv-dot cv-dot--off"></span> Proxy</span>
+                            <span class="cv-indicator" id="cv-ind-auth" title="${t('indicator.auth.off')}"><span class="cv-dot cv-dot--off"></span> Auth</span>
+                            <span class="cv-indicator" id="cv-ind-sponsorblock" style="display:${this.tier !== 'free' ? 'inline-flex' : 'none'}" title="${t('indicator.sb.off')}"><span class="cv-dot cv-dot--off"></span> SB</span>
                         </div>
 
                         <div class="cv-row">
@@ -432,5 +454,16 @@ export class CrabPanel {
     public setSponsorBlockState(enabled: boolean) {
         this.sponsorBlockEnabled = enabled;
         this.updateSponsorBlockButton();
+    }
+
+    public updateIndicator(id: IndicatorId, status: IndicatorStatus) {
+        const el = this.shadow.getElementById(`cv-ind-${id}`);
+        if (!el) return;
+        const dot = el.querySelector('.cv-dot');
+        if (dot) {
+            dot.className = `cv-dot cv-dot--${status}`;
+        }
+        const tooltipKey = id === 'sponsorblock' ? `indicator.sb.${status}` : `indicator.${id}.${status}`;
+        el.title = t(tooltipKey);
     }
 }

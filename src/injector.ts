@@ -46,6 +46,9 @@ interface AppSettings {
     default_target_lang: string;
     sponsorblock_enabled: boolean;
     ui_language: string;
+    use_proxy: boolean;
+    proxy_url: string;
+    yandex_token: string | null;
 }
 
 if (!window._cvInitialized) {
@@ -141,6 +144,7 @@ if (!window._cvInitialized) {
         isTranslating = true;
         currentVideoUrl = window.location.href;
         let attempts = 0;
+        let apiErrorRetries = 0;
 
         // Загружаем настройки из Rust, если еще не загрузили
         if (!appSettings && window.__TAURI__) {
@@ -155,6 +159,20 @@ if (!window._cvInitialized) {
                 if (panelInstance) {
                     panelInstance.setVideoVolumeSlider(userVideoVolume);
                     panelInstance.setSponsorBlockState(sponsorBlockEnabled);
+
+                    // Update status indicators
+                    panelInstance.updateIndicator('sponsorblock', sponsorBlockEnabled ? 'ok' : 'off');
+                    panelInstance.updateIndicator('auth', appSettings!.yandex_token ? 'ok' : 'off');
+                    if (appSettings!.use_proxy && appSettings!.proxy_url) {
+                        panelInstance.updateIndicator('proxy', 'ok');
+                        try {
+                            await window.__TAURI__!.core.invoke("ping_proxy", { proxyUrl: appSettings!.proxy_url });
+                        } catch {
+                            panelInstance.updateIndicator('proxy', 'error');
+                        }
+                    } else {
+                        panelInstance.updateIndicator('proxy', 'off');
+                    }
                 }
             } catch (e) { console.error("CrabVoice: Failed to fetch settings", e); }
         }
@@ -177,6 +195,7 @@ if (!window._cvInitialized) {
             const videoData = await getVideoData(service);
 
             const duration = videoData?.duration || v.duration || 344.0;
+            appLog(`Video data: service=${JSON.stringify(service.host)}, duration=${duration}, videoId=${videoData?.videoId ?? 'unknown'}`);
 
             // Load SponsorBlock segments (subscribers+ tier, YouTube only)
             if (appTier !== 'free' && sponsorBlockEnabled && window.location.hostname.includes("youtube.com")) {
@@ -188,14 +207,16 @@ if (!window._cvInitialized) {
                         if (sponsorSegments.length > 0) {
                             appLog(`SponsorBlock: Loaded ${sponsorSegments.length} segments`);
                         }
+                        if (panelInstance) panelInstance.updateIndicator('sponsorblock', 'ok');
                     } catch (e) {
-                        // Ошибка или бесплатная версия — просто игнорируем
+                        if (panelInstance) panelInstance.updateIndicator('sponsorblock', 'error');
                     }
                 }
             }
 
             const pollTranslation = async () => {
                 if (window.location.href !== currentVideoUrl) {
+                    appLog("URL changed, stopping poll");
                     isTranslating = false;
                     return;
                 }
@@ -211,12 +232,14 @@ if (!window._cvInitialized) {
                     const invoke = window.__TAURI__ ? window.__TAURI__.core.invoke : null;
                     if (!invoke) return;
 
-                    appLog("Sent translation request to Rust backend");
+                    appLog(`Poll attempt=${attempts}, firstRequest=${attempts === 0}`);
                     const res = await Promise.race([
                         invoke("translate", { url: window.location.href, duration, firstRequest: attempts === 0 }),
                         new Promise((_, reject) => setTimeout(() => reject(new Error("Network error")), 35000))
                     ]) as any;
                     
+                    appLog(`Response: status=${res.status}, remaining_time=${res.remaining_time ?? 'none'}, hasUrl=${!!res.url}`);
+
                     if (res.status === 1 && res.url) {
                         appLog("Translation successful! Playing native audio...");
                         updateStatus(t('status.linked'), "#4CAF50");
@@ -260,11 +283,21 @@ if (!window._cvInitialized) {
                     }
                 } catch (e: any) {
                     const errStr = e?.toString() ?? '';
-                    appLog(`Backend error: ${errStr}`);
-                    // Map structured error categories to user-friendly i18n messages
+                    appLog(`Backend error (attempt=${attempts}): ${errStr}`);
+
+                    const isApiError = errStr.includes('API error');
+                    if (isApiError && apiErrorRetries < 3) {
+                        apiErrorRetries++;
+                        appLog(`API error retry ${apiErrorRetries}/3 — restarting session in 10s`);
+                        updateStatus(t('status.retrying', { attempt: apiErrorRetries }), "#FFC131");
+                        attempts = 0;
+                        setTimeout(pollTranslation, 10000);
+                        return;
+                    }
+
                     let userMsg = t('error.unknown');
                     if (errStr.startsWith('Network error')) userMsg = t('error.network');
-                    else if (errStr.startsWith('API error')) userMsg = t('error.api');
+                    else if (isApiError) userMsg = t('error.api');
                     else if (errStr.startsWith('Parse error')) userMsg = t('error.parse');
                     else if (errStr.startsWith('Config error')) userMsg = t('error.config');
                     updateStatus(userMsg + " ⚠️", "#ff5e5e");
@@ -356,6 +389,7 @@ if (!window._cvInitialized) {
                 },
                 onSponsorBlockToggle: (enabled: boolean) => {
                     sponsorBlockEnabled = enabled;
+                    if (panelInstance) panelInstance.updateIndicator('sponsorblock', enabled ? 'ok' : 'off');
                     appLog(`SponsorBlock toggled: ${enabled}`);
                     // Persist setting
                     if (window.__TAURI__ && appSettings) {
