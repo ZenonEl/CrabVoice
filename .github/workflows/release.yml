@@ -162,6 +162,9 @@ jobs:
         with:
           workspaces: src-tauri -> target
 
+      - name: Install cargo-tauri (needed by gradle Rust plugin for per-arch builds)
+        run: cargo install --locked tauri-cli@^2
+
       - name: Install system dependencies
         run: |
           sudo apt-get update
