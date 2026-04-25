@@ -1,7 +1,7 @@
 {
   "app.title": "CrabVoice",
   "app.subtitle": "Нативный голосовой перевод видео",
-  "app.version": "CrabVoice v1.1.0 Публичная бета",
+  "app.version": "CrabVoice v1.2.0 Публичная бета",
   "app.crafted_by": "Сделано с 🦀 от",
 
   "url.placeholder": "Вставьте ссылку на видео (YouTube, VK, Vimeo)...",
@@ -39,6 +39,7 @@
   "logs.title": "Логи приложения",
   "logs.view": "Просмотр логов",
   "logs.export": "Экспорт / Копировать",
+  "logs.clear": "Очистить",
   "logs.empty": "Логи пусты.",
   "logs.copied": "📋 Логи скопированы в буфер обмена!",
   "logs.saved": "✅ Логи сохранены:\n{path}",
@@ -53,6 +54,7 @@
   "panel.pause": "⏸ Пауза",
   "panel.play": "▶️ Воспр.",
   "panel.refresh": "Обновить",
+  "panel.fullscreen": "На весь экран",
   "panel.back": "Назад в приложение",
   "panel.sb_on": "SponsorBlock: ВКЛ",
   "panel.sb_off": "SponsorBlock: ВЫКЛ",

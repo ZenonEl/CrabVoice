@@ -12,6 +12,7 @@ export interface PanelCallbacks {
     onTogglePlay: (paused: boolean) => void;
     onRefresh: () => void;
     onSponsorBlockToggle: (enabled: boolean) => void;
+    onFullscreen: () => void;
 }
 
 export interface PanelOptions {
@@ -246,6 +247,7 @@ export class CrabPanel {
                         <div class="cv-btn-group">
                             <button class="cv-btn" id="cv-toggle-play">${t('panel.pause')}</button>
                             <button class="cv-btn" id="cv-refresh">${Icons.refresh} ${t('panel.refresh')}</button>
+                            <button class="cv-btn" id="cv-fullscreen" title="${t('panel.fullscreen')}">⛶</button>
                         </div>
 
                         <button class="cv-btn-close" id="cv-close-full">${Icons.return} ${t('panel.back')}</button>
@@ -336,6 +338,8 @@ export class CrabPanel {
             this.setPlayPauseState(false);
             this.callbacks.onRefresh();
         };
+
+        this.shadow.getElementById('cv-fullscreen')!.onclick = () => this.callbacks.onFullscreen();
 
         if (this.btnSponsorBlock && this.tier !== 'free') {
             this.btnSponsorBlock.onclick = () => {

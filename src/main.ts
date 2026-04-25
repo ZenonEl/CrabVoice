@@ -61,6 +61,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     const btnViewLogs = document.querySelector("#btn-view-logs") as HTMLButtonElement;
     const btnDownloadLogs = document.querySelector("#btn-download-logs") as HTMLButtonElement;
+    const btnClearLogs = document.querySelector("#btn-clear-logs") as HTMLButtonElement;
     const logsArea = document.querySelector("#logs-area") as HTMLTextAreaElement;
 
     // Auth state tracked explicitly (not via CSS color)
@@ -280,6 +281,15 @@ window.addEventListener("DOMContentLoaded", async () => {
             logsArea.style.display = "block";
             logsArea.value = logs || t('logs.empty');
             logsArea.scrollTop = logsArea.scrollHeight;
+        } catch (e) {
+            console.error(e);
+        }
+    });
+
+    btnClearLogs.addEventListener("click", async () => {
+        try {
+            await invoke("clear_logs");
+            logsArea.value = "";
         } catch (e) {
             console.error(e);
         }

@@ -1,7 +1,7 @@
 {
   "app.title": "CrabVoice",
   "app.subtitle": "Real-time Native Video Translation",
-  "app.version": "CrabVoice v1.1.0 Public Beta",
+  "app.version": "CrabVoice v1.2.0 Public Beta",
   "app.crafted_by": "Crafted with 🦀 by",
 
   "url.placeholder": "Paste video URL (YouTube, VK, Vimeo)...",
@@ -39,6 +39,7 @@
   "logs.title": "App Logs",
   "logs.view": "View Logs",
   "logs.export": "Export / Copy Logs",
+  "logs.clear": "Clear",
   "logs.empty": "Logs are empty.",
   "logs.copied": "📋 Logs copied to clipboard!",
   "logs.saved": "✅ Logs saved to:\n{path}",
@@ -53,6 +54,7 @@
   "panel.pause": "⏸ Pause",
   "panel.play": "▶️ Play",
   "panel.refresh": "Refresh",
+  "panel.fullscreen": "Fullscreen",
   "panel.back": "Back to App",
   "panel.sb_on": "SponsorBlock: ON",
   "panel.sb_off": "SponsorBlock: OFF",

@@ -63,6 +63,23 @@ async fn get_logs(app: tauri::AppHandle) -> Result<String, String> {
 }
 
 #[tauri::command]
+async fn clear_logs(app: tauri::AppHandle) -> Result<(), String> {
+    let log_dir = app
+        .path()
+        .app_log_dir()
+        .map_err(|e| format!("Config error: {}", e))?;
+    if let Ok(entries) = fs::read_dir(&log_dir) {
+        for entry in entries.filter_map(|e| e.ok()) {
+            if entry.path().extension().map_or(false, |ext| ext == "log") {
+                let _ = fs::write(entry.path(), "");
+            }
+        }
+    }
+    info!("Logs cleared");
+    Ok(())
+}
+
+#[tauri::command]
 async fn export_logs(app: tauri::AppHandle) -> Result<String, String> {
     let logs = get_logs(app.clone()).await?;
 
@@ -307,6 +324,7 @@ pub fn run() {
             log_message,
             get_logs,
             export_logs,
+            clear_logs,
             get_app_tier,
             get_skip_segments,
             ping_proxy,

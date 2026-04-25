@@ -99,11 +99,157 @@ if (!window._cvInitialized) {
         }
     }
 
-    function updatePipState() {
-        const playing = (!!mainVideo && !mainVideo.paused && !mainVideo.ended) ||
-                        (!!audioObj && !audioObj.paused && !audioObj.ended);
-        if (window.__TAURI__) {
-            window.__TAURI__.core.invoke("set_pip_allowed", { allowed: playing }).catch(() => {});
+    let userFullscreen = false;
+    let savedVideoStyles: Record<string, string> | null = null;
+    let savedBodyStyles: { background: string; overflow: string } | null = null;
+    let savedVideoParent: Node | null = null;
+    let savedVideoNextSibling: Node | null = null;
+
+    const CINEMATIC_VIDEO_STYLES: Record<string, string> = {
+        position: 'fixed',
+        top: '0',
+        left: '0',
+        width: '100vw',
+        height: '100vh',
+        'z-index': '999999',
+        'object-fit': 'contain',
+        background: '#000',
+        margin: '0',
+    };
+
+    function enterCinematic() {
+        if (!mainVideo) return;
+        if (savedVideoStyles) return; // already active
+        savedVideoStyles = {};
+        for (const key of Object.keys(CINEMATIC_VIDEO_STYLES)) {
+            savedVideoStyles[key] = mainVideo.style.getPropertyValue(key);
+        }
+        savedBodyStyles = {
+            background: document.body.style.getPropertyValue('background'),
+            overflow: document.body.style.getPropertyValue('overflow'),
+        };
+        // Move video to body root so position:fixed escapes any transformed ancestors
+        savedVideoParent = mainVideo.parentNode;
+        savedVideoNextSibling = mainVideo.nextSibling;
+        if (savedVideoParent !== document.body) {
+            document.body.appendChild(mainVideo);
+        }
+        for (const [key, value] of Object.entries(CINEMATIC_VIDEO_STYLES)) {
+            mainVideo.style.setProperty(key, value, 'important');
+        }
+        document.body.style.setProperty('background', '#000', 'important');
+        document.body.style.setProperty('overflow', 'hidden', 'important');
+        const r = mainVideo.getBoundingClientRect();
+        const cs = getComputedStyle(mainVideo);
+        appLog(`Cinematic ON: rect=${r.left}x${r.top} ${r.width}x${r.height} parent=${mainVideo.parentNode?.nodeName} pos=${cs.position} z=${cs.zIndex} display=${cs.display} vis=${cs.visibility} opacity=${cs.opacity}`);
+        try {
+            const els = document.elementsFromPoint(window.innerWidth/2, window.innerHeight/2)
+                .slice(0, 4).map((e: any) => `${e.tagName}.${(e.className?.toString?.() || '').slice(0,30)}`).join(' > ');
+            appLog(`Cinematic ON: top elements at center: ${els}`);
+        } catch (e) { appLog(`elementsFromPoint err: ${e}`); }
+    }
+
+    function exitCinematic() {
+        if (!mainVideo || !savedVideoStyles || !savedBodyStyles) return;
+        for (const key of Object.keys(CINEMATIC_VIDEO_STYLES)) {
+            const v = savedVideoStyles[key];
+            if (v) mainVideo.style.setProperty(key, v);
+            else mainVideo.style.removeProperty(key);
+        }
+        // Restore original DOM position
+        if (savedVideoParent && savedVideoParent !== document.body) {
+            try {
+                if (savedVideoNextSibling && savedVideoParent.contains(savedVideoNextSibling)) {
+                    savedVideoParent.insertBefore(mainVideo, savedVideoNextSibling);
+                } else {
+                    savedVideoParent.appendChild(mainVideo);
+                }
+            } catch (e) {
+                appLog(`Failed to restore video position: ${e}`);
+            }
+        }
+        document.body.style.setProperty('background', savedBodyStyles.background);
+        document.body.style.setProperty('overflow', savedBodyStyles.overflow);
+        savedVideoStyles = null;
+        savedBodyStyles = null;
+        savedVideoParent = null;
+        savedVideoNextSibling = null;
+        appLog('Cinematic mode OFF');
+    }
+
+    function toggleFullscreen() {
+        appLog(`Fullscreen toggle requested, mainVideo=${!!mainVideo}, current=${userFullscreen}`);
+        if (!mainVideo) return;
+        userFullscreen = !userFullscreen;
+        if (userFullscreen) {
+            enterCinematic();
+            try { (screen.orientation as any)?.lock?.('landscape').catch(() => {}); } catch (_) {}
+        } else {
+            exitCinematic();
+            try { (screen.orientation as any)?.unlock?.(); } catch (_) {}
+        }
+    }
+
+    // Allow PIP whenever injector loads on a non-home page (a video site).
+    // Home page disables it via main.ts. This is more robust than tracking playback
+    // because mobile event listeners can be unreliable on pages like YouTube.
+    if (!isHome && window.__TAURI__) {
+        window.__TAURI__.core.invoke("set_pip_allowed", { allowed: true }).catch(() => {});
+    }
+
+    // Detect Android system PIP via tiny viewport (PIP windows are ~256x144).
+    // Phones never go below ~350 wide, so this is a safe threshold without feedback loops.
+    let pipMode = false;
+    let pauseListenersAttached = false;
+
+    const onMediaPause = function(this: HTMLMediaElement) {
+        if (pipMode && !this.ended) this.play().catch(() => {});
+    };
+
+    function attachPauseListeners() {
+        if (pauseListenersAttached) return;
+        if (mainVideo) mainVideo.addEventListener('pause', onMediaPause);
+        if (audioObj) audioObj.addEventListener('pause', onMediaPause);
+        pauseListenersAttached = true;
+    }
+
+    window.addEventListener('resize', () => {
+        const isPip = window.innerWidth < 350;
+        if (isPip === pipMode) return;
+        pipMode = isPip;
+        appLog(`PIP mode change: ${isPip} (viewport=${window.innerWidth}x${window.innerHeight})`);
+        if (isPip) {
+            if (!userFullscreen) enterCinematic();
+            if (panelInstance) panelInstance.host.style.setProperty('display', 'none', 'important');
+            attachPauseListeners();
+            if (mainVideo && mainVideo.paused && !mainVideo.ended) mainVideo.play().catch(() => {});
+            if (audioObj && audioObj.paused && !audioObj.ended) audioObj.play().catch(() => {});
+        } else {
+            if (panelInstance) panelInstance.host.style.removeProperty('display');
+            if (!userFullscreen) exitCinematic();
+        }
+        if (mainVideo) {
+            appLog(`PIP video state: paused=${mainVideo.paused} ended=${mainVideo.ended} currentTime=${mainVideo.currentTime.toFixed(2)} readyState=${mainVideo.readyState}`);
+        }
+    });
+
+    // Prevent sites (YouTube etc.) from pausing video on visibility/focus change.
+    // PIP/background marks page hidden + window blurs — sites listening to these pause the video.
+    if (!isHome) {
+        try {
+            Object.defineProperty(document, 'hidden', { configurable: true, get: () => false });
+            Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'visible' });
+            Object.defineProperty(document, 'webkitHidden', { configurable: true, get: () => false });
+            document.hasFocus = () => true;
+            // Suppress visibility/focus loss events so sites' own listeners never fire
+            const blockEvents = ['visibilitychange', 'webkitvisibilitychange', 'blur', 'pagehide'];
+            for (const ev of blockEvents) {
+                window.addEventListener(ev, (e) => { e.stopImmediatePropagation(); }, true);
+                document.addEventListener(ev, (e) => { e.stopImmediatePropagation(); }, true);
+            }
+            appLog('Page Visibility/Focus spoofed for background playback');
+        } catch (e) {
+            appLog(`Failed to spoof visibility/focus: ${e}`);
         }
     }
 
@@ -273,9 +419,7 @@ if (!window._cvInitialized) {
 
                         const events =['play', 'pause', 'playing', 'waiting', 'seeking', 'seeked', 'ratechange', 'timeupdate'];
                         events.forEach(e => v.addEventListener(e, syncAudio));
-                        ['play', 'pause', 'ended'].forEach(e => audioObj!.addEventListener(e, updatePipState));
                         syncAudio();
-                        updatePipState();
                     } else {
                         attempts++;
                         if (attempts > 30) {
@@ -407,6 +551,7 @@ if (!window._cvInitialized) {
                     if (panelInstance) panelInstance.setPlayPauseState(false);
                     if (mainVideo) requestTranslation(mainVideo, true);
                 },
+                onFullscreen: () => toggleFullscreen(),
                 onSponsorBlockToggle: (enabled: boolean) => {
                     sponsorBlockEnabled = enabled;
                     if (panelInstance) panelInstance.updateIndicator('sponsorblock', enabled ? 'ok' : 'off');
@@ -427,8 +572,6 @@ if (!window._cvInitialized) {
             appLog(`Found video element: ${!!v}`);
             if (v && v.duration > 0 && v.offsetWidth > 100) {
                 mainVideo = v;
-                ['play', 'pause', 'ended'].forEach(e => v.addEventListener(e, updatePipState));
-                updatePipState();
                 requestTranslation(v);
             }
         }
