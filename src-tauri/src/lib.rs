@@ -217,6 +217,45 @@ async fn poll_device_token(device_code: String) -> Result<DeviceTokenResponse, S
 }
 
 #[tauri::command]
+async fn set_pip_allowed(app: tauri::AppHandle, allowed: bool) -> Result<(), String> {
+    #[cfg(target_os = "android")]
+    {
+        let bundle_id = &app.config().identifier;
+        let path = std::path::PathBuf::from(format!("/data/data/{}/files/pip_allowed.txt", bundle_id));
+        fs::write(&path, if allowed { "1" } else { "0" })
+            .map_err(|e| format!("IO error: {}", e))?;
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        let _ = (app, allowed);
+    }
+    Ok(())
+}
+
+#[tauri::command]
+async fn consume_shared_url(app: tauri::AppHandle) -> Result<Option<String>, String> {
+    #[cfg(target_os = "android")]
+    {
+        let bundle_id = &app.config().identifier;
+        let path = std::path::PathBuf::from(format!("/data/data/{}/files/shared_url.txt", bundle_id));
+        info!("consume_shared_url: checking {}", path.display());
+        if !path.exists() {
+            return Ok(None);
+        }
+        let url = fs::read_to_string(&path).ok();
+        let _ = fs::remove_file(&path);
+        let result = url.map(|s| s.trim().to_string()).filter(|s| !s.is_empty());
+        info!("consume_shared_url: read {:?}", result);
+        return Ok(result);
+    }
+    #[cfg(not(target_os = "android"))]
+    {
+        let _ = app;
+        Ok(None)
+    }
+}
+
+#[tauri::command]
 async fn translate(
     url: String,
     duration: f64,
@@ -272,7 +311,9 @@ pub fn run() {
             get_skip_segments,
             ping_proxy,
             request_device_code,
-            poll_device_token
+            poll_device_token,
+            consume_shared_url,
+            set_pip_allowed
         ])
         .setup(move |app| {
             let settings_manager = SettingsManager::new(app.handle());

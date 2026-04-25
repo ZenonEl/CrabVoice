@@ -54,6 +54,16 @@ interface AppSettings {
 if (!window._cvInitialized) {
     window._cvInitialized = true;
 
+    // When user shares a URL while app is foregrounded on any page,
+    // visibilitychange fires when app returns — pick up the shared URL and navigate.
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState !== "visible") return;
+        if (!window.__TAURI__) return;
+        window.__TAURI__.core.invoke("consume_shared_url").then((url: string | null) => {
+            if (url) window.location.href = url;
+        }).catch(() => {});
+    });
+
     const isHome = window.location.hostname === 'localhost' || window.location.hostname === 'tauri.localhost' || window.location.protocol === 'tauri:';
 
 
@@ -86,6 +96,14 @@ if (!window._cvInitialized) {
     function updateStatus(text: string, color?: string) {
         if (panelInstance) {
             panelInstance.updateStatus(text, color || '#fff');
+        }
+    }
+
+    function updatePipState() {
+        const playing = (!!mainVideo && !mainVideo.paused && !mainVideo.ended) ||
+                        (!!audioObj && !audioObj.paused && !audioObj.ended);
+        if (window.__TAURI__) {
+            window.__TAURI__.core.invoke("set_pip_allowed", { allowed: playing }).catch(() => {});
         }
     }
 
@@ -255,7 +273,9 @@ if (!window._cvInitialized) {
 
                         const events =['play', 'pause', 'playing', 'waiting', 'seeking', 'seeked', 'ratechange', 'timeupdate'];
                         events.forEach(e => v.addEventListener(e, syncAudio));
+                        ['play', 'pause', 'ended'].forEach(e => audioObj!.addEventListener(e, updatePipState));
                         syncAudio();
+                        updatePipState();
                     } else {
                         attempts++;
                         if (attempts > 30) {
@@ -407,6 +427,8 @@ if (!window._cvInitialized) {
             appLog(`Found video element: ${!!v}`);
             if (v && v.duration > 0 && v.offsetWidth > 100) {
                 mainVideo = v;
+                ['play', 'pause', 'ended'].forEach(e => v.addEventListener(e, updatePipState));
+                updatePipState();
                 requestTranslation(v);
             }
         }

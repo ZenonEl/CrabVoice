@@ -37,7 +37,9 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-/src-tauri/gen
+# Tauri-generated Android project — track sources, ignore build artifacts and secrets
+/src-tauri/gen/schemas/
+/src-tauri/gen/android/keystore.properties
 src-tauri/injector.js
 /.claude
 .env

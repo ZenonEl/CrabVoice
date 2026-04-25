@@ -1,7 +1,7 @@
 {
   "app.title": "CrabVoice",
   "app.subtitle": "Нативный голосовой перевод видео",
-  "app.version": "CrabVoice v1.0.0 Публичная бета",
+  "app.version": "CrabVoice v1.1.0 Публичная бета",
   "app.crafted_by": "Сделано с 🦀 от",
 
   "url.placeholder": "Вставьте ссылку на видео (YouTube, VK, Vimeo)...",

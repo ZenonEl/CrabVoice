@@ -323,5 +323,32 @@ window.addEventListener("DOMContentLoaded", async () => {
         }
     });
 
+    // Reset PIP state — home page should not trigger PIP on Home button
+    invoke("set_pip_allowed", { allowed: false }).catch(() => {});
+
+    // Check for URL shared via Android share menu — also re-check when app returns to foreground
+    // (handles case where app was already open and user shared a new URL)
+    const checkSharedUrl = async () => {
+        try {
+            const sharedUrl = await invoke("consume_shared_url") as string | null;
+            if (sharedUrl) {
+                console.log(`Opening shared URL: ${sharedUrl}`);
+                urlInputEl.value = sharedUrl;
+                resultMsgEl.innerHTML = `<span style="color: #4CAF50;">${Icons.videoRedirectShow} ${t('url.redirecting')}</span>`;
+                window.location.href = sharedUrl;
+            }
+        } catch (e) {
+            console.warn("consume_shared_url failed:", e);
+        }
+    };
+
+    await checkSharedUrl();
+
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+            checkSharedUrl();
+        }
+    });
+
     console.log("Main UI loaded successfully");
 });

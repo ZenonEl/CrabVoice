@@ -180,13 +180,6 @@ jobs:
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_B64 }}" | base64 -d > /tmp/release.keystore
 
-      - name: Init Android project
-        run: npx tauri android init
-
-      - name: Fix app display name
-        run: |
-          sed -i 's|<string name="app_name">.*</string>|<string name="app_name">CrabVoice</string>|' src-tauri/gen/android/app/src/main/res/values/strings.xml
-
       - name: Write keystore.properties
         run: |
           echo "password=${{ secrets.ANDROID_KEY_PASSWORD }}" > src-tauri/gen/android/keystore.properties
