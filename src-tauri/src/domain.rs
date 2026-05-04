@@ -2,7 +2,7 @@ use crate::error::AppError;
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 
-/// Глобальные настройки приложения (хранятся на диске)
+/// Global application settings persisted on disk.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppSettings {
     pub volume_ducking: f64,
@@ -39,7 +39,7 @@ impl Default for AppSettings {
             default_source_lang: "en".to_string(),
             default_target_lang: "ru".to_string(),
             use_proxy: false,
-            proxy_url: "".to_string(), // Теперь сюда можно писать http://... или socks5://...
+            proxy_url: "".to_string(), // Accepts http://... or socks5://...
             use_lively_voice: false,
             yandex_token: None,
             sponsorblock_enabled: true,
@@ -49,7 +49,7 @@ impl Default for AppSettings {
     }
 }
 
-/// Сущность результата перевода
+/// Translation result entity.
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TranslationResult {
     pub url: Option<String>,
@@ -77,10 +77,10 @@ pub struct DeviceTokenResponse {
     pub error: Option<String>,
 }
 
-/// Порт (Интерфейс) для инверсии зависимостей.
+/// Port interface for dependency inversion.
 #[async_trait]
 pub trait TranslationProvider: Send + Sync {
-    // Теперь провайдер принимает настройки, чтобы знать, какие параметры отправлять (языки, голоса)
+    // Provider receives settings to decide which languages and voice options to send.
     async fn translate_video(
         &self,
         video_url: &str,

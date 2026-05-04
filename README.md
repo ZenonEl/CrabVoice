@@ -15,7 +15,7 @@ Built with **Tauri v2** (Rust + TypeScript), CrabVoice bypasses CORS and CSP res
 
 ## ✨ Features
 
-- **Cross-Platform** — Windows, Linux (deb, AppImage, portable), Android (APK)
+- **Cross-Platform** — Windows, Linux (deb, rpm, AppImage, portable), Android (APK)
 - **Real-time Voice Translation** — automatic audio dubbing via Yandex Translation API
 - **55+ Video Platforms** — YouTube, VK, Vimeo, TikTok, Twitch, and [many more](https://github.com/ilyhalight/voice-over-translation/wiki/%5BEN%5D-Supported-sites)
 - **Audio Sync** — playback, pause, seek, and speed sync between original and translated audio
@@ -35,6 +35,7 @@ Download the latest release for your platform:
 |----------|------|
 | Windows | `CrabVoice_x.x.x_x64-setup.exe` / `.msi` |
 | Linux (Debian/Ubuntu) | `CrabVoice_x.x.x_amd64.deb` |
+| Linux (Fedora/RHEL) | `CrabVoice-x.x.x-1.x86_64.rpm` |
 | Linux (portable) | `CrabVoice-linux-portable` |
 | Linux (AppImage) | `CrabVoice_x.x.x_amd64.AppImage` |
 | Android | `CrabVoice-universal-release.apk` |
@@ -68,6 +69,12 @@ pnpm tauri build -- --features subscribers            # With SponsorBlock
 ```
 
 **Requirements:** Node.js 20+, Rust stable, pnpm, protobuf-compiler
+
+## 🔐 Architecture & Security Notes
+
+CrabVoice runs video pages inside the Tauri WebView and injects a local control script so it can detect videos, request voice-over translation, and keep translated audio synchronized with the original player. This is why the Tauri CSP is intentionally disabled for the app WebView: the feature depends on script injection into third-party video pages instead of a normal static app shell.
+
+The Yandex video translation integration uses a reverse-engineered request-signing flow compatible with the public `vot.js` / `voice-over-translation` ecosystem. The HMAC key used for request signatures is public compatibility data, not a repository secret. OAuth client credentials are supplied through GitHub Actions secrets during release builds and are not tracked in git.
 
 ## 🙏 Acknowledgements
 

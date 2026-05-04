@@ -3,8 +3,8 @@
 We love community contributions! To make the process smooth for everyone, please follow these guidelines.
 
 ## Legal
-By submitting a Pull Request, you agree to our **[Contributor License Agreement (CLA)](https://gist.github.com/ВАШ_ID_GIST_А)**. 
-*Note: This agreement allows your contributions to be used in both our open-source version and any future proprietary/premium versions of the software.*
+By submitting a Pull Request, you agree to our **[Contributor License Agreement (CLA)](https://gist.github.com/ZenonEl/a276d8b406935c622d4155c7c1412c85)**.
+This agreement allows your contributions to be used in both the open-source version and any future proprietary or premium versions of the software.
 
 ## How to Contribute
 1. **Find an Issue:** Look at our [Issues](https://github.com/ZenonEl/CrabVoice/issues) or create a new one to discuss your idea.

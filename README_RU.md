@@ -15,7 +15,7 @@
 
 ## ✨ Возможности
 
-- **Кроссплатформенность** — Windows, Linux (deb, AppImage, portable), Android (APK)
+- **Кроссплатформенность** — Windows, Linux (deb, rpm, AppImage, portable), Android (APK)
 - **Голосовой перевод в реальном времени** — автоматическая озвучка через API Яндекс Переводчика
 - **55+ видеоплатформ** — YouTube, VK, Vimeo, TikTok, Twitch и [многие другие](https://github.com/ilyhalight/voice-over-translation/wiki/%5BRU%5D-Supported-sites)
 - **Синхронизация аудио** — воспроизведение, пауза, перемотка и скорость синхронизированы между оригиналом и переводом
@@ -35,6 +35,7 @@
 |-----------|------|
 | Windows | `CrabVoice_x.x.x_x64-setup.exe` / `.msi` |
 | Linux (Debian/Ubuntu) | `CrabVoice_x.x.x_amd64.deb` |
+| Linux (Fedora/RHEL) | `CrabVoice-x.x.x-1.x86_64.rpm` |
 | Linux (переносной) | `CrabVoice-linux-portable` |
 | Linux (AppImage) | `CrabVoice_x.x.x_amd64.AppImage` |
 | Android | `CrabVoice-universal-release.apk` |
@@ -68,6 +69,12 @@ pnpm tauri build -- --features subscribers            # Со SponsorBlock
 ```
 
 **Требования:** Node.js 20+, Rust stable, pnpm, protobuf-compiler
+
+## 🔐 Архитектура и безопасность
+
+CrabVoice открывает видеостраницы внутри Tauri WebView и внедряет локальный управляющий скрипт, чтобы находить видео, запрашивать голосовой перевод и синхронизировать переведённое аудио с оригинальным плеером. Поэтому CSP для WebView отключён намеренно: ключевая функция приложения зависит от внедрения скрипта на сторонние видеостраницы, а не от обычной статичной оболочки.
+
+Интеграция с видео-переводом Яндекса использует реверс-инженерный flow подписи запросов, совместимый с публичной экосистемой `vot.js` / `voice-over-translation`. HMAC-ключ для подписи — публичные compatibility-данные, а не секрет репозитория. OAuth-credentials передаются через GitHub Actions secrets при release-сборке и не хранятся в git.
 
 ## 🙏 Благодарности
 

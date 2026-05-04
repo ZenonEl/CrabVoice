@@ -13,6 +13,9 @@ pub mod pb {
     include!(concat!(env!("OUT_DIR"), "/_.rs"));
 }
 
+// Public compatibility key used by the reverse-engineered Yandex video
+// translation signing flow in the vot.js / voice-over-translation ecosystem.
+// This is request-signing compatibility data, not an application secret.
 const HMAC_KEY: &[u8] = b"bt8xH3VOlb4mqf0nqAibnDOoiPlXsisf";
 
 pub struct YandexClient;
