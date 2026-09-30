@@ -9,7 +9,7 @@
 
 > **[Русская версия / Russian version](README_RU.md)**
 
-**CrabVoice** — a cross-platform desktop and mobile app for real-time voice-over translation of online videos. Watch YouTube, VK, Vimeo and 55+ other platforms in your native language with synchronized audio dubbing.
+**CrabVoice** — a cross-platform desktop and mobile app for real-time voice-over translation of online videos. Watch YouTube, VK and Vimeo in your native language with synchronized audio dubbing; many more sites are detected and still need testing.
 
 Built with **Tauri v2** (Rust + TypeScript), CrabVoice bypasses CORS and CSP restrictions to deliver native-quality audio translation directly inside video pages — no browser extension needed.
 
@@ -17,7 +17,7 @@ Built with **Tauri v2** (Rust + TypeScript), CrabVoice bypasses CORS and CSP res
 
 - **Cross-Platform** — Windows, Linux (deb, rpm, AppImage, portable), Android (APK)
 - **Real-time Voice Translation** — automatic audio dubbing via Yandex Translation API
-- **55+ Video Platforms** — YouTube, VK, Vimeo, TikTok, Twitch, and [many more](https://github.com/ilyhalight/voice-over-translation/wiki/%5BEN%5D-Supported-sites)
+- **Video Platforms** — verified on YouTube, VK and Vimeo; TikTok, Twitch and [many more](https://github.com/ilyhalight/voice-over-translation/wiki/%5BEN%5D-Supported-sites) are detected but need testing (see [Supported Platforms](#-supported-platforms))
 - **Audio Sync** — playback, pause, seek, and speed sync between original and translated audio
 - **SponsorBlock** — auto-skip ads and sponsor segments (subscribers tier)
 - **Proxy Support** — HTTP/SOCKS5 proxy with built-in ping checker
